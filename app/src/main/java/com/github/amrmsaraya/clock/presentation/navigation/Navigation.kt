@@ -38,7 +38,13 @@ fun Navigation(
         }
 
         composable(Clock.route) {
-            ClockScreen(modifier = modifier)
+            ClockScreen(
+                modifier = modifier,
+                onShowBottomNavigation = onShowBottomNavigation,
+                onBackPress = {
+                    navController.popBackStack()
+                }
+            )
         }
 
         composable(Stopwatch.route) {

@@ -36,10 +36,10 @@ import kotlinx.coroutines.launch
 @Composable
 fun AlarmScreen(
     modifier: Modifier,
-    viewModel: AlarmViewModel = viewModel(),
     onShowBottomNavigation: (Boolean) -> Unit,
-    onBackPress: () -> Unit
-) {
+    onBackPress: () -> Unit,
+    viewModel: AlarmViewModel = viewModel(),
+    ) {
     val uiState by viewModel.uiState
     val scaffoldState = rememberScaffoldState()
     val drawerState = rememberBottomDrawerState(initialValue = BottomDrawerValue.Closed)
@@ -79,9 +79,9 @@ fun AlarmScreen(
         content = {
             AlarmScreenContent(
                 scaffoldState = scaffoldState,
+                drawerState = drawerState,
                 scope = scope,
-                onShowBottomNavigation = onShowBottomNavigation,
-                drawerState = drawerState
+                onShowBottomNavigation = onShowBottomNavigation
             )
         }
     )
@@ -93,8 +93,8 @@ fun AlarmScreen(
 private fun AlarmScreenContent(
     scaffoldState: ScaffoldState,
     scope: CoroutineScope,
-    onShowBottomNavigation: (Boolean) -> Unit,
-    drawerState: BottomDrawerState
+    drawerState: BottomDrawerState,
+    onShowBottomNavigation: (Boolean) -> Unit
 ) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
