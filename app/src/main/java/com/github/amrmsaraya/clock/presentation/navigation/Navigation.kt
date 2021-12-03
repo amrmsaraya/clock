@@ -2,6 +2,7 @@ package com.github.amrmsaraya.clock.presentation.navigation
 
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.ExperimentalUnitApi
 import androidx.navigation.NavHostController
@@ -14,6 +15,7 @@ import com.github.amrmsaraya.clock.presentation.stopwatch.StopwatchScreen
 import com.github.amrmsaraya.clock.presentation.timer.TimerScreen
 import com.google.accompanist.pager.ExperimentalPagerApi
 
+@ExperimentalComposeUiApi
 @ExperimentalUnitApi
 @ExperimentalPagerApi
 @ExperimentalMaterialApi

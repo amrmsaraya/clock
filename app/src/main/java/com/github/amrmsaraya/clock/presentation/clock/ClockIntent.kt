@@ -1,9 +1,9 @@
 package com.github.amrmsaraya.clock.presentation.clock
 
-sealed class ClockIntent {
-    object Start : ClockIntent()
-    object Pause : ClockIntent()
-    object Reset : ClockIntent()
-    data class Configure(val delay: Long) : ClockIntent()
+import java.util.*
 
+sealed class ClockIntent {
+    data class InsertClock(val timeZone: TimeZone) : ClockIntent()
+    data class DeleteClocks(val timeZones: List<TimeZone>) : ClockIntent()
+    object GetClocks : ClockIntent()
 }

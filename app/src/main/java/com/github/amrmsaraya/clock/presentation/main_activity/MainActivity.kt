@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.ExperimentalUnitApi
 import androidx.navigation.compose.rememberNavController
@@ -14,10 +15,13 @@ import com.github.amrmsaraya.clock.presentation.navigation.BottomNavigationBar
 import com.github.amrmsaraya.clock.presentation.navigation.Navigation
 import com.github.amrmsaraya.clock.presentation.theme.ClockTheme
 import com.google.accompanist.pager.ExperimentalPagerApi
+import dagger.hilt.android.AndroidEntryPoint
 
+@ExperimentalComposeUiApi
 @ExperimentalUnitApi
 @ExperimentalPagerApi
 @ExperimentalMaterialApi
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,6 +31,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@ExperimentalComposeUiApi
 @ExperimentalUnitApi
 @ExperimentalPagerApi
 @ExperimentalMaterialApi

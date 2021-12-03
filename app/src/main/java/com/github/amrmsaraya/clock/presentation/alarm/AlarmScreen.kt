@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.*
@@ -39,7 +40,7 @@ fun AlarmScreen(
     onShowBottomNavigation: (Boolean) -> Unit,
     onBackPress: () -> Unit,
     viewModel: AlarmViewModel = viewModel(),
-    ) {
+) {
     val uiState by viewModel.uiState
     val scaffoldState = rememberScaffoldState()
     val drawerState = rememberBottomDrawerState(initialValue = BottomDrawerValue.Closed)
@@ -100,7 +101,7 @@ private fun AlarmScreenContent(
         modifier = Modifier.fillMaxSize(),
         scaffoldState = scaffoldState,
         floatingActionButton = {
-            FAB {
+            AddFAB {
                 scope.launch {
                     onShowBottomNavigation(false)
                     drawerState.expand()
@@ -253,9 +254,16 @@ private fun AlarmCard(
 }
 
 @Composable
-fun FAB(onClick: () -> Unit) {
+fun AddFAB(onClick: () -> Unit) {
     FloatingActionButton(onClick = onClick) {
         Icon(imageVector = Icons.Default.Add, contentDescription = null)
+    }
+}
+
+@Composable
+fun DeleteFAB(onClick: () -> Unit) {
+    FloatingActionButton(onClick = onClick) {
+        Icon(imageVector = Icons.Default.Delete, contentDescription = null)
     }
 }
 

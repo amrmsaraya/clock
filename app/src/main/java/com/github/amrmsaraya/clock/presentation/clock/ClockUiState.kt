@@ -6,6 +6,6 @@ import java.util.*
 
 data class ClockUiState(
     val time: Flow<Time> = flow { },
-    val times: Flow<Map<TimeZone, Time>> = flow { },
+    val clocks: Flow<Map<TimeZone, Time>> = flow { },
     val timeZones: List<TimeZone> = emptyList()
 )

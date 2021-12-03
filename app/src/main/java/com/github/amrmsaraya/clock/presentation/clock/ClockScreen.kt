@@ -1,12 +1,16 @@
 package com.github.amrmsaraya.clock.presentation.clock
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
@@ -27,17 +31,19 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.github.amrmsaraya.clock.presentation.alarm.AddFAB
 import com.github.amrmsaraya.clock.presentation.alarm.BottomDrawerSheet
-import com.github.amrmsaraya.clock.presentation.alarm.FAB
+import com.github.amrmsaraya.clock.presentation.alarm.DeleteFAB
 import com.github.amrmsaraya.clock.presentation.theme.Red500
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.cos
 import kotlin.math.sin
 
-@ExperimentalStdlibApi
+@ExperimentalAnimationApi
+@ExperimentalFoundationApi
 @ExperimentalComposeUiApi
 @ExperimentalMaterialApi
 @Composable
@@ -45,11 +51,15 @@ fun ClockScreen(
     modifier: Modifier,
     onShowBottomNavigation: (Boolean) -> Unit,
     onBackPress: () -> Unit,
-    viewModel: ClockViewModel = viewModel(),
+    viewModel: ClockViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState
     val time by uiState.time.collectAsState(initial = Time())
-    val times by uiState.times.collectAsState(initial = mapOf())
+    val clocks by uiState.clocks.collectAsState(initial = mapOf())
+
+    LaunchedEffect(key1 = true) {
+        viewModel.sendIntent(ClockIntent.GetClocks)
+    }
 
     val scaffoldState = rememberScaffoldState()
     val drawerState = rememberBottomDrawerState(initialValue = BottomDrawerValue.Closed)
@@ -74,7 +84,7 @@ fun ClockScreen(
             AddClock(
                 timeZones = uiState.timeZones,
                 onClick = {
-                    viewModel.myZones.add(it)
+                    viewModel.sendIntent(ClockIntent.InsertClock(it))
                     scope.launch {
                         localKeyboard?.hide()
                         onShowBottomNavigation(true)
@@ -87,35 +97,61 @@ fun ClockScreen(
             ClockScreenContent(
                 scaffoldState = scaffoldState,
                 time = time,
-                times = times
-            ) {
-                scope.launch {
-                    onShowBottomNavigation(false)
-                    drawerState.expand()
+                times = clocks,
+                onAddClock = {
+                    scope.launch {
+                        onShowBottomNavigation(false)
+                        drawerState.expand()
+                    }
+                },
+                onDeleteClocks = {
+                    viewModel.sendIntent(ClockIntent.DeleteClocks(it))
                 }
-            }
+            )
         }
     )
 }
 
+@ExperimentalAnimationApi
+@ExperimentalFoundationApi
 @ExperimentalMaterialApi
 @Composable
 private fun ClockScreenContent(
     scaffoldState: ScaffoldState,
     time: Time,
     times: Map<TimeZone, Time>,
-    onAddClock: () -> Unit
+    onAddClock: () -> Unit,
+    onDeleteClocks: (List<TimeZone>) -> Unit
 ) {
+    var selectMode by remember { mutableStateOf(false) }
+    val selectedItems = remember { mutableStateListOf<TimeZone>() }
+    val deletedItems = remember { mutableStateListOf<TimeZone>() }
+    val scope = rememberCoroutineScope()
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         scaffoldState = scaffoldState,
         floatingActionButton = {
-            FAB {
-                onAddClock()
+            if (selectMode) {
+                DeleteFAB {
+                    deletedItems.addAll(selectedItems)
+                    scope.launch {
+                        delay(1001)
+                        onDeleteClocks(selectedItems)
+                        selectedItems.clear()
+                    }
+                    selectMode = false
+                }
+            } else {
+                AddFAB { onAddClock() }
             }
-        }
+        },
+        floatingActionButtonPosition = if (selectMode) FabPosition.Center else FabPosition.End
     ) {
-        Column(Modifier.fillMaxSize()) {
+        Column(
+            Modifier.fillMaxSize(),
+            verticalArrangement = if (times.isEmpty()) Arrangement.Center else Arrangement.Top
+        ) {
             Clock(
                 modifier = Modifier
                     .padding(16.dp)
@@ -129,26 +165,65 @@ private fun ClockScreenContent(
                 modifier = Modifier.padding(16.dp),
                 horizontalAlignment = CenterHorizontally
             ) {
-                items(times.keys.toList()) {
-                    ClockItem(times[it]!!, it)
+                itemsIndexed(times.keys.toList()) { index, timeZone ->
+                    AnimatedVisibility(
+                        visible = timeZone !in deletedItems,
+                        enter = expandVertically(animationSpec = tween(durationMillis = 1000)),
+                        exit = shrinkVertically(animationSpec = tween(durationMillis = 1000))
+                    ) {
+                        ClockItem(
+                            time = times[timeZone]!!,
+                            timeZone = timeZone,
+                            selected = timeZone in selectedItems,
+                            selectMode = selectMode,
+                            onSelectMode = { selectMode = true },
+                            onSelect = {
+                                if (it) {
+                                    selectedItems.add(timeZone)
+                                } else {
+                                    selectedItems.remove(timeZone)
+                                    selectMode = selectedItems.isNotEmpty()
+                                }
+                            }
+                        )
+                    }
                 }
             }
         }
     }
 }
 
+@ExperimentalFoundationApi
 @Composable
-private fun ClockItem(time: Time, timeZone: TimeZone) {
+private fun ClockItem(
+    time: Time,
+    timeZone: TimeZone,
+    selected: Boolean,
+    selectMode: Boolean,
+    onSelectMode: () -> Unit,
+    onSelect: (Boolean) -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 8.dp, bottom = 8.dp),
+            .padding(top = 8.dp, bottom = 8.dp)
+            .combinedClickable(
+                onClick = {
+                    if (selectMode) {
+                        onSelect(!selected)
+                    }
+                },
+                onLongClick = {
+                    onSelectMode()
+                    onSelect(true)
+                },
+            ),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Clock(
-                modifier = Modifier.size(60.dp),
+                modifier = Modifier.size(50.dp),
                 time = time,
                 color = if (isSystemInDarkTheme()) Color.LightGray else Color.DarkGray
             )
@@ -163,10 +238,28 @@ private fun ClockItem(time: Time, timeZone: TimeZone) {
                 )
             }
         }
-        Text(
-            text = SimpleDateFormat("h:mm a", Locale.getDefault()).format(time.timeInMillis),
-            fontSize = 22.sp
-        )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = "${time.calendar.get(Calendar.HOUR)}:${
+                    "%02d".format(
+                        time.calendar.get(
+                            Calendar.MINUTE
+                        )
+                    )
+                } ${
+                    if (time.calendar.get(
+                            Calendar.AM_PM
+                        ) == 0
+                    ) "AM" else "PM"
+                }",
+
+                fontSize = 22.sp
+            )
+            if (selectMode) {
+                Spacer(modifier = Modifier.size(8.dp))
+                Checkbox(checked = selected, onCheckedChange = onSelect)
+            }
+        }
     }
 }
 

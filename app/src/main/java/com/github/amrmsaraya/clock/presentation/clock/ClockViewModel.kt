@@ -3,84 +3,137 @@ package com.github.amrmsaraya.clock.presentation.clock
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.github.amrmsaraya.clock.presentation.stopwatch.StopwatchIntent
+import com.github.amrmsaraya.clock.domain.entity.Clock
+import com.github.amrmsaraya.clock.domain.usecase.ClockCRUDUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import java.util.*
+import javax.inject.Inject
 
-@ExperimentalStdlibApi
-class ClockViewModel : ViewModel() {
+@HiltViewModel
+class ClockViewModel @Inject constructor(
+    private val clockCRUDUseCase: ClockCRUDUseCase,
+) : ViewModel() {
 
     private val timeZones = TimeZone.getAvailableIDs().map { TimeZone.getTimeZone(it) }
-    private val intentChannel = Channel<StopwatchIntent>()
     val uiState = mutableStateOf(ClockUiState(timeZones = timeZones))
-    val myZones = mutableListOf<TimeZone>()
+    private val intentChannel = Channel<ClockIntent>()
+    private val clocksChannel = Channel<Map<TimeZone, Time>> { }
+    private var clocks = listOf<Clock>()
 
     init {
+        handleIntents()
         getTime()
-        getTimes()
+        getClocks()
+        emitClocks()
+    }
+
+    private fun handleIntents() = viewModelScope.launch {
+        intentChannel.consumeAsFlow().collect {
+            when (it) {
+                is ClockIntent.InsertClock -> insertClock(it.timeZone)
+                is ClockIntent.DeleteClocks -> deleteClocks(it.timeZones)
+                is ClockIntent.GetClocks -> Unit
+            }
+        }
+    }
+
+    fun sendIntent(clockIntent: ClockIntent) = viewModelScope.launch {
+        intentChannel.send(clockIntent)
+    }
+
+    private fun insertClock(timeZone: TimeZone) = viewModelScope.launch {
+        clockCRUDUseCase.insert(
+            Clock(
+                id = timeZone.id,
+                displayName = timeZone.getDisplayName(false, TimeZone.SHORT)
+            )
+        )
+    }
+
+    private fun deleteClocks(timeZones: List<TimeZone>) = viewModelScope.launch {
+        clockCRUDUseCase.delete(
+            timeZones.map {
+                Clock(
+                    id = it.id,
+                    displayName = it.getDisplayName(false, TimeZone.SHORT)
+                )
+            }
+        )
     }
 
     private fun getTime() = viewModelScope.launch {
         uiState.value = uiState.value.copy(
             time = flow {
                 while (true) {
-                    delay(1)
-                    val calendar = Calendar.getInstance()
-                    val seconds =
-                        (calendar.get(Calendar.SECOND) * 1000 + calendar.get(Calendar.MILLISECOND)) * 6 / 1000f + 270
-                    val minutes =
-                        calendar.get(Calendar.MINUTE) * 6 + 270 + calendar.get(Calendar.SECOND) / 10f
-                    val hours =
-                        calendar.get(Calendar.HOUR) * 30 + 270 + calendar.get(Calendar.MINUTE) / 2f
-
-                    emit(
-                        Time(
-                            timeInMillis = calendar.timeInMillis,
-                            hours = hours,
-                            minutes = minutes,
-                            seconds = seconds,
-                        )
-                    )
+                    delay(10)
+                    emit(getClock(TimeZone.getDefault()))
                 }
             }
         )
     }
 
-    private fun getTimes() = viewModelScope.launch {
+    private fun getClocks() = viewModelScope.launch(Dispatchers.Default) {
+        clockCRUDUseCase.getClocks().collect {
+            clocks = it
+        }
+    }
+
+    private fun emitClocks() = viewModelScope.launch {
         uiState.value = uiState.value.copy(
-            times = flow {
+            clocks = flow {
                 while (true) {
                     delay(10)
                     emit(
-                        buildMap<TimeZone, Time> {
-                            myZones.forEach {
-                                delay(10)
-                                val calendar = Calendar.getInstance(it)
-                                val seconds =
-                                    (calendar.get(Calendar.SECOND) * 1000 + calendar.get(Calendar.MILLISECOND)) * 6 / 1000f + 270
-                                val minutes =
-                                    calendar.get(Calendar.MINUTE) * 6 + 270 + calendar.get(Calendar.SECOND) / 10f
-                                val hours =
-                                    calendar.get(Calendar.HOUR) * 30 + 270 + calendar.get(Calendar.MINUTE) / 2f
-                                val time = Time(
-                                    timeInMillis = calendar.timeInMillis,
-                                    hours = hours,
-                                    minutes = minutes,
-                                    seconds = seconds,
-                                )
-                                putIfAbsent(
-                                    it,
-                                    time
-                                )
-                            }
+                        clocks.associate {
+                            val timeZone = TimeZone.getTimeZone(it.id)
+                            val time = getClock(timeZone)
+                            timeZone to time
                         }
                     )
                 }
             }
         )
     }
+
+    private suspend fun clockJob(myZones: List<Clock>) =
+        viewModelScope.launch(Dispatchers.Default) {
+            while (isActive) {
+                delay(10)
+                clocksChannel.send(
+                    myZones.associate {
+                        val timeZone = TimeZone.getTimeZone(it.id)
+                        val time = getClock(timeZone)
+                        timeZone to time
+                    }
+                )
+            }
+        }
+
+    private fun getClock(timeZone: TimeZone): Time {
+        val calendar = Calendar.getInstance(timeZone)
+        val seconds =
+            (calendar.get(Calendar.SECOND) * 1000 + calendar.get(Calendar.MILLISECOND)) * 6 / 1000f + 270
+        val minutes =
+            calendar.get(Calendar.MINUTE) * 6 + 270 + calendar.get(Calendar.SECOND) / 10f
+        val hours =
+            calendar.get(Calendar.HOUR) * 30 + 270 + calendar.get(Calendar.MINUTE) / 2f
+
+        return Time(
+            calendar = calendar,
+            hours = hours,
+            minutes = minutes,
+            seconds = seconds,
+        )
+    }
+
 }
 
