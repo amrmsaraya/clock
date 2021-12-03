@@ -4,10 +4,9 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import androidx.room.TypeConverters
 import com.github.amrmsaraya.clock.data.model.ClockDTO
 
-@Database(entities = [ClockDTO::class], version = 1)
+@Database(entities = [ClockDTO::class], version = 1, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun clockDao(): ClockDao

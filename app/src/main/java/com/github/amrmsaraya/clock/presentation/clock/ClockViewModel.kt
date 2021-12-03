@@ -4,6 +4,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.amrmsaraya.clock.domain.entity.Clock
+import com.github.amrmsaraya.clock.domain.entity.WorldClock
 import com.github.amrmsaraya.clock.domain.usecase.ClockCRUDUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -12,9 +13,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.*
 import javax.inject.Inject
 
@@ -26,14 +26,13 @@ class ClockViewModel @Inject constructor(
     private val timeZones = TimeZone.getAvailableIDs().map { TimeZone.getTimeZone(it) }
     val uiState = mutableStateOf(ClockUiState(timeZones = timeZones))
     private val intentChannel = Channel<ClockIntent>()
-    private val clocksChannel = Channel<Map<TimeZone, Time>> { }
-    private var clocks = listOf<Clock>()
+    private var worldClocks = listOf<Clock>()
 
     init {
         handleIntents()
-        getTime()
-        getClocks()
-        emitClocks()
+        getLocalClock()
+        getWorldClocks()
+        emitWorldClocks()
     }
 
     private fun handleIntents() = viewModelScope.launch {
@@ -42,6 +41,9 @@ class ClockViewModel @Inject constructor(
                 is ClockIntent.InsertClock -> insertClock(it.timeZone)
                 is ClockIntent.DeleteClocks -> deleteClocks(it.timeZones)
                 is ClockIntent.GetClocks -> Unit
+                is ClockIntent.ResetDeleteFlag -> {
+                    uiState.value = uiState.value.copy(isDeleted = false)
+                }
             }
         }
     }
@@ -59,44 +61,48 @@ class ClockViewModel @Inject constructor(
         )
     }
 
-    private fun deleteClocks(timeZones: List<TimeZone>) = viewModelScope.launch {
-        clockCRUDUseCase.delete(
-            timeZones.map {
-                Clock(
-                    id = it.id,
-                    displayName = it.getDisplayName(false, TimeZone.SHORT)
-                )
-            }
-        )
-    }
+    private fun deleteClocks(timeZones: List<TimeZone>) =
+        viewModelScope.launch {
+            clockCRUDUseCase.delete(
+                timeZones.map {
+                    Clock(
+                        id = it.id,
+                        displayName = it.getDisplayName(false, TimeZone.SHORT)
+                    )
+                }
+            )
+        }
 
-    private fun getTime() = viewModelScope.launch {
+    private fun getLocalClock() = viewModelScope.launch {
         uiState.value = uiState.value.copy(
-            time = flow {
+            localClock = flow {
                 while (true) {
                     delay(10)
-                    emit(getClock(TimeZone.getDefault()))
+                    emit(convertToWorldClock(TimeZone.getDefault()))
                 }
             }
         )
     }
 
-    private fun getClocks() = viewModelScope.launch(Dispatchers.Default) {
+    private fun getWorldClocks() = viewModelScope.launch(Dispatchers.Default) {
         clockCRUDUseCase.getClocks().collect {
-            clocks = it
+            worldClocks = it
+            withContext(Dispatchers.Main) {
+                uiState.value = uiState.value.copy(isDeleted = true)
+            }
         }
     }
 
-    private fun emitClocks() = viewModelScope.launch {
+    private fun emitWorldClocks() = viewModelScope.launch {
         uiState.value = uiState.value.copy(
-            clocks = flow {
+            worldClocks = flow {
                 while (true) {
                     delay(10)
                     emit(
-                        clocks.associate {
+                        worldClocks.associate {
                             val timeZone = TimeZone.getTimeZone(it.id)
-                            val time = getClock(timeZone)
-                            timeZone to time
+                            val worldClock = convertToWorldClock(timeZone)
+                            timeZone to worldClock
                         }
                     )
                 }
@@ -104,36 +110,21 @@ class ClockViewModel @Inject constructor(
         )
     }
 
-    private suspend fun clockJob(myZones: List<Clock>) =
-        viewModelScope.launch(Dispatchers.Default) {
-            while (isActive) {
-                delay(10)
-                clocksChannel.send(
-                    myZones.associate {
-                        val timeZone = TimeZone.getTimeZone(it.id)
-                        val time = getClock(timeZone)
-                        timeZone to time
-                    }
-                )
-            }
-        }
-
-    private fun getClock(timeZone: TimeZone): Time {
+    private fun convertToWorldClock(timeZone: TimeZone): WorldClock {
         val calendar = Calendar.getInstance(timeZone)
         val seconds =
-            (calendar.get(Calendar.SECOND) * 1000 + calendar.get(Calendar.MILLISECOND)) * 6 / 1000f + 270
+            270 + (calendar.get(Calendar.SECOND) * 1000 + calendar.get(Calendar.MILLISECOND)) * 6 / 1000f
         val minutes =
-            calendar.get(Calendar.MINUTE) * 6 + 270 + calendar.get(Calendar.SECOND) / 10f
+            270 + calendar.get(Calendar.MINUTE) * 6 + calendar.get(Calendar.SECOND) / 10f
         val hours =
-            calendar.get(Calendar.HOUR) * 30 + 270 + calendar.get(Calendar.MINUTE) / 2f
+            270 + calendar.get(Calendar.HOUR) * 30 + calendar.get(Calendar.MINUTE) / 2f
 
-        return Time(
+        return WorldClock(
             calendar = calendar,
             hours = hours,
             minutes = minutes,
             seconds = seconds,
         )
     }
-
 }
 

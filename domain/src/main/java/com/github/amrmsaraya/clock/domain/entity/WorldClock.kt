@@ -1,8 +1,8 @@
-package com.github.amrmsaraya.clock.presentation.clock
+package com.github.amrmsaraya.clock.domain.entity
 
 import java.util.*
 
-data class Time(
+data class WorldClock(
     val calendar: Calendar = Calendar.getInstance(),
     val hours: Float = 0f,
     val minutes: Float = 0f,

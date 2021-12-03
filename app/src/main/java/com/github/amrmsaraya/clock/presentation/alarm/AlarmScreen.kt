@@ -12,8 +12,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.*
@@ -26,14 +24,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.*
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.github.amrmsaraya.clock.presentation.common_ui.AddFAB
 import com.github.amrmsaraya.clock.presentation.theme.*
-import com.google.accompanist.pager.ExperimentalPagerApi
+import dev.chrisbanes.snapper.ExperimentalSnapperApi
+import dev.chrisbanes.snapper.rememberSnapperFlingBehavior
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-@ExperimentalUnitApi
-@ExperimentalPagerApi
-@ExperimentalMaterialApi
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun AlarmScreen(
     modifier: Modifier,
@@ -109,26 +107,11 @@ private fun AlarmScreenContent(
             }
         }
     ) {
-
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(top = 16.dp, start = 16.dp, end = 16.dp)
         ) {
-            item {
-                var checked by remember { mutableStateOf(true) }
-                AlarmCard(
-                    name = "Wake up",
-                    time = "09:00 AM",
-                    days = "Mon  Tue  Wed  Thu  Fri",
-                    backgroundColor = Red400,
-                    contentColor = Red900,
-                    checked = checked,
-                    onCheckedChange = { checked = it }
-                )
-                Spacer(modifier = Modifier.size(16.dp))
-            }
-
             item {
                 var checked by remember { mutableStateOf(true) }
                 AlarmCard(
@@ -165,6 +148,48 @@ private fun AlarmScreenContent(
                     days = "Mon  Wed  Thu  Fri",
                     backgroundColor = Orange400,
                     contentColor = Orange900,
+                    checked = checked,
+                    onCheckedChange = { checked = it }
+                )
+                Spacer(modifier = Modifier.size(16.dp))
+            }
+
+            item {
+                var checked by remember { mutableStateOf(true) }
+                AlarmCard(
+                    name = "Wake up",
+                    time = "09:00 AM",
+                    days = "Mon  Tue  Wed  Thu  Fri",
+                    backgroundColor = BlueGray400,
+                    contentColor = BlueGray900,
+                    checked = checked,
+                    onCheckedChange = { checked = it }
+                )
+                Spacer(modifier = Modifier.size(16.dp))
+            }
+
+            item {
+                var checked by remember { mutableStateOf(true) }
+                AlarmCard(
+                    name = "Work",
+                    time = "07:30 AM",
+                    days = "Mon  Wed  Thu  Fri",
+                    backgroundColor = Blue400,
+                    contentColor = Blue900,
+                    checked = checked,
+                    onCheckedChange = { checked = it }
+                )
+                Spacer(modifier = Modifier.size(16.dp))
+            }
+
+            item {
+                var checked by remember { mutableStateOf(true) }
+                AlarmCard(
+                    name = "Work",
+                    time = "07:30 AM",
+                    days = "Mon  Wed  Thu  Fri",
+                    backgroundColor = Pink400,
+                    contentColor = Pink900,
                     checked = checked,
                     onCheckedChange = { checked = it }
                 )
@@ -254,22 +279,6 @@ private fun AlarmCard(
 }
 
 @Composable
-fun AddFAB(onClick: () -> Unit) {
-    FloatingActionButton(onClick = onClick) {
-        Icon(imageVector = Icons.Default.Add, contentDescription = null)
-    }
-}
-
-@Composable
-fun DeleteFAB(onClick: () -> Unit) {
-    FloatingActionButton(onClick = onClick) {
-        Icon(imageVector = Icons.Default.Delete, contentDescription = null)
-    }
-}
-
-@ExperimentalUnitApi
-@ExperimentalPagerApi
-@Composable
 fun AddAlarm(
     modifier: Modifier = Modifier,
     onSave: () -> Unit,
@@ -281,8 +290,8 @@ fun AddAlarm(
     val days = listOf("Sat", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri")
     val selectedDays = remember { mutableStateListOf<String>() }
 
-    val colors = listOf(Red400, Purple400, Teal400, Orange400)
-    var selectedColor by remember { mutableStateOf(Red400) }
+    val colors = listOf(Purple400, Teal400, Orange400, BlueGray400, Blue400, Pink400)
+    var selectedColor by remember { mutableStateOf(colors.first()) }
 
     var title by remember { mutableStateOf("") }
 
@@ -324,12 +333,12 @@ fun AddAlarm(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Chooser(
+            TimeChooser(
                 modifier
                     .fillMaxSize()
                     .weight(0.45f),
                 hoursState,
-                24
+                27
             )
             Text(
                 modifier = Modifier.weight(0.1f),
@@ -337,10 +346,10 @@ fun AddAlarm(
                 fontSize = 26.sp,
                 textAlign = TextAlign.Center
             )
-            Chooser(
+            TimeChooser(
                 modifier
                     .fillMaxSize()
-                    .weight(0.45f), minutesState, 60
+                    .weight(0.45f), minutesState, 63
             )
         }
 
@@ -423,7 +432,8 @@ fun AddAlarm(
                                     .fillMaxSize()
                                     .padding(8.dp),
                                 imageVector = Icons.Default.Done,
-                                contentDescription = null
+                                contentDescription = null,
+                                tint = Color.White
                             )
                         }
 
@@ -435,9 +445,9 @@ fun AddAlarm(
     }
 }
 
-@ExperimentalUnitApi
+@OptIn(ExperimentalUnitApi::class, ExperimentalSnapperApi::class)
 @Composable
-private fun Chooser(
+private fun TimeChooser(
     modifier: Modifier,
     state: LazyListState,
     size: Int,
@@ -446,14 +456,16 @@ private fun Chooser(
         modifier = modifier,
         horizontalAlignment = CenterHorizontally,
         state = state,
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.SpaceEvenly,
+        flingBehavior = rememberSnapperFlingBehavior(lazyListState = state)
     ) {
         items(size) {
             val viewedItems = state.layoutInfo.visibleItemsInfo
+
             val animatedSp by animateValueAsState(
                 targetValue = if (viewedItems.isNotEmpty()) {
-                    if (viewedItems[(viewedItems.size - 1) / 2].index == it) {
-                        26.sp
+                    if (viewedItems[(viewedItems.lastIndex) / 2].index == it) {
+                        32.sp
                     } else {
                         18.sp
                     }
@@ -477,11 +489,11 @@ private fun Chooser(
                 }
             )
             Text(
-                text = "$it",
+                modifier = Modifier.padding(16.dp),
+                text = if (it > size - 3 || it - 1 < 0) "" else "${it - 1}",
                 fontSize = animatedSp,
                 color = animatedColor
             )
-            Spacer(modifier = Modifier.size(8.dp))
         }
     }
 }
