@@ -1,6 +1,7 @@
 package com.github.amrmsaraya.clock.di
 
 import android.content.Context
+import com.github.amrmsaraya.clock.data.local.AlarmDao
 import com.github.amrmsaraya.clock.data.local.AppDatabase
 import com.github.amrmsaraya.clock.data.local.ClockDao
 import dagger.Module
@@ -18,5 +19,11 @@ class Room {
     @Provides
     fun provideClockDao(@ApplicationContext context: Context): ClockDao {
         return AppDatabase.getDatabase(context).clockDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideAlarmDao(@ApplicationContext context: Context): AlarmDao {
+        return AppDatabase.getDatabase(context).alarmDao()
     }
 }

@@ -8,17 +8,17 @@ import com.github.amrmsaraya.clock.domain.repository.ClockRepo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class ClockRepoImpl(private val clockLocalDataSource: ClockLocalDataSource) : ClockRepo {
+class ClockRepoImpl(private val localDataSource: ClockLocalDataSource) : ClockRepo {
     override suspend fun insert(clock: Clock) {
-        clockLocalDataSource.insert(clock.toClockDTO())
+        localDataSource.insert(clock.toClockDTO())
     }
 
     override suspend fun delete(clocks: List<Clock>) {
-        clockLocalDataSource.delete(clocks.map { it.toClockDTO() })
+        localDataSource.delete(clocks.map { it.toClockDTO() })
     }
 
     override suspend fun getClocks(): Flow<List<Clock>> {
-        return clockLocalDataSource.getClocks().map {
+        return localDataSource.getClocks().map {
             it.map { clockDTO ->
                 clockDTO.toClock()
             }

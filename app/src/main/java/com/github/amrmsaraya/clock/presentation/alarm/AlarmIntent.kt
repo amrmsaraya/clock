@@ -1,9 +1,9 @@
 package com.github.amrmsaraya.clock.presentation.alarm
 
-sealed class AlarmIntent {
-    object Start : AlarmIntent()
-    object Pause : AlarmIntent()
-    object Reset : AlarmIntent()
-    data class Configure(val delay: Long) : AlarmIntent()
+import com.github.amrmsaraya.clock.domain.entity.Alarm
 
+sealed class AlarmIntent {
+    data class InsertAlarm(val alarm: Alarm) : AlarmIntent()
+    data class DeleteAlarms(val alarms: List<Alarm>) : AlarmIntent()
+    object GetClocks : AlarmIntent()
 }

@@ -7,6 +7,7 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,10 +21,15 @@ import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.*
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.github.amrmsaraya.clock.domain.entity.Alarm
+import com.github.amrmsaraya.clock.presentation.alarm.utils.Colors
+import com.github.amrmsaraya.clock.presentation.alarm.utils.Days
 import com.github.amrmsaraya.clock.presentation.common_ui.AddFAB
 import com.github.amrmsaraya.clock.presentation.theme.*
 import dev.chrisbanes.snapper.ExperimentalSnapperApi
@@ -37,12 +43,14 @@ fun AlarmScreen(
     modifier: Modifier,
     onShowBottomNavigation: (Boolean) -> Unit,
     onBackPress: () -> Unit,
-    viewModel: AlarmViewModel = viewModel(),
+    viewModel: AlarmViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState
     val scaffoldState = rememberScaffoldState()
     val drawerState = rememberBottomDrawerState(initialValue = BottomDrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val hourState = rememberLazyListState()
+    val minuteState = rememberLazyListState()
 
 
     BackHandler {
@@ -61,7 +69,10 @@ fun AlarmScreen(
         drawerState = drawerState,
         drawerContent = {
             AddAlarm(
-                onSave = {
+                hourState = hourState,
+                minuteState = minuteState,
+                onSave = { alarm ->
+                    viewModel.sendIntent(AlarmIntent.InsertAlarm(alarm))
                     scope.launch {
                         onShowBottomNavigation(true)
                         drawerState.close()
@@ -80,6 +91,7 @@ fun AlarmScreen(
                 scaffoldState = scaffoldState,
                 drawerState = drawerState,
                 scope = scope,
+                alarms = uiState.alarms,
                 onShowBottomNavigation = onShowBottomNavigation
             )
         }
@@ -93,6 +105,7 @@ private fun AlarmScreenContent(
     scaffoldState: ScaffoldState,
     scope: CoroutineScope,
     drawerState: BottomDrawerState,
+    alarms: List<Alarm>,
     onShowBottomNavigation: (Boolean) -> Unit
 ) {
     Scaffold(
@@ -112,84 +125,26 @@ private fun AlarmScreenContent(
                 .fillMaxWidth()
                 .padding(top = 16.dp, start = 16.dp, end = 16.dp)
         ) {
-            item {
+            items(alarms) { alarm ->
                 var checked by remember { mutableStateOf(true) }
                 AlarmCard(
-                    name = "Doctor",
-                    time = "04:30 PM",
-                    days = "Sat  Mon  Thu",
-                    backgroundColor = Purple400,
-                    contentColor = Purple900,
-                    checked = checked,
-                    onCheckedChange = { checked = it }
-                )
-                Spacer(modifier = Modifier.size(16.dp))
-            }
-
-            item {
-                var checked by remember { mutableStateOf(true) }
-                AlarmCard(
-                    name = "Wake up",
-                    time = "09:00 AM",
-                    days = "Mon  Tue  Wed  Thu  Fri",
-                    backgroundColor = Teal400,
-                    contentColor = Teal900,
-                    checked = checked,
-                    onCheckedChange = { checked = it }
-                )
-                Spacer(modifier = Modifier.size(16.dp))
-            }
-
-            item {
-                var checked by remember { mutableStateOf(true) }
-                AlarmCard(
-                    name = "Work",
-                    time = "07:30 AM",
-                    days = "Mon  Wed  Thu  Fri",
-                    backgroundColor = Orange400,
-                    contentColor = Orange900,
-                    checked = checked,
-                    onCheckedChange = { checked = it }
-                )
-                Spacer(modifier = Modifier.size(16.dp))
-            }
-
-            item {
-                var checked by remember { mutableStateOf(true) }
-                AlarmCard(
-                    name = "Wake up",
-                    time = "09:00 AM",
-                    days = "Mon  Tue  Wed  Thu  Fri",
-                    backgroundColor = BlueGray400,
-                    contentColor = BlueGray900,
-                    checked = checked,
-                    onCheckedChange = { checked = it }
-                )
-                Spacer(modifier = Modifier.size(16.dp))
-            }
-
-            item {
-                var checked by remember { mutableStateOf(true) }
-                AlarmCard(
-                    name = "Work",
-                    time = "07:30 AM",
-                    days = "Mon  Wed  Thu  Fri",
-                    backgroundColor = Blue400,
-                    contentColor = Blue900,
-                    checked = checked,
-                    onCheckedChange = { checked = it }
-                )
-                Spacer(modifier = Modifier.size(16.dp))
-            }
-
-            item {
-                var checked by remember { mutableStateOf(true) }
-                AlarmCard(
-                    name = "Work",
-                    time = "07:30 AM",
-                    days = "Mon  Wed  Thu  Fri",
-                    backgroundColor = Pink400,
-                    contentColor = Pink900,
+                    name = alarm.title,
+                    time = buildString {
+                        append(alarm.hour)
+                        append(":")
+                        append("%02d".format(alarm.minute))
+                        append(" ")
+                        append(if (alarm.amPm == 0) "AM" else "PM")
+                    },
+                    days = Days.values().filter { it.ordinal in alarm.repeatOn }.map {
+                        stringResource(id = it.stringRes)
+                    }.joinToString("  "),
+                    backgroundColor = Colors.values().filter { it.ordinal == alarm.color }.map {
+                        it.background
+                    }.firstOrNull() ?: Purple400,
+                    contentColor = Colors.values().filter { it.ordinal == alarm.color }.map {
+                        it.onBackground
+                    }.firstOrNull() ?: Purple900,
                     checked = checked,
                     onCheckedChange = { checked = it }
                 )
@@ -281,17 +236,16 @@ private fun AlarmCard(
 @Composable
 fun AddAlarm(
     modifier: Modifier = Modifier,
-    onSave: () -> Unit,
+    hourState: LazyListState,
+    minuteState: LazyListState,
+    onSave: (Alarm) -> Unit,
     onCancel: () -> Unit,
 ) {
-    val hoursState = rememberLazyListState()
-    val minutesState = rememberLazyListState()
+    val days = Days.values()
+    val selectedDays = remember { mutableStateListOf<Days>() }
 
-    val days = listOf("Sat", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri")
-    val selectedDays = remember { mutableStateListOf<String>() }
-
-    val colors = listOf(Purple400, Teal400, Orange400, BlueGray400, Blue400, Pink400)
-    var selectedColor by remember { mutableStateOf(colors.first()) }
+    val backgroundColor = listOf(Purple400, Teal400, Orange400, BlueGray400, Blue400, Pink400)
+    var selectedColor by remember { mutableStateOf(0) }
 
     var title by remember { mutableStateOf("") }
 
@@ -316,7 +270,28 @@ fun AddAlarm(
                 style = MaterialTheme.typography.h6
             )
 
-            TextButton(onClick = { onSave() }) {
+            TextButton(
+                onClick = {
+                    val hourVisibileItems = hourState.layoutInfo.visibleItemsInfo
+                    val minuteVisibileItems = minuteState.layoutInfo.visibleItemsInfo
+
+                    val hour = hourVisibileItems[hourVisibileItems.lastIndex / 2].index
+                    val minute =
+                        minuteVisibileItems[minuteVisibileItems.lastIndex / 2].index - 1
+
+                    onSave(
+                        Alarm(
+                            title = title,
+                            hour = hour,
+                            minute = minute,
+                            amPm = 0,
+                            color = selectedColor,
+                            repeatOn = selectedDays.map { it.ordinal },
+                            enabled = true,
+                        )
+                    )
+                }
+            ) {
                 Text(
                     text = "Save",
                     fontSize = 16.sp,
@@ -329,16 +304,17 @@ fun AddAlarm(
         Row(
             Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.3f),
+                .height(200.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             TimeChooser(
-                modifier
+                modifier = modifier
                     .fillMaxSize()
-                    .weight(0.45f),
-                hoursState,
-                27
+                    .weight(0.35f),
+                state = hourState,
+                size = 14,
+                type = "hour"
             )
             Text(
                 modifier = Modifier.weight(0.1f),
@@ -347,9 +323,12 @@ fun AddAlarm(
                 textAlign = TextAlign.Center
             )
             TimeChooser(
-                modifier
+                modifier = modifier
                     .fillMaxSize()
-                    .weight(0.45f), minutesState, 63
+                    .weight(0.35f),
+                state = minuteState,
+                size = 62,
+                type = "minute"
             )
         }
 
@@ -382,7 +361,7 @@ fun AddAlarm(
                             }
                         }
                         .padding(10.dp),
-                    text = it
+                    text = stringResource(id = it.stringRes)
                 )
             }
         }
@@ -402,7 +381,7 @@ fun AddAlarm(
 
         Spacer(modifier = Modifier.size(16.dp))
 
-        Column() {
+        Column {
             Text(text = "Select Color", fontSize = 20.sp)
             Spacer(modifier = Modifier.size(8.dp))
             Row(
@@ -411,9 +390,9 @@ fun AddAlarm(
                     .height(60.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                colors.forEach {
+                backgroundColor.forEachIndexed { index, color ->
                     val animatedSize by animateDpAsState(
-                        targetValue = if (it == selectedColor) 50.dp else 35.dp,
+                        targetValue = if (index == selectedColor) 50.dp else 35.dp,
                         animationSpec = tween(500)
                     )
                     Box(
@@ -421,12 +400,10 @@ fun AddAlarm(
                             .padding(6.dp)
                             .size(animatedSize)
                             .clip(CircleShape)
-                            .background(it)
-                            .clickable {
-                                selectedColor = it
-                            }
+                            .background(color)
+                            .clickable { selectedColor = index }
                     ) {
-                        if (it == selectedColor) {
+                        if (index == selectedColor) {
                             Icon(
                                 modifier = Modifier
                                     .fillMaxSize()
@@ -436,12 +413,10 @@ fun AddAlarm(
                                 tint = Color.White
                             )
                         }
-
                     }
                 }
             }
         }
-
     }
 }
 
@@ -451,7 +426,13 @@ private fun TimeChooser(
     modifier: Modifier,
     state: LazyListState,
     size: Int,
+    type: String,
+    default: Int = if (type == "hour") 8 else 0
 ) {
+
+    LaunchedEffect(key1 = true) {
+        state.scrollToItem(default)
+    }
     LazyColumn(
         modifier = modifier,
         horizontalAlignment = CenterHorizontally,
@@ -489,8 +470,12 @@ private fun TimeChooser(
                 }
             )
             Text(
-                modifier = Modifier.padding(16.dp),
-                text = if (it > size - 3 || it - 1 < 0) "" else "${it - 1}",
+                modifier = Modifier.padding(20.dp),
+                text = if (it > size - 2 || it - 1 < 0) "" else "${
+                    if (type == "hour") it else "%02d".format(
+                        it - 1
+                    )
+                }",
                 fontSize = animatedSp,
                 color = animatedColor
             )

@@ -1,7 +1,7 @@
 package com.github.amrmsaraya.clock.presentation.alarm
 
-import com.github.amrmsaraya.timer.Time
+import com.github.amrmsaraya.clock.domain.entity.Alarm
 
 data class AlarmUiState(
-    val stopwatch: Time = Time(),
+    val alarms: List<Alarm> = emptyList(),
 )

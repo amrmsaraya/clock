@@ -1,6 +1,8 @@
 package com.github.amrmsaraya.clock.di
 
+import com.github.amrmsaraya.clock.domain.repository.AlarmRepo
 import com.github.amrmsaraya.clock.domain.repository.ClockRepo
+import com.github.amrmsaraya.clock.domain.usecase.AlarmCRUDUseCase
 import com.github.amrmsaraya.clock.domain.usecase.ClockCRUDUseCase
 import dagger.Module
 import dagger.Provides
@@ -16,5 +18,11 @@ class UseCase {
     @Provides
     fun provideClockCRUDUseCase(clockRepo: ClockRepo): ClockCRUDUseCase {
         return ClockCRUDUseCase(clockRepo)
+    }
+
+    @Singleton
+    @Provides
+    fun provideAlarmCRUDUseCase(alarmRepo: AlarmRepo): AlarmCRUDUseCase {
+        return AlarmCRUDUseCase(alarmRepo)
     }
 }

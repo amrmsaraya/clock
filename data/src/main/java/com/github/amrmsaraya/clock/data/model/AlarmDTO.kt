@@ -1,0 +1,18 @@
+package com.github.amrmsaraya.clock.data.model
+
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import java.util.*
+
+@Entity(tableName = "alarm")
+data class AlarmDTO(
+    @PrimaryKey(autoGenerate = true)
+    val id: Long = 0,
+    val title: String,
+    val hour: Int,
+    val minute: Int,
+    val amPm: Int,
+    val color: Int,
+    val repeatOn: List<Int>,
+    val enabled: Boolean = true
+)

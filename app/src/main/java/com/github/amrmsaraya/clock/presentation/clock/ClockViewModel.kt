@@ -1,5 +1,6 @@
 package com.github.amrmsaraya.clock.presentation.clock
 
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -24,8 +25,12 @@ class ClockViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val timeZones = TimeZone.getAvailableIDs().map { TimeZone.getTimeZone(it) }
-    val uiState = mutableStateOf(ClockUiState(timeZones = timeZones))
+
+    private val _uiState = mutableStateOf(ClockUiState(timeZones = timeZones))
+    val uiState: State<ClockUiState> = _uiState
+
     private val intentChannel = Channel<ClockIntent>()
+
     private var worldClocks = listOf<Clock>()
 
     init {
@@ -42,7 +47,7 @@ class ClockViewModel @Inject constructor(
                 is ClockIntent.DeleteClocks -> deleteClocks(it.timeZones)
                 is ClockIntent.GetClocks -> Unit
                 is ClockIntent.ResetDeleteFlag -> {
-                    uiState.value = uiState.value.copy(isDeleted = false)
+                    _uiState.value = uiState.value.copy(isDeleted = false)
                 }
             }
         }
@@ -74,7 +79,7 @@ class ClockViewModel @Inject constructor(
         }
 
     private fun getLocalClock() = viewModelScope.launch {
-        uiState.value = uiState.value.copy(
+        _uiState.value = uiState.value.copy(
             localClock = flow {
                 while (true) {
                     delay(10)
@@ -88,13 +93,13 @@ class ClockViewModel @Inject constructor(
         clockCRUDUseCase.getClocks().collect {
             worldClocks = it
             withContext(Dispatchers.Main) {
-                uiState.value = uiState.value.copy(isDeleted = true)
+                _uiState.value = uiState.value.copy(isDeleted = true)
             }
         }
     }
 
     private fun emitWorldClocks() = viewModelScope.launch {
-        uiState.value = uiState.value.copy(
+        _uiState.value = uiState.value.copy(
             worldClocks = flow {
                 while (true) {
                     delay(10)
