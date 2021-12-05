@@ -18,7 +18,6 @@ import androidx.compose.ui.unit.sp
 import com.github.amrmsaraya.clock.domain.entity.WorldClock
 import java.util.*
 
-
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun WorldClockRow(
@@ -54,7 +53,8 @@ fun WorldClockRow(
             AnalogClock(
                 modifier = Modifier.size(50.dp),
                 worldClock = worldClock,
-                color = if (isSystemInDarkTheme()) Color.LightGray else Color.DarkGray
+                color = if (isSystemInDarkTheme()) Color.LightGray else Color.DarkGray,
+                showSeconds = false
             )
             Spacer(modifier = Modifier.size(16.dp))
             Column {

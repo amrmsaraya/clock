@@ -86,25 +86,26 @@ fun AlarmScreen(
         modifier = modifier.fillMaxSize(),
         drawerState = drawerState,
         drawerContent = {
-            AddAlarm(
-                hourState = hourState,
-                minuteState = minuteState,
-                drawerState = drawerState,
-                alarm = alarm,
-                onSave = { alarm ->
-                    viewModel.sendIntent(AlarmIntent.InsertAlarm(alarm))
-                    scope.launch {
-                        onShowBottomNavigation(true)
-                        drawerState.close()
+            if (drawerState.targetValue == BottomDrawerValue.Expanded) {
+                AddAlarm(
+                    hourState = hourState,
+                    minuteState = minuteState,
+                    alarm = alarm,
+                    onSave = { alarm ->
+                        viewModel.sendIntent(AlarmIntent.InsertAlarm(alarm))
+                        scope.launch {
+                            onShowBottomNavigation(true)
+                            drawerState.close()
+                        }
+                    },
+                    onCancel = {
+                        scope.launch {
+                            onShowBottomNavigation(true)
+                            drawerState.close()
+                        }
                     }
-                },
-                onCancel = {
-                    scope.launch {
-                        onShowBottomNavigation(true)
-                        drawerState.close()
-                    }
-                }
-            )
+                )
+            }
         },
         content = {
             AlarmScreenContent(

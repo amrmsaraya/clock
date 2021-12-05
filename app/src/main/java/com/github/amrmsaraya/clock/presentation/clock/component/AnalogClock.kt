@@ -19,7 +19,8 @@ import kotlin.math.sin
 fun AnalogClock(
     modifier: Modifier = Modifier,
     worldClock: WorldClock,
-    color: Color
+    color: Color,
+    showSeconds: Boolean = true
 ) {
     BoxWithConstraints(
         modifier = modifier,
@@ -40,11 +41,13 @@ fun AnalogClock(
                 radius = radius,
                 color = color
             )
-            secondsHand(
-                second = worldClock.seconds,
-                radius = radius,
-                color = Red500
-            )
+            if (showSeconds) {
+                secondsHand(
+                    second = worldClock.seconds,
+                    radius = radius,
+                    color = Red500
+                )
+            }
             drawCircle(
                 color = color,
                 radius = radius * .03f,

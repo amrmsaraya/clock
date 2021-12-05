@@ -102,7 +102,6 @@ class ClockViewModel @Inject constructor(
         _uiState.value = uiState.value.copy(
             worldClocks = flow {
                 while (true) {
-                    delay(10)
                     emit(
                         worldClocks.associate {
                             val timeZone = TimeZone.getTimeZone(it.id)
@@ -110,6 +109,7 @@ class ClockViewModel @Inject constructor(
                             timeZone to worldClock
                         }
                     )
+                    delay(60000)
                 }
             }
         )

@@ -53,7 +53,6 @@ fun AddAlarm(
     alarm: Alarm,
     onSave: (Alarm) -> Unit,
     onCancel: () -> Unit,
-    drawerState: BottomDrawerState,
 ) {
     val context = LocalContext.current
 
@@ -61,37 +60,19 @@ fun AddAlarm(
     val selectedDays = remember { mutableStateListOf<Days>() }
 
     val backgroundColor = Colors.values().map { it.background }
-    var selectedColor by remember { mutableStateOf(0) }
+    var selectedColor by remember { mutableStateOf(alarm.color) }
 
-    var title by remember { mutableStateOf("") }
-    var amPm by remember { mutableStateOf(0) }
-    var ringtone by remember { mutableStateOf(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)) }
+    var title by remember { mutableStateOf(alarm.title) }
+    var amPm by remember { mutableStateOf(alarm.amPm) }
+    var ringtone by remember { mutableStateOf(alarm.ringtone.toUri()) }
 
     val colorRowScrollState = rememberScrollState()
     val daysRowScrollState = rememberScrollState()
 
     val getRingtone =
         rememberLauncherForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) {
-            ringtone = it.data?.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI)
+            ringtone = it.data?.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI)!!
         }
-
-    LaunchedEffect(key1 = drawerState.targetValue) {
-        if (drawerState.targetValue == BottomDrawerValue.Expanded ||
-            drawerState.targetValue == BottomDrawerValue.Open
-        ) {
-            title = alarm.title
-            selectedColor = alarm.color
-            amPm = alarm.amPm
-            ringtone = alarm.ringtone.toUri()
-
-            selectedDays.clear()
-            selectedDays.addAll(
-                alarm.repeatOn.map { ordinal ->
-                    Days.values().first { it.ordinal == ordinal }
-                }
-            )
-        }
-    }
 
     Column(modifier = modifier.verticalScroll(state = rememberScrollState())) {
         HeaderRow(
@@ -199,6 +180,7 @@ private fun ColorRow(
             backgroundColor.forEachIndexed { index, color ->
                 val animatedSize by animateDpAsState(
                     targetValue = if (index == selectedColor) 50.dp else 35.dp,
+                    animationSpec = tween(500)
                 )
                 Box(
                     modifier = Modifier
