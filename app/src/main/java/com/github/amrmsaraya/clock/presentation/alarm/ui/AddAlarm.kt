@@ -44,6 +44,7 @@ import com.github.amrmsaraya.clock.presentation.alarm.utils.Colors
 import com.github.amrmsaraya.clock.presentation.alarm.utils.Days
 import com.github.amrmsaraya.clock.presentation.theme.Purple400
 
+@ExperimentalMaterialApi
 @Composable
 fun AddAlarm(
     modifier: Modifier = Modifier,
@@ -52,6 +53,7 @@ fun AddAlarm(
     alarm: Alarm,
     onSave: (Alarm) -> Unit,
     onCancel: () -> Unit,
+    drawerState: BottomDrawerState,
 ) {
     val context = LocalContext.current
 
@@ -73,18 +75,22 @@ fun AddAlarm(
             ringtone = it.data?.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI)
         }
 
-    LaunchedEffect(key1 = alarm) {
-        title = alarm.title
-        selectedColor = alarm.color
-        amPm = alarm.amPm
-        ringtone = alarm.ringtone.toUri()
+    LaunchedEffect(key1 = drawerState.targetValue) {
+        if (drawerState.targetValue == BottomDrawerValue.Expanded ||
+            drawerState.targetValue == BottomDrawerValue.Open
+        ) {
+            title = alarm.title
+            selectedColor = alarm.color
+            amPm = alarm.amPm
+            ringtone = alarm.ringtone.toUri()
 
-        selectedDays.clear()
-        selectedDays.addAll(
-            alarm.repeatOn.map { ordinal ->
-                Days.values().first { it.ordinal == ordinal }
-            }
-        )
+            selectedDays.clear()
+            selectedDays.addAll(
+                alarm.repeatOn.map { ordinal ->
+                    Days.values().first { it.ordinal == ordinal }
+                }
+            )
+        }
     }
 
     Column(modifier = modifier.verticalScroll(state = rememberScrollState())) {
@@ -193,7 +199,6 @@ private fun ColorRow(
             backgroundColor.forEachIndexed { index, color ->
                 val animatedSize by animateDpAsState(
                     targetValue = if (index == selectedColor) 50.dp else 35.dp,
-                    animationSpec = tween(500)
                 )
                 Box(
                     modifier = Modifier

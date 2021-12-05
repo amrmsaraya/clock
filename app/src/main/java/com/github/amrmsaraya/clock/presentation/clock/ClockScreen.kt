@@ -138,7 +138,7 @@ private fun ClockScreenContent(
                         deletedItems.addAll(selectedItems)
                         onSelectMode(false)
 
-                        delay((animationDuration + animationDuration * .5f).roundToLong())
+                        delay((animationDuration + animationDuration * .2f).roundToLong())
                         onDeleteClocks(selectedItems)
                     }
                 }
