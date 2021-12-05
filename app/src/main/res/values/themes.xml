@@ -6,12 +6,11 @@
         <item name="android:navigationBarColor" >@color/white</item>
     </style>
 
-    <style name="Theme.Clock.NoActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
+    <style name="Theme.Clock.Splash" parent="Theme.SplashScreen">
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
+        <item name="windowSplashScreenBackground">@android:color/white</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+        <item name="postSplashScreenTheme">@style/Theme.Clock</item>
     </style>
-
-    <style name="Theme.Clock.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-
-    <style name="Theme.Clock.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

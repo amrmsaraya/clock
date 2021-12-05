@@ -14,4 +14,12 @@
     <string name="wednesday">Wed</string>
     <string name="thursday">Thu</string>
     <string name="friday">Fri</string>
+    <string name="ring_once">Ring once</string>
+    <string name="am">AM</string>
+    <string name="pm">PM</string>
+    <string name="save">Save</string>
+    <string name="title">Title</string>
+    <string name="select_color">Select Color</string>
+    <string name="add_alarm">Add Alarm</string>
+    <string name="cancel">Cancel</string>
 </resources>

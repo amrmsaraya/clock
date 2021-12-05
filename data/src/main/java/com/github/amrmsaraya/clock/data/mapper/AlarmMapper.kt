@@ -5,24 +5,28 @@ import com.github.amrmsaraya.clock.domain.entity.Alarm
 
 internal fun AlarmDTO.toAlarm(): Alarm {
     return Alarm(
+        id = id,
         title = title,
         hour = hour,
         minute = minute,
         amPm = amPm,
         color = color,
         repeatOn = repeatOn,
+        ringtone = ringtone,
         enabled = enabled
     )
 }
 
 internal fun Alarm.toAlarmDTO(): AlarmDTO {
     return AlarmDTO(
+        id = id,
         title = title,
         hour = hour,
         minute = minute,
         amPm = amPm,
         color = color,
         repeatOn = repeatOn,
+        ringtone = ringtone,
         enabled = enabled
     )
 }
