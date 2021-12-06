@@ -8,6 +8,6 @@ data class Alarm(
     val amPm: Int = 0,
     val color: Int = 0,
     val repeatOn: List<Int> = emptyList(),
-    val ringtone: String,
+    val ringtone: String = "",
     val enabled: Boolean = true
 )

@@ -20,6 +20,7 @@
     <string name="save">Save</string>
     <string name="title">Title</string>
     <string name="select_color">Select Color</string>
-    <string name="add_alarm">Add Alarm</string>
+    <string name="new_alarm">New Alarm</string>
+    <string name="edit_alarm">Edit Alarm</string>
     <string name="cancel">Cancel</string>
 </resources>

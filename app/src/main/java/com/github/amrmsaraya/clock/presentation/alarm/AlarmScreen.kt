@@ -25,16 +25,15 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.github.amrmsaraya.clock.R
 import com.github.amrmsaraya.clock.domain.entity.Alarm
-import com.github.amrmsaraya.clock.presentation.alarm.ui.AddAlarm
 import com.github.amrmsaraya.clock.presentation.alarm.ui.AlarmCard
+import com.github.amrmsaraya.clock.presentation.alarm.ui.NewAlarm
 import com.github.amrmsaraya.clock.presentation.alarm.utils.Colors
 import com.github.amrmsaraya.clock.presentation.alarm.utils.Days
 import com.github.amrmsaraya.clock.presentation.common_ui.AddFAB
-import com.github.amrmsaraya.clock.presentation.common_ui.BottomDrawerSheet
 import com.github.amrmsaraya.clock.presentation.common_ui.DeleteFAB
+import com.github.amrmsaraya.clock.presentation.common_ui.FullScreenDialog
 import com.github.amrmsaraya.clock.presentation.theme.Purple400
 import com.github.amrmsaraya.clock.presentation.theme.Purple900
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.roundToLong
@@ -43,17 +42,12 @@ import kotlin.math.roundToLong
 @Composable
 fun AlarmScreen(
     modifier: Modifier,
-    onShowBottomNavigation: (Boolean) -> Unit,
     onBackPress: () -> Unit,
     viewModel: AlarmViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState
     val scaffoldState = rememberScaffoldState()
-    val drawerState = rememberBottomDrawerState(initialValue = BottomDrawerValue.Closed)
     val scope = rememberCoroutineScope()
-
-    val hourState = rememberLazyListState()
-    val minuteState = rememberLazyListState()
 
     var selectMode by remember { mutableStateOf(false) }
     val selectedAlarms = remember { mutableStateListOf<Alarm>() }
@@ -61,114 +55,111 @@ fun AlarmScreen(
 
     var isDeleteInProgress by remember { mutableStateOf(false) }
 
-    var alarm by remember {
-        mutableStateOf(
-            Alarm(
-                ringtone = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM).toString()
-            )
-        )
-    }
+    var showAlarmDialog by remember { mutableStateOf(false) }
+    var alarmEditMode by remember { mutableStateOf(false) }
+    var alarm by remember { mutableStateOf(Alarm(ringtone = "")) }
+
 
     BackHandler {
         when {
-            drawerState.isOpen -> {
-                scope.launch {
-                    onShowBottomNavigation(true)
-                    drawerState.close()
-                }
-            }
             selectMode -> selectMode = false
             else -> onBackPress()
         }
     }
 
-    BottomDrawerSheet(
-        modifier = modifier.fillMaxSize(),
-        drawerState = drawerState,
-        drawerContent = {
-            if (drawerState.targetValue == BottomDrawerValue.Expanded) {
-                AddAlarm(
-                    hourState = hourState,
-                    minuteState = minuteState,
-                    alarm = alarm,
-                    onSave = { alarm ->
-                        viewModel.sendIntent(AlarmIntent.InsertAlarm(alarm))
-                        scope.launch {
-                            onShowBottomNavigation(true)
-                            drawerState.close()
-                        }
-                    },
-                    onCancel = {
-                        scope.launch {
-                            onShowBottomNavigation(true)
-                            drawerState.close()
-                        }
-                    }
-                )
+    NewAlarmDialog(
+        visible = showAlarmDialog,
+        editMode = alarmEditMode,
+        alarm = alarm,
+        onSave = {
+            viewModel.sendIntent(AlarmIntent.InsertAlarm(it))
+            showAlarmDialog = false
+        },
+        onCancel = { showAlarmDialog = false }
+    )
+
+
+    AlarmScreenContent(
+        modifier = modifier,
+        scaffoldState = scaffoldState,
+        alarms = uiState.alarms,
+        onCheckedChange = { viewModel.sendIntent(AlarmIntent.InsertAlarm(it)) },
+        onShowAlarmDialog = { receivedAlarm, editMode ->
+            alarm = receivedAlarm
+            alarmEditMode = editMode
+            showAlarmDialog = true
+        },
+        selectMode = selectMode,
+        selectedAlarms = selectedAlarms.map { it.id },
+        deletedAlarms = deletedAlarms,
+        onSelectMode = {
+            if (!isDeleteInProgress) {
+                selectMode = true
             }
         },
-        content = {
-            AlarmScreenContent(
-                scaffoldState = scaffoldState,
-                drawerState = drawerState,
-                scope = scope,
-                alarms = uiState.alarms,
-                onShowBottomNavigation = onShowBottomNavigation,
-                onCheckedChange = { viewModel.sendIntent(AlarmIntent.InsertAlarm(it)) },
-                onAlarmChange = { alarm = it },
-                selectMode = selectMode,
-                selectedAlarms = selectedAlarms.map { it.id },
-                deletedAlarms = deletedAlarms,
-                onSelectMode = {
-                    if (!isDeleteInProgress) {
-                        selectMode = true
-                    }
-                },
-                onSelectAlarm = {
-                    if (!isDeleteInProgress) {
-                        selectedAlarms.add(it)
-                    }
-                },
-                onUnSelectAlarm = {
-                    selectedAlarms.remove(it)
-                    if (selectedAlarms.isEmpty()) {
-                        selectMode = false
-                    }
-                },
-                onDelete = {
-                    scope.launch {
-                        isDeleteInProgress = true
+        onSelectAlarm = {
+            if (!isDeleteInProgress) {
+                selectedAlarms.add(it)
+            }
+        },
+        onUnSelectAlarm = {
+            selectedAlarms.remove(it)
+            if (selectedAlarms.isEmpty()) {
+                selectMode = false
+            }
+        },
+        onDelete = {
+            scope.launch {
+                isDeleteInProgress = true
 
-                        deletedAlarms.addAll(selectedAlarms)
-                        selectMode = false
+                deletedAlarms.addAll(selectedAlarms)
+                selectMode = false
 
-                        delay((1000 + 1000 * .2f).roundToLong())
-                        viewModel.sendIntent(AlarmIntent.DeleteAlarms(selectedAlarms))
+                delay((1000 + 1000 * .2f).roundToLong())
+                viewModel.sendIntent(AlarmIntent.DeleteAlarms(selectedAlarms))
 
-                        isDeleteInProgress = false
-                    }
-                },
-                onCleanUp = {
-                    deletedAlarms.clear()
-                    selectedAlarms.clear()
-                }
-            )
+                isDeleteInProgress = false
+            }
+        },
+        onCleanUp = {
+            deletedAlarms.clear()
+            selectedAlarms.clear()
         }
     )
 
+}
+
+@Composable
+fun NewAlarmDialog(
+    visible: Boolean,
+    editMode: Boolean,
+    alarm: Alarm,
+    onSave: (Alarm) -> Unit,
+    onCancel: () -> Unit,
+) {
+    FullScreenDialog(
+        visible = visible,
+        onDismiss = onCancel
+    ) {
+        NewAlarm(
+            modifier = Modifier.padding(16.dp),
+            editMode = editMode,
+            alarm = alarm,
+            onSave = onSave,
+            onCancel = onCancel
+        )
+    }
 }
 
 @ExperimentalFoundationApi
 @ExperimentalMaterialApi
 @Composable
 private fun AlarmScreenContent(
+    modifier: Modifier = Modifier,
     scaffoldState: ScaffoldState,
-    scope: CoroutineScope,
-    drawerState: BottomDrawerState,
     alarms: List<Alarm>,
-    onShowBottomNavigation: (Boolean) -> Unit,
     onCheckedChange: (Alarm) -> Unit,
-    onAlarmChange: (Alarm) -> Unit,
+    onShowAlarmDialog: (Alarm, Boolean) -> Unit,
     selectMode: Boolean,
     selectedAlarms: List<Long>,
     deletedAlarms: List<Alarm>,
@@ -178,27 +169,28 @@ private fun AlarmScreenContent(
     onDelete: () -> Unit,
     onCleanUp: () -> Unit
 ) {
+    val listState = rememberLazyListState()
+
     LaunchedEffect(key1 = alarms) {
         onCleanUp()
     }
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         scaffoldState = scaffoldState,
         floatingActionButton = {
             when (selectMode) {
                 true -> DeleteFAB { onDelete() }
                 false -> {
-                    AddFAB {
-                        scope.launch {
-                            onAlarmChange(
+                    if (listState.firstVisibleItemIndex < 1) {
+                        AddFAB {
+                            onShowAlarmDialog(
                                 Alarm(
                                     ringtone = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
                                         .toString()
-                                )
+                                ),
+                                false
                             )
-                            onShowBottomNavigation(false)
-                            drawerState.expand()
                         }
                     }
                 }
@@ -230,7 +222,8 @@ private fun AlarmScreenContent(
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 16.dp, start = 16.dp, end = 16.dp)
+                    .padding(top = 16.dp, start = 16.dp, end = 16.dp),
+                state = listState
             ) {
                 items(alarms) { alarm ->
 
@@ -276,11 +269,7 @@ private fun AlarmScreenContent(
                                             false -> onSelectAlarm(alarm)
                                         }
                                     } else {
-                                        scope.launch {
-                                            onAlarmChange(alarm)
-                                            onShowBottomNavigation(false)
-                                            drawerState.expand()
-                                        }
+                                        onShowAlarmDialog(alarm, true)
                                     }
                                 },
                                 onLongClick = {

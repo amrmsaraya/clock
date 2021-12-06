@@ -17,10 +17,12 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.NavigateNext
@@ -44,13 +46,11 @@ import com.github.amrmsaraya.clock.presentation.alarm.utils.Colors
 import com.github.amrmsaraya.clock.presentation.alarm.utils.Days
 import com.github.amrmsaraya.clock.presentation.theme.Purple400
 
-@ExperimentalMaterialApi
 @Composable
-fun AddAlarm(
+fun NewAlarm(
     modifier: Modifier = Modifier,
-    hourState: LazyListState,
-    minuteState: LazyListState,
     alarm: Alarm,
+    editMode: Boolean,
     onSave: (Alarm) -> Unit,
     onCancel: () -> Unit,
 ) {
@@ -58,6 +58,13 @@ fun AddAlarm(
 
     val days = Days.values()
     val selectedDays = remember { mutableStateListOf<Days>() }
+    if (selectedDays.isEmpty()) {
+        selectedDays.addAll(
+            alarm.repeatOn.map { ordinal ->
+                Days.values().first { it.ordinal == ordinal }
+            }
+        )
+    }
 
     val backgroundColor = Colors.values().map { it.background }
     var selectedColor by remember { mutableStateOf(alarm.color) }
@@ -69,15 +76,22 @@ fun AddAlarm(
     val colorRowScrollState = rememberScrollState()
     val daysRowScrollState = rememberScrollState()
 
+    val hourState = rememberLazyListState()
+    val minuteState = rememberLazyListState()
+
     val getRingtone =
         rememberLauncherForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) {
-            ringtone = it.data?.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI)!!
+            it.data?.getParcelableExtra<Uri>(RingtoneManager.EXTRA_RINGTONE_PICKED_URI)
+                ?.let { uri ->
+                    ringtone = uri
+                }
         }
 
     Column(modifier = modifier.verticalScroll(state = rememberScrollState())) {
         HeaderRow(
             hourState = hourState,
             minuteState = minuteState,
+            editMode = editMode,
             title = title,
             amPm = amPm,
             ringtone = ringtone,
@@ -217,11 +231,17 @@ private fun DaysRow(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         days.forEachIndexed { index, it ->
+
+            val backgroundColor by animateColorAsState(
+                targetValue = if (it in selectedDays) Purple400 else Color.Transparent,
+                animationSpec = tween(1000)
+            )
+
             Text(
                 modifier =
                 Modifier
                     .background(
-                        color = if (it in selectedDays) Purple400 else Color.Transparent,
+                        color = backgroundColor,
                         shape = RoundedCornerShape(
                             topStart = if (index == 0 || days[index - 1] !in selectedDays) 8.dp else 0.dp,
                             bottomStart = if (index == 0 || days[index - 1] !in selectedDays) 8.dp else 0.dp,
@@ -297,9 +317,14 @@ private fun TimeChooserRow(
                     .background(
                         animateColorAsState(
                             targetValue = if (amPm == 0) MaterialTheme.colors.primary else Color.Transparent,
+                            animationSpec = tween(1000)
                         ).value
                     )
-                    .clickable { onAmPmChange(0) }
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() },
+                        onClick = { onAmPmChange(0) }
+                    )
                     .padding(8.dp),
                 text = stringResource(id = R.string.am),
                 fontSize = 22.sp,
@@ -312,6 +337,7 @@ private fun TimeChooserRow(
                     .background(
                         animateColorAsState(
                             targetValue = if (amPm == 1) MaterialTheme.colors.primary else Color.Transparent,
+                            animationSpec = tween(1000)
                         ).value
                     )
                     .clickable { onAmPmChange(1) }
@@ -329,6 +355,7 @@ private fun TimeChooserRow(
 private fun HeaderRow(
     hourState: LazyListState,
     minuteState: LazyListState,
+    editMode: Boolean,
     title: String,
     amPm: Int,
     ringtone: Uri,
@@ -345,23 +372,21 @@ private fun HeaderRow(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        TextButton(onClick = {
-            localKeyboard?.hide()
-            onCancel()
-        }
+        IconButton(
+            onClick = {
+                localKeyboard?.hide()
+                onCancel()
+            }
         ) {
-            Text(
-                text = stringResource(R.string.cancel),
-                fontSize = 16.sp,
-            )
+            Icon(imageVector = Icons.Default.Close, contentDescription = null)
         }
 
         Text(
-            text = stringResource(R.string.add_alarm),
+            text = if (editMode) stringResource(R.string.edit_alarm) else stringResource(R.string.new_alarm),
             style = MaterialTheme.typography.h6
         )
 
-        TextButton(
+        IconButton(
             onClick = {
                 val hourVisibleItems = hourState.layoutInfo.visibleItemsInfo
                 val minuteVisibleItems = minuteState.layoutInfo.visibleItemsInfo
@@ -385,10 +410,7 @@ private fun HeaderRow(
                 )
             }
         ) {
-            Text(
-                text = stringResource(R.string.save),
-                fontSize = 16.sp,
-            )
+            Icon(imageVector = Icons.Default.Done, contentDescription = null)
         }
     }
 }

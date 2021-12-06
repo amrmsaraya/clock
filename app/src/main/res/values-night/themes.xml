@@ -1,12 +1,12 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Theme.Clock" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="android:statusBarColor">@color/dark_gray</item>
-        <item name="android:navigationBarColor">@color/dark_gray</item>
+        <item name="android:statusBarColor">@color/purple</item>
+        <item name="android:navigationBarColor">@color/purple</item>
     </style>
 
     <style name="Theme.Clock.Splash" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">@color/dark_gray</item>
+        <item name="windowSplashScreenBackground">@color/purple</item>
         <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
         <item name="postSplashScreenTheme">@style/Theme.Clock</item>
     </style>

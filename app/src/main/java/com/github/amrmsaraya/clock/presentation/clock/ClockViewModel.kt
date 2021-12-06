@@ -109,7 +109,7 @@ class ClockViewModel @Inject constructor(
                             timeZone to worldClock
                         }
                     )
-                    delay(60000)
+                    delay(100)
                 }
             }
         )

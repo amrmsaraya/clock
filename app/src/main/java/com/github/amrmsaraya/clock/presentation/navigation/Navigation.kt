@@ -24,10 +24,7 @@ fun Navigation(
         composable(Alarm.route) {
             AlarmScreen(
                 modifier = modifier,
-                onShowBottomNavigation = onShowBottomNavigation,
-                onBackPress = {
-                    navController.popBackStack()
-                }
+                onBackPress = { navController.popBackStack() }
             )
         }
 

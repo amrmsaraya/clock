@@ -10,6 +10,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
@@ -118,6 +119,7 @@ private fun ClockScreenContent(
     val deletedItems = remember { mutableStateListOf<TimeZone>() }
     val scope = rememberCoroutineScope()
     val animationDuration = 1000
+    val listState = rememberLazyListState()
 
     LaunchedEffect(isDeleted) {
         if (isDeleted) {
@@ -143,7 +145,9 @@ private fun ClockScreenContent(
                     }
                 }
             } else {
-                AddFAB { onAddClock() }
+                if (listState.firstVisibleItemIndex < 1) {
+                    AddFAB { onAddClock() }
+                }
             }
         },
         floatingActionButtonPosition = if (selectMode) FabPosition.Center else FabPosition.End
@@ -163,6 +167,7 @@ private fun ClockScreenContent(
             Spacer(modifier = Modifier.size(16.dp))
             LazyColumn(
                 modifier = Modifier.padding(16.dp),
+                state = listState,
                 horizontalAlignment = CenterHorizontally
             ) {
                 items(times.keys.toList()) { timeZone ->
