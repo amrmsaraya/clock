@@ -340,7 +340,11 @@ private fun TimeChooserRow(
                             animationSpec = tween(1000)
                         ).value
                     )
-                    .clickable { onAmPmChange(1) }
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() },
+                        onClick = { onAmPmChange(1) }
+                    )
                     .padding(8.dp),
                 text = stringResource(id = R.string.pm),
                 fontSize = 22.sp,
