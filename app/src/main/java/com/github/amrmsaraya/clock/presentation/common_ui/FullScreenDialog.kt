@@ -28,20 +28,15 @@ fun FullScreenDialog(
             onDismissRequest = onDismiss,
             properties = DialogProperties(usePlatformDefaultWidth = false),
         ) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp)
                         .clip(RoundedCornerShape(20.dp))
-                        .background(MaterialTheme.colors.surface)
+                        .background(MaterialTheme.colors.surface),
                 ) {
                     content()
                 }
-            }
         }
     }
 }

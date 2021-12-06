@@ -20,6 +20,8 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -36,6 +38,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -46,6 +50,7 @@ import com.github.amrmsaraya.clock.presentation.alarm.utils.Colors
 import com.github.amrmsaraya.clock.presentation.alarm.utils.Days
 import com.github.amrmsaraya.clock.presentation.theme.Purple400
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun NewAlarm(
     modifier: Modifier = Modifier,
@@ -55,6 +60,7 @@ fun NewAlarm(
     onCancel: () -> Unit,
 ) {
     val context = LocalContext.current
+    val keyboard = LocalSoftwareKeyboardController.current
 
     val days = Days.values()
     val selectedDays = remember { mutableStateListOf<Days>() }
@@ -134,7 +140,12 @@ fun NewAlarm(
             maxLines = 1,
             leadingIcon = {
                 Icon(imageVector = Icons.Default.Edit, contentDescription = null)
-            }
+            },
+            keyboardOptions = KeyboardOptions(
+                capitalization = KeyboardCapitalization.Sentences,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(onAny = { keyboard?.hide() })
         )
 
         Spacer(modifier = Modifier.size(16.dp))
