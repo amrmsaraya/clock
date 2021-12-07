@@ -22,10 +22,7 @@ fun Navigation(
         startDestination = Alarm.route
     ) {
         composable(Alarm.route) {
-            AlarmScreen(
-                modifier = modifier,
-                onBackPress = { navController.popBackStack() }
-            )
+            AlarmScreen(modifier = modifier)
         }
 
         composable(Clock.route) {

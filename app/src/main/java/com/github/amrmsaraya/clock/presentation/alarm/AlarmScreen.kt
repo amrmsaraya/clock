@@ -1,5 +1,6 @@
 package com.github.amrmsaraya.clock.presentation.alarm
 
+import android.app.Activity
 import android.media.RingtoneManager
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
@@ -19,6 +20,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -42,12 +44,12 @@ import kotlin.math.roundToLong
 @Composable
 fun AlarmScreen(
     modifier: Modifier,
-    onBackPress: () -> Unit,
     viewModel: AlarmViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     var selectMode by remember { mutableStateOf(false) }
     val selectedAlarms = remember { mutableStateListOf<Alarm>() }
@@ -62,8 +64,11 @@ fun AlarmScreen(
 
     BackHandler {
         when {
-            selectMode -> selectMode = false
-            else -> onBackPress()
+            selectMode -> {
+                selectMode = false
+                selectedAlarms.clear()
+            }
+            else -> (context as Activity).finish()
         }
     }
 

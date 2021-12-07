@@ -61,14 +61,12 @@ private fun BottomNavigation(
                 selectedContentColor = MaterialTheme.colors.secondary,
                 unselectedContentColor = Color.Gray,
                 onClick = {
-                    if (currentDestination?.route != screen.route) {
-                        navController.navigate(screen.route) {
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
-                            }
-                            launchSingleTop = true
-                            restoreState = true
+                    navController.navigate(screen.route) {
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
                         }
+                        launchSingleTop = true
+                        restoreState = true
                     }
                 }
             )
