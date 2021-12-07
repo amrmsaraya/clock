@@ -14,20 +14,17 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.AlarmAdd
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.github.amrmsaraya.clock.R
 import com.github.amrmsaraya.clock.domain.entity.Alarm
 import com.github.amrmsaraya.clock.presentation.alarm.ui.AlarmCard
+import com.github.amrmsaraya.clock.presentation.alarm.ui.EmptyAlarms
 import com.github.amrmsaraya.clock.presentation.alarm.ui.NewAlarm
 import com.github.amrmsaraya.clock.presentation.alarm.utils.Colors
 import com.github.amrmsaraya.clock.presentation.alarm.utils.Days
@@ -204,25 +201,7 @@ private fun AlarmScreenContent(
         floatingActionButtonPosition = if (selectMode) FabPosition.Center else FabPosition.End
     ) {
         Box(Modifier.fillMaxSize()) {
-            if (alarms.isEmpty()) {
-                Column(
-                    modifier = Modifier.align(Alignment.Center),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Icon(
-                        modifier = Modifier.size(100.dp),
-                        imageVector = Icons.Outlined.AlarmAdd,
-                        contentDescription = null,
-                        tint = Color.Gray
-                    )
-                    Spacer(modifier = Modifier.size(8.dp))
-                    Text(
-                        text = "Click \"+\" to add a new alarm",
-                        color = Color.Gray,
-                        textAlign = TextAlign.Center
-                    )
-                }
-            }
+            EmptyAlarms(visible = alarms.isEmpty())
 
             LazyColumn(
                 modifier = Modifier
@@ -231,7 +210,6 @@ private fun AlarmScreenContent(
                 state = listState
             ) {
                 items(alarms) { alarm ->
-
                     AnimatedVisibility(
                         visible = !deletedAlarms.contains(alarm),
                         enter = EnterTransition.None,
@@ -295,7 +273,6 @@ private fun AlarmScreenContent(
                             }
                         }
                     }
-//                    Spacer(modifier = Modifier.size(16.dp))
                 }
             }
         }

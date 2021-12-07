@@ -17,15 +17,24 @@ import com.github.amrmsaraya.clock.presentation.navigation.BottomNavigationBar
 import com.github.amrmsaraya.clock.presentation.navigation.Navigation
 import com.github.amrmsaraya.clock.presentation.theme.ClockTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        installSplashScreen()
+        val splash = installSplashScreen()
+        var keepSplash by mutableStateOf(true)
+        splash.setKeepVisibleCondition { keepSplash }
 
         setContent {
+            // Keep splash screen
+            LaunchedEffect(true) {
+                delay(200)
+                keepSplash = false
+            }
+
             App()
         }
     }
