@@ -245,7 +245,7 @@ private fun DaysRow(
 
             val backgroundColor by animateColorAsState(
                 targetValue = if (it in selectedDays) Purple400 else Color.Transparent,
-                animationSpec = tween(1000)
+                animationSpec = tween(500)
             )
 
             Text(
@@ -328,7 +328,7 @@ private fun TimeChooserRow(
                     .background(
                         animateColorAsState(
                             targetValue = if (amPm == 0) MaterialTheme.colors.primary else Color.Transparent,
-                            animationSpec = tween(1000)
+                            animationSpec = tween(500)
                         ).value
                     )
                     .clickable(
@@ -348,7 +348,7 @@ private fun TimeChooserRow(
                     .background(
                         animateColorAsState(
                             targetValue = if (amPm == 1) MaterialTheme.colors.primary else Color.Transparent,
-                            animationSpec = tween(1000)
+                            animationSpec = tween(500)
                         ).value
                     )
                     .clickable(
