@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.*
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,7 +32,8 @@ import com.github.amrmsaraya.clock.presentation.alarm.utils.Days
 import com.github.amrmsaraya.clock.presentation.common_ui.AddFAB
 import com.github.amrmsaraya.clock.presentation.common_ui.DeleteFAB
 import com.github.amrmsaraya.clock.presentation.common_ui.FullScreenDialog
-import com.github.amrmsaraya.clock.presentation.theme.Purple400
+import com.github.amrmsaraya.clock.presentation.theme.Purple100
+import com.github.amrmsaraya.clock.presentation.theme.Purple200
 import com.github.amrmsaraya.clock.presentation.theme.Purple900
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -180,6 +182,7 @@ private fun AlarmScreenContent(
     Scaffold(
         modifier = modifier.fillMaxSize(),
         scaffoldState = scaffoldState,
+        backgroundColor = MaterialTheme.colorScheme.background,
         floatingActionButton = {
             when (selectMode) {
                 true -> DeleteFAB { onDelete() }
@@ -233,11 +236,16 @@ private fun AlarmScreenContent(
                                 days = Days.values().filter { it.ordinal in alarm.repeatOn }.map {
                                     stringResource(id = it.stringRes)
                                 }.joinToString("  "),
-                                backgroundColor = Colors.values()
+                                activeBackgroundColor = Colors.values()
                                     .filter { it.ordinal == alarm.color }
                                     .map {
-                                        it.background
-                                    }.firstOrNull() ?: Purple400,
+                                        it.activeBackground
+                                    }.firstOrNull() ?: Purple200,
+                                inActiveBackgroundColor = Colors.values()
+                                    .filter { it.ordinal == alarm.color }
+                                    .map {
+                                        it.inActiveBackground
+                                    }.firstOrNull() ?: Purple100,
                                 contentColor = Colors.values().filter { it.ordinal == alarm.color }
                                     .map {
                                         it.onBackground
@@ -264,7 +272,7 @@ private fun AlarmScreenContent(
                             )
                             AnimatedVisibility(selectMode) {
                                 Spacer(modifier = Modifier.size(8.dp))
-                                Checkbox(
+                                androidx.compose.material3.Checkbox(
                                     checked = selectedAlarms.contains(alarm.id),
                                     onCheckedChange = {
                                         if (it) onSelectAlarm(alarm) else onUnSelectAlarm(alarm)

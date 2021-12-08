@@ -4,10 +4,13 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.Card
+import androidx.compose.material.Switch
+import androidx.compose.material.SwitchDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -28,7 +31,8 @@ fun AlarmCard(
     time: String,
     amPm: String,
     days: String,
-    backgroundColor: Color,
+    activeBackgroundColor: Color,
+    inActiveBackgroundColor: Color,
     contentColor: Color,
     ringtone: String,
     checked: Boolean,
@@ -38,22 +42,15 @@ fun AlarmCard(
 ) {
     val animatedBackgroundColor by animateColorAsState(
         targetValue = if (checked) {
-            backgroundColor
+            activeBackgroundColor
         } else {
-            if (isSystemInDarkTheme()) {
-                LocalElevationOverlay.current?.apply(
-                    color = MaterialTheme.colors.surface,
-                    elevation = LocalAbsoluteElevation.current + 1.dp
-                ) ?: MaterialTheme.colors.surface
-            } else {
-                Color.LightGray
-            }
+            inActiveBackgroundColor
         },
         animationSpec = tween(1000)
     )
 
     val animateContentColor by animateColorAsState(
-        targetValue = if (checked) contentColor else Color.Gray,
+        targetValue = if (checked) contentColor else activeBackgroundColor,
         animationSpec = tween(1000)
     )
 
@@ -77,17 +74,11 @@ fun AlarmCard(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Column(Modifier.weight(1f)) {
-                Row(verticalAlignment = Alignment.Bottom) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        text = time,
-                        color = Color.White,
+                        text = "$time $amPm",
+                        color = animateContentColor,
                         fontSize = 20.sp
-                    )
-                    Spacer(modifier = Modifier.size(4.dp))
-                    Text(
-                        text = amPm,
-                        color = Color.White,
-                        fontSize = 16.sp
                     )
                     if (title.isNotEmpty()) {
                         Spacer(modifier = Modifier.size(8.dp))
@@ -96,14 +87,13 @@ fun AlarmCard(
                             color = animateContentColor,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
-                            fontSize = 16.sp
                         )
                     }
                 }
                 Spacer(modifier = Modifier.size(4.dp))
                 Text(
                     text = if (days.isNotEmpty()) days else stringResource(R.string.ring_once),
-                    style = MaterialTheme.typography.body2,
+                    style = MaterialTheme.typography.bodyMedium,
                     color = animateContentColor,
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1

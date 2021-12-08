@@ -5,8 +5,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -53,7 +53,7 @@ fun TimeChooser(
             val animatedColor by animateColorAsState(
                 targetValue = if (viewedItems.isNotEmpty()) {
                     if (viewedItems[(viewedItems.size - 1) / 2].index == it) {
-                        MaterialTheme.colors.onSurface
+                        MaterialTheme.colorScheme.onSurface
                     } else {
                         Color.Gray
                     }

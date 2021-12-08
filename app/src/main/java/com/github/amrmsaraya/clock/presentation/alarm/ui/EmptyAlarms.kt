@@ -2,20 +2,20 @@ package com.github.amrmsaraya.clock.presentation.alarm.ui
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AlarmAdd
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.github.amrmsaraya.clock.R
 
 @Composable
 fun EmptyAlarms(visible: Boolean) {
@@ -40,7 +40,7 @@ fun EmptyAlarms(visible: Boolean) {
                 )
                 Spacer(modifier = Modifier.size(8.dp))
                 Text(
-                    text = "Click \"+\" to add a new alarm",
+                    text = stringResource(id = R.string.add_new_alarm),
                     color = Color.Gray,
                     textAlign = TextAlign.Center
                 )

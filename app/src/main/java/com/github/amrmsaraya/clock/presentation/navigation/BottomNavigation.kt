@@ -2,6 +2,9 @@ package com.github.amrmsaraya.clock.presentation.navigation
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.*
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
@@ -28,7 +31,6 @@ fun BottomNavigationBar(navController: NavHostController) {
 
     if (currentDestination?.route in screens.map { it.route }) {
         Column {
-            Divider(thickness = 1.dp)
             BottomNavigation(
                 navController = navController,
                 currentDestination = currentDestination,
@@ -44,22 +46,17 @@ private fun BottomNavigation(
     currentDestination: NavDestination?,
     screens: List<Screens>
 ) {
-    BottomNavigation(
-        backgroundColor = MaterialTheme.colors.surface,
-        elevation = 0.dp
-    ) {
+    NavigationBar() {
         for (screen in screens) {
-            BottomNavigationItem(
+            NavigationBarItem(
                 selected = currentDestination?.route == screen.route,
                 icon = {
                     when (currentDestination?.route == screen.route) {
-                        true -> Icon(imageVector = screen.activeIcon, contentDescription = null)
-                        false -> Icon(imageVector = screen.inactiveIcon, contentDescription = null)
+                        true -> androidx.compose.material3.Icon(imageVector = screen.activeIcon, contentDescription = null)
+                        false -> androidx.compose.material3.Icon(imageVector = screen.inactiveIcon, contentDescription = null)
                     }
                 },
-                label = { Text(text = stringResource(id = screen.title), maxLines = 1) },
-                selectedContentColor = MaterialTheme.colors.secondary,
-                unselectedContentColor = Color.Gray,
+                label = { androidx.compose.material3.Text(text = stringResource(id = screen.title), maxLines = 1) },
                 onClick = {
                     navController.navigate(screen.route) {
                         popUpTo(navController.graph.findStartDestination().id) {
