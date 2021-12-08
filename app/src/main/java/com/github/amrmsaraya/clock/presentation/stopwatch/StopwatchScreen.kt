@@ -6,10 +6,10 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedButton
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -76,10 +76,7 @@ fun ControlRow(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
-        OutlinedButton(
-            onClick = onReset,
-            shape = CircleShape
-        ) {
+        OutlinedButton(onClick = onReset) {
             Text(
                 modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 4.dp),
                 text = stringResource(R.string.reset).uppercase(),
@@ -109,7 +106,7 @@ fun StopwatchTimer(
     animatedValue: Float,
     isRunning: Boolean = true
 ) {
-    val color = MaterialTheme.colors.primary
+    val color = MaterialTheme.colorScheme.primary
     val isDarkTheme = isSystemInDarkTheme()
 
     BoxWithConstraints(contentAlignment = Alignment.Center) {
