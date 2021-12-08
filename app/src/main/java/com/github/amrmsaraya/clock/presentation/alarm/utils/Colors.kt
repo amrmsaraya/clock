@@ -4,9 +4,9 @@ import androidx.compose.ui.graphics.Color
 import com.github.amrmsaraya.clock.presentation.theme.*
 
 enum class Colors(
-    val activeBackground: Color,
-    val inActiveBackground: Color,
-    val onBackground: Color
+    val activeBackgroundColor: Color,
+    val inActiveBackgroundColor: Color,
+    val contentColor: Color
 ) {
     PURPLE(Purple200, Purple100, Purple900),
     TEAL(Teal200, Teal100, Teal900),

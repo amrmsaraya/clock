@@ -239,16 +239,16 @@ private fun AlarmScreenContent(
                                 activeBackgroundColor = Colors.values()
                                     .filter { it.ordinal == alarm.color }
                                     .map {
-                                        it.activeBackground
+                                        it.activeBackgroundColor
                                     }.firstOrNull() ?: Purple200,
                                 inActiveBackgroundColor = Colors.values()
                                     .filter { it.ordinal == alarm.color }
                                     .map {
-                                        it.inActiveBackground
+                                        it.inActiveBackgroundColor
                                     }.firstOrNull() ?: Purple100,
                                 contentColor = Colors.values().filter { it.ordinal == alarm.color }
                                     .map {
-                                        it.onBackground
+                                        it.contentColor
                                     }.firstOrNull() ?: Purple900,
                                 ringtone = alarm.ringtone,
                                 checked = alarm.enabled,

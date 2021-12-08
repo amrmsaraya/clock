@@ -6,17 +6,22 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.*
+import androidx.compose.material.BottomDrawerValue
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.rememberBottomDrawerState
+import androidx.compose.material.rememberScaffoldState
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -84,7 +89,7 @@ fun ClockScreen(
         },
         content = {
             ClockScreenContent(
-                scaffoldState = scaffoldState,
+//                scaffoldState = scaffoldState,
                 worldClock = localClock,
                 times = worldClocks,
                 selectMode = selectMode,
@@ -103,9 +108,10 @@ fun ClockScreen(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ClockScreenContent(
-    scaffoldState: ScaffoldState,
+//    scaffoldState: ScaffoldState,
     worldClock: WorldClock,
     times: Map<TimeZone, WorldClock>,
     selectMode: Boolean,
@@ -132,7 +138,6 @@ private fun ClockScreenContent(
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        scaffoldState = scaffoldState,
         floatingActionButton = {
             if (selectMode) {
                 DeleteFAB {
@@ -162,7 +167,7 @@ private fun ClockScreenContent(
                     .fillMaxWidth(0.8f)
                     .align(CenterHorizontally),
                 worldClock = worldClock,
-                color = if (isSystemInDarkTheme()) Color.LightGray else Color.DarkGray
+                color = MaterialTheme.colorScheme.onSurface
             )
             Spacer(modifier = Modifier.size(16.dp))
             LazyColumn(

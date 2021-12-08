@@ -8,13 +8,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material.Card
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -93,16 +93,16 @@ private fun SearchTextField(
     BasicTextField(
         value = search,
         onValueChange = { onSearch(it) },
-        textStyle = TextStyle(color = MaterialTheme.colors.onSurface, fontSize = 18.sp),
-        cursorBrush = SolidColor(MaterialTheme.colors.primary),
+        textStyle = TextStyle(color = MaterialTheme.colorScheme.onSurface, fontSize = 18.sp),
+        cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
         singleLine = true,
     ) {
-        Card(
+        Surface(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 8.dp),
-            elevation = 3.dp,
-            shape = CircleShape
+            shape = CircleShape,
+            tonalElevation = 1.dp,
         ) {
             Row(
                 Modifier.padding(start = 16.dp, end = 16.dp, top = 10.dp, bottom = 10.dp),
@@ -125,7 +125,7 @@ private fun SearchTextField(
                         if (search.isEmpty()) {
                             Text(
                                 text = "City, country or region",
-                                color = Color.Gray,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = .5f),
                                 fontSize = 18.sp
                             )
                         }
@@ -144,7 +144,7 @@ private fun SearchTextField(
                             ),
                         imageVector = Icons.Default.Cancel,
                         contentDescription = null,
-                        tint = Color.Gray
+                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = .5f)
                     )
                 }
             }

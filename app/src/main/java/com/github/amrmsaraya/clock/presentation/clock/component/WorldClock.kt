@@ -6,15 +6,17 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Checkbox
-import androidx.compose.material.Text
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.github.amrmsaraya.clock.R
 import com.github.amrmsaraya.clock.domain.entity.WorldClock
 import java.util.*
 
@@ -78,7 +80,11 @@ fun WorldClockRow(
                         append(":")
                         append("%02d".format(worldClock.calendar.get(Calendar.MINUTE)))
                         append(" ")
-                        append(if (worldClock.calendar.get(Calendar.AM_PM) == 0) "AM" else "PM")
+                        append(
+                            if (worldClock.calendar.get(Calendar.AM_PM) == 0) stringResource(id = R.string.am) else stringResource(
+                                id = R.string.pm
+                            )
+                        )
                     },
 
                     fontSize = 20.sp

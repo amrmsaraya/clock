@@ -78,7 +78,7 @@ fun NewAlarm(
         )
     }
 
-    val backgroundColor = Colors.values().map { it.activeBackground }
+    val backgroundColor = Colors.values().map { it.activeBackgroundColor }
     var selectedColor by remember { mutableStateOf(alarm.color) }
 
     var title by remember { mutableStateOf(alarm.title) }
@@ -174,30 +174,42 @@ fun NewAlarm(
 
         Spacer(modifier = Modifier.size(16.dp))
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable(
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() },
-                    onClick = { ringtonePicker(context, getRingtone) }
-                ),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Column {
-                Text(text = stringResource(R.string.ringtone))
-                Spacer(modifier = Modifier.size(4.dp))
-                Text(
-                    text = RingtoneManager.getRingtone(
-                        context,
-                        ringtone
-                    ).getTitle(context),
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = ContentAlpha.disabled)
-                )
-            }
-            Icon(imageVector = Icons.Default.NavigateNext, contentDescription = null)
+        RingtoneRow(
+            ringtone = ringtone,
+            onClick = { ringtonePicker(context, getRingtone) }
+        )
+    }
+}
+
+@Composable
+private fun RingtoneRow(
+    ringtone: Uri,
+    onClick: () -> Unit,
+) {
+    val context = LocalContext.current
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() },
+                onClick = onClick
+            ),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Column {
+            Text(text = stringResource(R.string.ringtone))
+            Spacer(modifier = Modifier.size(4.dp))
+            Text(
+                text = RingtoneManager.getRingtone(
+                    context,
+                    ringtone
+                ).getTitle(context),
+                color = Color.Gray
+            )
         }
+        Icon(imageVector = Icons.Default.NavigateNext, contentDescription = null)
     }
 }
 
@@ -259,7 +271,7 @@ private fun DaysRow(
         days.forEachIndexed { index, it ->
 
             val backgroundColor by animateColorAsState(
-                targetValue = if (it in selectedDays) MaterialTheme.colorScheme.primaryContainer else Color.Transparent,
+                targetValue = if (it in selectedDays) MaterialTheme.colorScheme.primary else Color.Transparent,
                 animationSpec = tween(500)
             )
 
@@ -287,7 +299,10 @@ private fun DaysRow(
                     )
                     .padding(10.dp),
                 text = stringResource(id = it.stringRes),
-                color = if (it in selectedDays) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface
+                color = animateColorAsState(
+                    targetValue = if (it in selectedDays) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
+                    animationSpec = tween(500)
+                ).value
             )
         }
     }
@@ -349,8 +364,9 @@ private fun TimeChooserRow(
                     .fillMaxWidth()
                     .background(
                         animateColorAsState(
-                            targetValue = if (amPm == 0) MaterialTheme.colorScheme.primaryContainer else Color.Transparent,
+                            targetValue = if (amPm == 0) MaterialTheme.colorScheme.primary else Color.Transparent,
                             animationSpec = tween(500)
+
                         ).value
                     )
                     .clickable(
@@ -362,14 +378,17 @@ private fun TimeChooserRow(
                 text = stringResource(id = R.string.am),
                 fontSize = 22.sp,
                 textAlign = TextAlign.Center,
-                color = if (amPm == 0) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface
+                color = animateColorAsState(
+                    targetValue = if (amPm == 0) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
+                    animationSpec = tween(500)
+                ).value
             )
             Text(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(
                         animateColorAsState(
-                            targetValue = if (amPm == 1) MaterialTheme.colorScheme.primaryContainer else Color.Transparent,
+                            targetValue = if (amPm == 1) MaterialTheme.colorScheme.primary else Color.Transparent,
                             animationSpec = tween(500)
                         ).value
                     )
@@ -382,7 +401,10 @@ private fun TimeChooserRow(
                 text = stringResource(id = R.string.pm),
                 fontSize = 22.sp,
                 textAlign = TextAlign.Center,
-                color = if (amPm == 1) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface
+                color = animateColorAsState(
+                    targetValue = if (amPm == 1) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
+                    animationSpec = tween(500)
+                ).value
             )
         }
     }
@@ -421,7 +443,7 @@ private fun HeaderRow(
 
         Text(
             text = if (editMode) stringResource(R.string.edit_alarm) else stringResource(R.string.new_alarm),
-            style = MaterialTheme.typography.headlineSmall
+            style = MaterialTheme.typography.titleLarge
         )
 
         IconButton(
@@ -460,7 +482,10 @@ private fun ringtonePicker(
     val existingRingtoneUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
     val intent = Intent(RingtoneManager.ACTION_RINGTONE_PICKER)
 
-    intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, context.getString(R.string.set_alarm_tone))
+    intent.putExtra(
+        RingtoneManager.EXTRA_RINGTONE_TITLE,
+        context.getString(R.string.set_alarm_tone)
+    )
     intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALARM)
     intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, existingRingtoneUri)
     intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, false)
