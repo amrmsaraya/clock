@@ -21,9 +21,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.github.amrmsaraya.clock.R
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -102,7 +104,7 @@ private fun SearchTextField(
                 .fillMaxWidth()
                 .padding(top = 8.dp),
             shape = CircleShape,
-            tonalElevation = 1.dp,
+            tonalElevation = 3.dp,
         ) {
             Row(
                 Modifier.padding(start = 16.dp, end = 16.dp, top = 10.dp, bottom = 10.dp),
@@ -124,7 +126,7 @@ private fun SearchTextField(
                     Box {
                         if (search.isEmpty()) {
                             Text(
-                                text = "City, country or region",
+                                text = stringResource(R.string.time_zone_placeholder),
                                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = .5f),
                                 fontSize = 18.sp
                             )

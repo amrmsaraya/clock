@@ -7,6 +7,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -52,10 +53,11 @@ fun WorldClockRow(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            AnalogClock(
+            MaterialClock(
                 modifier = Modifier.size(50.dp),
                 worldClock = worldClock,
-                color = if (isSystemInDarkTheme()) Color.LightGray else Color.DarkGray,
+                frameColor = MaterialTheme.colorScheme.primary,
+                handleColor = if (isSystemInDarkTheme()) Color.LightGray else Color.DarkGray,
                 showSeconds = false
             )
             Spacer(modifier = Modifier.size(16.dp))

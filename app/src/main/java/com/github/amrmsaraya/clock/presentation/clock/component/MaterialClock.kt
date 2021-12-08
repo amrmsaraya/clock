@@ -11,38 +11,44 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.Stroke
 import com.github.amrmsaraya.clock.domain.entity.WorldClock
 import com.github.amrmsaraya.clock.presentation.theme.Red500
 import kotlin.math.cos
 import kotlin.math.sin
 
 @Composable
-fun AnalogClock(
+fun MaterialClock(
     modifier: Modifier = Modifier,
     worldClock: WorldClock,
-    color: Color,
+    frameColor: Color,
+    handleColor: Color,
     showSeconds: Boolean = true
 ) {
     BoxWithConstraints(
         modifier = modifier,
         contentAlignment = Alignment.Center
     ) {
+        val mColor = MaterialTheme.colorScheme.primary
         val backgroundColor = MaterialTheme.colorScheme.surface
 
         Canvas(modifier = Modifier.size(if (maxWidth < maxHeight) maxWidth else maxHeight)) {
             val radius = size.width / 2
-
-            hoursDial(radius, color)
-            minutesDial(radius, color)
+            drawCircle(
+                color = frameColor,
+                radius = radius,
+                center = center,
+                style = Stroke(radius * 0.07f, cap = StrokeCap.Round)
+            )
             hourHand(
                 hour = worldClock.hours,
                 radius = radius,
-                color = color
+                color = handleColor
             )
             minutesHand(
                 minute = worldClock.minutes,
                 radius = radius,
-                color = color
+                color = handleColor
             )
             if (showSeconds) {
                 secondsHand(
@@ -52,8 +58,8 @@ fun AnalogClock(
                 )
             }
             drawCircle(
-                color = color,
-                radius = radius * .04f,
+                color = handleColor,
+                radius = radius * .07f,
                 center = center
             )
             drawCircle(
@@ -62,42 +68,6 @@ fun AnalogClock(
                 center = center
             )
         }
-    }
-}
-
-private fun DrawScope.hoursDial(radius: Float, color: Color) {
-    for (angle in 0..360 step 30) {
-        drawLine(
-            color = color,
-            start = Offset(
-                x = center.x + (radius) * cos(angle * Math.PI.toFloat() / 180),
-                y = center.y + (radius) * sin(angle * Math.PI.toFloat() / 180)
-            ),
-            end = Offset(
-                x = center.x + (radius - radius * 0.125f) * cos(angle * Math.PI.toFloat() / 180),
-                y = center.y + (radius - radius * 0.125f) * sin(angle * Math.PI.toFloat() / 180)
-            ),
-            strokeWidth = radius * 0.01f,
-            cap = StrokeCap.Round
-        )
-    }
-}
-
-private fun DrawScope.minutesDial(radius: Float, color: Color) {
-    for (angle in 0..360 step 6) {
-        drawLine(
-            color = color,
-            start = Offset(
-                x = center.x + (radius) * cos(angle * Math.PI.toFloat() / 180),
-                y = center.y + (radius) * sin(angle * Math.PI.toFloat() / 180)
-            ),
-            end = Offset(
-                x = center.x + (radius - radius * 0.05f) * cos(angle * Math.PI.toFloat() / 180),
-                y = center.y + (radius - radius * 0.05f) * sin(angle * Math.PI.toFloat() / 180)
-            ),
-            strokeWidth = radius * 0.01f,
-            cap = StrokeCap.Round
-        )
     }
 }
 
@@ -110,10 +80,10 @@ private fun DrawScope.hourHand(
         color = color,
         start = Offset(x = center.x, y = center.y),
         end = Offset(
-            x = center.x + (radius * 0.533f) * cos(hour * Math.PI.toFloat() / 180),
-            y = center.y + (radius * 0.533f) * sin(hour * Math.PI.toFloat() / 180)
+            x = center.x + (radius * 0.6f) * cos(hour * Math.PI.toFloat() / 180),
+            y = center.y + (radius * 0.6f) * sin(hour * Math.PI.toFloat() / 180)
         ),
-        strokeWidth = radius * 0.015f,
+        strokeWidth = radius * 0.07f,
         cap = StrokeCap.Round
     )
 }
@@ -127,10 +97,10 @@ private fun DrawScope.minutesHand(
         color = color,
         start = Offset(x = center.x, y = center.y),
         end = Offset(
-            x = center.x + (radius * 0.8f) * cos(minute * Math.PI.toFloat() / 180),
-            y = center.y + (radius * 0.8f) * sin(minute * Math.PI.toFloat() / 180)
+            x = center.x + (radius * 0.85f) * cos(minute * Math.PI.toFloat() / 180),
+            y = center.y + (radius * 0.85f) * sin(minute * Math.PI.toFloat() / 180)
         ),
-        strokeWidth = radius * 0.015f,
+        strokeWidth = radius * 0.04f,
         cap = StrokeCap.Round
     )
 }
@@ -144,10 +114,10 @@ private fun DrawScope.secondsHand(
         color = color,
         start = Offset(x = center.x, y = center.y),
         end = Offset(
-            x = center.x + (radius * 0.66f) * cos(second * Math.PI.toFloat() / 180),
-            y = center.y + (radius * 0.66f) * sin(second * Math.PI.toFloat() / 180)
+            x = center.x + (radius * 0.7f) * cos(second * Math.PI.toFloat() / 180),
+            y = center.y + (radius * 0.7f) * sin(second * Math.PI.toFloat() / 180)
         ),
-        strokeWidth = radius * 0.01f,
+        strokeWidth = radius * 0.02f,
         cap = StrokeCap.Round
     )
 }

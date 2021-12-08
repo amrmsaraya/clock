@@ -6,6 +6,7 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -22,12 +23,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.github.amrmsaraya.clock.domain.entity.WorldClock
 import com.github.amrmsaraya.clock.presentation.clock.component.AddClock
-import com.github.amrmsaraya.clock.presentation.clock.component.AnalogClock
+import com.github.amrmsaraya.clock.presentation.clock.component.MaterialClock
 import com.github.amrmsaraya.clock.presentation.clock.component.WorldClockRow
 import com.github.amrmsaraya.clock.presentation.common_ui.AddFAB
 import com.github.amrmsaraya.clock.presentation.common_ui.BottomDrawerSheet
@@ -161,13 +163,14 @@ private fun ClockScreenContent(
             Modifier.fillMaxSize(),
             verticalArrangement = if (times.isEmpty()) Arrangement.Center else Arrangement.Top
         ) {
-            AnalogClock(
+            MaterialClock(
                 modifier = Modifier
                     .padding(16.dp)
                     .fillMaxWidth(0.8f)
                     .align(CenterHorizontally),
                 worldClock = worldClock,
-                color = MaterialTheme.colorScheme.onSurface
+                frameColor = MaterialTheme.colorScheme.primary,
+                handleColor = if (isSystemInDarkTheme()) Color.LightGray else Color.DarkGray
             )
             Spacer(modifier = Modifier.size(16.dp))
             LazyColumn(
