@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AlarmAdd
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -36,12 +37,12 @@ fun EmptyAlarms(visible: Boolean) {
                     modifier = Modifier.size(100.dp),
                     imageVector = Icons.Outlined.AlarmAdd,
                     contentDescription = null,
-                    tint = Color.Gray
+                    tint =  MaterialTheme.colorScheme.primary
                 )
                 Spacer(modifier = Modifier.size(8.dp))
                 Text(
                     text = stringResource(id = R.string.add_new_alarm),
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.primary,
                     textAlign = TextAlign.Center
                 )
             }

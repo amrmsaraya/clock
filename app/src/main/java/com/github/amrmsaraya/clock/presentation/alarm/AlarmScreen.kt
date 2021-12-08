@@ -32,7 +32,7 @@ import com.github.amrmsaraya.clock.presentation.alarm.utils.Days
 import com.github.amrmsaraya.clock.presentation.common_ui.AddFAB
 import com.github.amrmsaraya.clock.presentation.common_ui.DeleteFAB
 import com.github.amrmsaraya.clock.presentation.common_ui.FullScreenDialog
-import com.github.amrmsaraya.clock.presentation.theme.Purple100
+import com.github.amrmsaraya.clock.presentation.theme.Purple50
 import com.github.amrmsaraya.clock.presentation.theme.Purple200
 import com.github.amrmsaraya.clock.presentation.theme.Purple900
 import kotlinx.coroutines.delay
@@ -245,7 +245,7 @@ private fun AlarmScreenContent(
                                     .filter { it.ordinal == alarm.color }
                                     .map {
                                         it.inActiveBackgroundColor
-                                    }.firstOrNull() ?: Purple100,
+                                    }.firstOrNull() ?: Purple50,
                                 contentColor = Colors.values().filter { it.ordinal == alarm.color }
                                     .map {
                                         it.contentColor

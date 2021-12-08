@@ -3,7 +3,7 @@
     <style name="Theme.Clock" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="android:statusBarColor">@color/lightSurface</item>
         <item name="android:windowLightStatusBar">true</item>
-        <item name="android:navigationBarColor" >@color/lightSurface</item>
+        <item name="android:navigationBarColor">@color/lightSurface</item>
     </style>
 
     <style name="Theme.Clock.Splash" parent="Theme.SplashScreen">
