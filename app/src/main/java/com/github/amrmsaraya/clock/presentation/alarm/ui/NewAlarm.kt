@@ -16,8 +16,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -88,8 +86,8 @@ fun NewAlarm(
     val colorRowScrollState = rememberScrollState()
     val daysRowScrollState = rememberScrollState()
 
-    val hourState = rememberLazyListState()
-    val minuteState = rememberLazyListState()
+    var selectedHour by remember { mutableStateOf(alarm.hour) }
+    var selectedMinute by remember { mutableStateOf(alarm.minute) }
 
     val getRingtone =
         rememberLauncherForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) {
@@ -101,10 +99,10 @@ fun NewAlarm(
 
     Column(modifier = modifier.verticalScroll(state = rememberScrollState())) {
         HeaderRow(
-            hourState = hourState,
-            minuteState = minuteState,
-            editMode = editMode,
             title = title,
+            editMode = editMode,
+            hour = selectedHour,
+            minute = selectedMinute,
             amPm = amPm,
             ringtone = ringtone,
             selectedColor = selectedColor,
@@ -118,15 +116,17 @@ fun NewAlarm(
 
         TimeChooserRow(
             modifier = modifier,
-            hourState = hourState,
-            minuteState = minuteState,
             hour = alarm.hour,
             minute = alarm.minute,
             amPm = amPm,
+            onTimeChange = { hour, minute ->
+                selectedHour = hour
+                selectedMinute = minute
+            },
             onAmPmChange = { amPm = it }
         )
 
-        Spacer(modifier = Modifier.size(16.dp))
+        Spacer(modifier = Modifier.size(8.dp))
 
         DaysRow(
             modifier = Modifier
@@ -311,15 +311,21 @@ private fun DaysRow(
 @Composable
 private fun TimeChooserRow(
     modifier: Modifier,
-    hourState: LazyListState,
-    minuteState: LazyListState,
     hour: Int,
     minute: Int,
     amPm: Int,
+    onTimeChange: (Int, Int) -> Unit,
     onAmPmChange: (Int) -> Unit
 ) {
+    var selectedHour by remember { mutableStateOf(hour) }
+    var selectedMinute by remember { mutableStateOf(minute) }
+
+    LaunchedEffect(key1 = selectedHour, key2 = selectedMinute) {
+        onTimeChange(selectedHour, selectedMinute)
+    }
+
     Row(
-        Modifier
+        modifier
             .fillMaxWidth()
             .height(200.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -329,9 +335,8 @@ private fun TimeChooserRow(
             modifier = modifier
                 .fillMaxSize()
                 .weight(0.35f),
-            state = hourState,
-            size = 14,
             type = "hour",
+            onTimeChange = { selectedHour = it },
             default = hour,
         )
         Text(
@@ -344,9 +349,8 @@ private fun TimeChooserRow(
             modifier = modifier
                 .fillMaxSize()
                 .weight(0.35f),
-            state = minuteState,
-            size = 62,
             type = "minute",
+            onTimeChange = { selectedMinute = it },
             default = minute
         )
         Column(
@@ -413,10 +417,10 @@ private fun TimeChooserRow(
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun HeaderRow(
-    hourState: LazyListState,
-    minuteState: LazyListState,
-    editMode: Boolean,
     title: String,
+    editMode: Boolean,
+    hour: Int,
+    minute: Int,
     amPm: Int,
     ringtone: Uri,
     selectedColor: Int,
@@ -448,13 +452,6 @@ private fun HeaderRow(
 
         IconButton(
             onClick = {
-                val hourVisibleItems = hourState.layoutInfo.visibleItemsInfo
-                val minuteVisibleItems = minuteState.layoutInfo.visibleItemsInfo
-
-                val hour = hourVisibleItems[hourVisibleItems.lastIndex / 2].index
-                val minute =
-                    minuteVisibleItems[minuteVisibleItems.lastIndex / 2].index - 1
-
                 localKeyboard?.hide()
                 onSave(
                     alarm.copy(

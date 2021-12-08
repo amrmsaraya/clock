@@ -1,18 +1,20 @@
 package com.github.amrmsaraya.clock.presentation.alarm.ui
 
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.ExperimentalUnitApi
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -23,52 +25,61 @@ import dev.chrisbanes.snapper.rememberSnapperFlingBehavior
 @Composable
 fun TimeChooser(
     modifier: Modifier,
-    state: LazyListState,
-    size: Int,
     type: String,
     default: Int,
+    onTimeChange: (Int) -> Unit
 ) {
+    val state = rememberLazyListState()
+    val list = if (type == "hour") (1..12).toList() else (0..59).toList()
+    var showList by remember { mutableStateOf(false) }
+    var selectedItem by remember { mutableStateOf(default) }
 
-    LaunchedEffect(default) {
-        state.scrollToItem(if (type == "hour") default - 1 else default)
+    LaunchedEffect(selectedItem) {
+        onTimeChange(selectedItem)
     }
 
-    LazyColumn(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        state = state,
-        verticalArrangement = Arrangement.SpaceEvenly,
-        flingBehavior = rememberSnapperFlingBehavior(lazyListState = state)
-    ) {
-        items(size) {
-            val viewedItems = state.layoutInfo.visibleItemsInfo
+    Box(modifier = modifier, contentAlignment = Alignment.Center) {
+        Text(
+            modifier = Modifier
+                .clip(RoundedCornerShape(10.dp))
+                .clickable { showList = true }
+                .background(MaterialTheme.colorScheme.primaryContainer)
+                .border(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = RoundedCornerShape(10.dp)
+                )
+                .padding(16.dp),
+            text = "%02d".format(selectedItem),
+            color = MaterialTheme.colorScheme.onPrimaryContainer,
+            fontSize = 22.sp
+        )
 
-            val textSize = when (viewedItems.isNotEmpty()) {
-                true -> when (viewedItems[(viewedItems.lastIndex) / 2].index) {
-                    it -> 32.sp
-                    else -> 18.sp
+        if (showList) {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.surface),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                state = state,
+                verticalArrangement = Arrangement.SpaceEvenly,
+                flingBehavior = rememberSnapperFlingBehavior(lazyListState = state)
+            ) {
+                items(list) {
+                    Text(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                selectedItem = it
+                                showList = false
+                            }
+                            .padding(4.dp),
+                        text = "%02d".format(it),
+                        fontSize = 20.sp,
+                        textAlign = TextAlign.Center
+                    )
                 }
-                false -> 18.sp
             }
-            val animatedColor by animateColorAsState(
-                targetValue = if (viewedItems.isNotEmpty()) {
-                    if (viewedItems[(viewedItems.size - 1) / 2].index == it) {
-                        MaterialTheme.colorScheme.onSurface
-                    } else {
-                        Color.Gray
-                    }
-                } else {
-                    Color.Gray
-                }
-            )
-            Text(
-                modifier = Modifier.padding(top = 14.dp, bottom = 14.dp),
-                text = if (it > size - 2 || it - 1 < 0) "" else {
-                    "${if (type == "hour") it else "%02d".format(it - 1)}"
-                },
-                fontSize = textSize,
-                color = animatedColor
-            )
         }
     }
 }
