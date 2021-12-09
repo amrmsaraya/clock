@@ -476,8 +476,7 @@ private fun HeaderRow(
                         amPm = amPm,
                         color = selectedColor,
                         repeatOn = selectedDays.map { it.ordinal },
-                        ringtone = ringtone.toString(),
-                        enabled = true,
+                        ringtone = ringtone.toString()
                     )
                 )
             }
