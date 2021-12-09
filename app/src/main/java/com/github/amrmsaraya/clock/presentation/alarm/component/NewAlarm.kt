@@ -141,6 +141,7 @@ fun NewAlarm(
             value = title,
             onValueChange = { title = it },
             label = { Text(text = stringResource(R.string.title)) },
+            textStyle = MaterialTheme.typography.bodyLarge,
             maxLines = 1,
             leadingIcon = {
                 Icon(imageVector = Icons.Default.Edit, contentDescription = null)
@@ -152,13 +153,12 @@ fun NewAlarm(
                 focusedLabelColor = MaterialTheme.colorScheme.onSurface,
                 unfocusedBorderColor = MaterialTheme.colorScheme.outline,
                 leadingIconColor = MaterialTheme.colorScheme.onSurface
-
             ),
             keyboardOptions = KeyboardOptions(
                 capitalization = KeyboardCapitalization.Sentences,
                 imeAction = ImeAction.Done
             ),
-            keyboardActions = KeyboardActions(onAny = { keyboard?.hide() })
+            keyboardActions = KeyboardActions(onDone = { keyboard?.hide() })
         )
 
         Spacer(modifier = Modifier.size(16.dp))
