@@ -112,7 +112,6 @@ fun ClockScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ClockScreenContent(
-//    scaffoldState: ScaffoldState,
     worldClock: WorldClock,
     times: Map<TimeZone, WorldClock>,
     selectMode: Boolean,
@@ -169,7 +168,7 @@ private fun ClockScreenContent(
                     .align(CenterHorizontally),
                 worldClock = worldClock,
                 frameColor = MaterialTheme.colorScheme.primary,
-                handleColor = if (isSystemInDarkTheme()) Color.LightGray else Color.DarkGray
+                handleColor = MaterialTheme.colorScheme.outline
             )
             Spacer(modifier = Modifier.size(16.dp))
             LazyColumn(

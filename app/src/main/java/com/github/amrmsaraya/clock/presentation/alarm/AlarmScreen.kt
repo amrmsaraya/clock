@@ -24,9 +24,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.github.amrmsaraya.clock.R
 import com.github.amrmsaraya.clock.domain.entity.Alarm
-import com.github.amrmsaraya.clock.presentation.alarm.ui.AlarmCard
-import com.github.amrmsaraya.clock.presentation.alarm.ui.EmptyAlarms
-import com.github.amrmsaraya.clock.presentation.alarm.ui.NewAlarm
+import com.github.amrmsaraya.clock.presentation.alarm.component.AlarmCard
+import com.github.amrmsaraya.clock.presentation.alarm.component.EmptyAlarms
+import com.github.amrmsaraya.clock.presentation.alarm.component.NewAlarm
 import com.github.amrmsaraya.clock.presentation.alarm.utils.Colors
 import com.github.amrmsaraya.clock.presentation.alarm.utils.Days
 import com.github.amrmsaraya.clock.presentation.common_ui.AddFAB

@@ -1,4 +1,4 @@
-package com.github.amrmsaraya.clock.presentation.alarm.ui
+package com.github.amrmsaraya.clock.presentation.alarm.component
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween

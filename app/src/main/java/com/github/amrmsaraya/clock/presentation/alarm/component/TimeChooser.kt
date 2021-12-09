@@ -1,4 +1,4 @@
-package com.github.amrmsaraya.clock.presentation.alarm.ui
+package com.github.amrmsaraya.clock.presentation.alarm.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize

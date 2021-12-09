@@ -57,7 +57,7 @@ fun WorldClockRow(
                 modifier = Modifier.size(50.dp),
                 worldClock = worldClock,
                 frameColor = MaterialTheme.colorScheme.primary,
-                handleColor = if (isSystemInDarkTheme()) Color.LightGray else Color.DarkGray,
+                handleColor = MaterialTheme.colorScheme.outline,
                 showSeconds = false
             )
             Spacer(modifier = Modifier.size(16.dp))
@@ -67,7 +67,7 @@ fun WorldClockRow(
                 Text(
                     text = timeZone.getDisplayName(false, TimeZone.SHORT),
                     fontSize = 14.sp,
-                    color = Color.Gray
+                    color = MaterialTheme.colorScheme.outline
                 )
             }
         }

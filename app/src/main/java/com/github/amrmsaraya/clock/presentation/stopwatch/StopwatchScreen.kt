@@ -107,8 +107,7 @@ fun StopwatchTimer(
     isRunning: Boolean = true
 ) {
     val color = MaterialTheme.colorScheme.primary
-    val isDarkTheme = isSystemInDarkTheme()
-
+    val backgroundColor = MaterialTheme.colorScheme.outline
     BoxWithConstraints(contentAlignment = Alignment.Center) {
         Text(
             text = stopwatchFormat(timer, color),
@@ -117,13 +116,13 @@ fun StopwatchTimer(
 
         Canvas(modifier = Modifier.size(if (maxWidth < maxHeight) maxWidth else maxHeight)) {
             drawArc(
-                color = if (isDarkTheme) Color.DarkGray else Color.LightGray,
+                color = backgroundColor,
                 startAngle = -90f,
                 sweepAngle = animatedValue * 360,
                 useCenter = false,
                 style = Stroke(10f, cap = StrokeCap.Round),
                 size = Size(size.width, size.width),
-                alpha = 0.5f
+                alpha = 0.3f
             )
             drawArc(
                 color = color,

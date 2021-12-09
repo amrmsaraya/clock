@@ -1,4 +1,4 @@
-package com.github.amrmsaraya.clock.presentation.alarm.ui
+package com.github.amrmsaraya.clock.presentation.alarm.component
 
 import android.app.PendingIntent
 import android.content.Context
@@ -20,7 +20,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.ContentAlpha
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
@@ -151,7 +150,7 @@ fun NewAlarm(
                 cursorColor = MaterialTheme.colorScheme.primary,
                 focusedBorderColor = MaterialTheme.colorScheme.primary,
                 focusedLabelColor = MaterialTheme.colorScheme.onSurface,
-                unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = ContentAlpha.disabled),
+                unfocusedBorderColor = MaterialTheme.colorScheme.outline,
                 leadingIconColor = MaterialTheme.colorScheme.onSurface
 
             ),
@@ -206,7 +205,7 @@ private fun RingtoneRow(
                     context,
                     ringtone
                 ).getTitle(context),
-                color = Color.Gray
+                color = MaterialTheme.colorScheme.outline
             )
         }
         Icon(imageVector = Icons.Default.NavigateNext, contentDescription = null)
