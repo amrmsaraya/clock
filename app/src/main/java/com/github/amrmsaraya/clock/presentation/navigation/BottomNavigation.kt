@@ -42,7 +42,7 @@ private fun BottomNavigation(
     currentDestination: NavDestination?,
     screens: List<Screens>
 ) {
-    NavigationBar() {
+    NavigationBar {
         for (screen in screens) {
             NavigationBarItem(
                 selected = currentDestination?.route == screen.route,

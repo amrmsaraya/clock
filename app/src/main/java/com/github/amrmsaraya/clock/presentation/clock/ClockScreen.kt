@@ -91,7 +91,6 @@ fun ClockScreen(
         },
         content = {
             ClockScreenContent(
-//                scaffoldState = scaffoldState,
                 worldClock = localClock,
                 times = worldClocks,
                 selectMode = selectMode,

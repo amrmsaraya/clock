@@ -1,85 +1,61 @@
 package com.github.amrmsaraya.clock.presentation.alarm.ui
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.ExperimentalUnitApi
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.github.amrmsaraya.clock.presentation.alarm.utils.TimeType
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.PagerDefaults
+import com.google.accompanist.pager.VerticalPager
+import com.google.accompanist.pager.rememberPagerState
 import dev.chrisbanes.snapper.ExperimentalSnapperApi
-import dev.chrisbanes.snapper.rememberSnapperFlingBehavior
+import kotlinx.coroutines.flow.collect
 
-@OptIn(ExperimentalUnitApi::class, ExperimentalSnapperApi::class)
+@OptIn(ExperimentalUnitApi::class, ExperimentalSnapperApi::class, ExperimentalPagerApi::class)
 @Composable
 fun TimeChooser(
     modifier: Modifier,
-    type: String,
-    default: Int,
+    type: TimeType,
+    initial: Int,
     onTimeChange: (Int) -> Unit
 ) {
-    val state = rememberLazyListState()
-    val list = if (type == "hour") (1..12).toList() else (0..59).toList()
-    var showList by remember { mutableStateOf(false) }
-    var selectedItem by remember { mutableStateOf(default) }
+    val state = rememberPagerState(initialPage = if (type == TimeType.HOUR) initial - 1 else initial)
+    val list = if (type == TimeType.HOUR) (1..12).toList() else (0..59).toList()
 
-    LaunchedEffect(selectedItem) {
-        onTimeChange(selectedItem)
-    }
-
-    Box(modifier = modifier, contentAlignment = Alignment.Center) {
-        Text(
-            modifier = Modifier
-                .clip(RoundedCornerShape(10.dp))
-                .clickable { showList = true }
-                .background(MaterialTheme.colorScheme.primaryContainer)
-                .border(
-                    width = 1.dp,
-                    color = MaterialTheme.colorScheme.primary,
-                    shape = RoundedCornerShape(10.dp)
-                )
-                .padding(16.dp),
-            text = "%02d".format(selectedItem),
-            color = MaterialTheme.colorScheme.onPrimaryContainer,
-            fontSize = 22.sp
-        )
-
-        if (showList) {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.surface),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                state = state,
-                verticalArrangement = Arrangement.SpaceEvenly,
-                flingBehavior = rememberSnapperFlingBehavior(lazyListState = state)
-            ) {
-                items(list) {
-                    Text(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                selectedItem = it
-                                showList = false
-                            }
-                            .padding(4.dp),
-                        text = "%02d".format(it),
-                        fontSize = 20.sp,
-                        textAlign = TextAlign.Center
-                    )
-                }
-            }
+    LaunchedEffect(state) {
+        snapshotFlow { state.currentPage }.collect {
+            onTimeChange(list[it])
         }
     }
+
+    VerticalPager(
+        modifier = modifier
+            .fillMaxSize()
+            .clip(RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colorScheme.primary),
+        count = list.size,
+        state = state,
+        flingBehavior = PagerDefaults.flingBehavior(
+            state = state,
+            maximumFlingDistance = { it.distanceToIndexSnap(list.lastIndex).toFloat() }
+        )
+    ) {
+        Text(
+            text = "%02d".format(list[it]),
+            color = MaterialTheme.colorScheme.onPrimary,
+            style = MaterialTheme.typography.displayMedium,
+            textAlign = TextAlign.Center
+        )
+    }
+
 }

@@ -47,12 +47,12 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import com.github.amrmsaraya.clock.R
 import com.github.amrmsaraya.clock.domain.entity.Alarm
 import com.github.amrmsaraya.clock.presentation.alarm.utils.Colors
 import com.github.amrmsaraya.clock.presentation.alarm.utils.Days
+import com.github.amrmsaraya.clock.presentation.alarm.utils.TimeType
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -115,7 +115,6 @@ fun NewAlarm(
         Spacer(modifier = Modifier.size(16.dp))
 
         TimeChooserRow(
-            modifier = modifier,
             hour = alarm.hour,
             minute = alarm.minute,
             amPm = amPm,
@@ -126,7 +125,7 @@ fun NewAlarm(
             onAmPmChange = { amPm = it }
         )
 
-        Spacer(modifier = Modifier.size(8.dp))
+        Spacer(modifier = Modifier.size(16.dp))
 
         DaysRow(
             modifier = Modifier
@@ -190,6 +189,7 @@ private fun RingtoneRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(bottom = 8.dp)
             .clickable(
                 indication = null,
                 interactionSource = remember { MutableInteractionSource() },
@@ -231,7 +231,7 @@ private fun ColorRow(
         ) {
             backgroundColor.forEachIndexed { index, color ->
                 val animatedSize by animateDpAsState(
-                    targetValue = if (index == selectedColor) 50.dp else 35.dp,
+                    targetValue = if (index == selectedColor) 45.dp else 35.dp,
                     animationSpec = tween(500)
                 )
                 Box(
@@ -268,49 +268,56 @@ private fun DaysRow(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        days.forEachIndexed { index, it ->
+        days.forEach { day ->
 
             val backgroundColor by animateColorAsState(
-                targetValue = if (it in selectedDays) MaterialTheme.colorScheme.primary else Color.Transparent,
+                targetValue = if (day in selectedDays) MaterialTheme.colorScheme.primary else Color.Transparent,
                 animationSpec = tween(500)
             )
 
-            Text(
+            Box(
                 modifier = Modifier
-                    .background(
-                        color = backgroundColor,
-                        shape = RoundedCornerShape(
-                            topStart = if (index == 0 || days[index - 1] !in selectedDays) 8.dp else 0.dp,
-                            bottomStart = if (index == 0 || days[index - 1] !in selectedDays) 8.dp else 0.dp,
-                            topEnd = if (index == days.lastIndex || days[index + 1] !in selectedDays) 8.dp else 0.dp,
-                            bottomEnd = if (index == days.lastIndex || days[index + 1] !in selectedDays) 8.dp else 0.dp,
-                        )
+                    .size(35.dp)
+                    .clip(CircleShape)
+                    .border(
+                        width = 1.dp,
+                        color = if (day in selectedDays) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
+                        shape = CircleShape
                     )
+                    .background(color = backgroundColor)
                     .clickable(
                         indication = null,
                         interactionSource = remember { MutableInteractionSource() },
                         onClick = {
-                            if (it in selectedDays) {
-                                selectedDays.remove(it)
+                            if (day in selectedDays) {
+                                selectedDays.remove(day)
                             } else {
-                                selectedDays.add(it)
+                                selectedDays.add(day)
                             }
                         }
-                    )
-                    .padding(10.dp),
-                text = stringResource(id = it.stringRes),
-                color = animateColorAsState(
-                    targetValue = if (it in selectedDays) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
-                    animationSpec = tween(500)
-                ).value
-            )
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = stringResource(id = day.stringRes),
+                    color = animateColorAsState(
+                        targetValue = if (day in selectedDays) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
+                        animationSpec = tween(500)
+                    ).value,
+                    style = MaterialTheme.typography.bodyLarge,
+                    textAlign = TextAlign.Center
+                )
+            }
+            if (days.last() != day) {
+                Spacer(modifier = Modifier.size(8.dp))
+            }
         }
     }
 }
 
 @Composable
 private fun TimeChooserRow(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     hour: Int,
     minute: Int,
     amPm: Int,
@@ -327,45 +334,51 @@ private fun TimeChooserRow(
     Row(
         modifier
             .fillMaxWidth()
-            .height(200.dp),
+            .height(80.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         TimeChooser(
             modifier = modifier
-                .fillMaxSize()
-                .weight(0.35f),
-            type = "hour",
+                .weight(0.375f)
+                .fillMaxSize(),
+            type = TimeType.HOUR,
             onTimeChange = { selectedHour = it },
-            default = hour,
+            initial = hour,
         )
         Text(
-            modifier = Modifier.weight(0.1f),
+            modifier = Modifier
+                .fillMaxHeight()
+                .padding(start = 16.dp, end = 16.dp),
             text = ":",
-            fontSize = 26.sp,
+            style = MaterialTheme.typography.displayMedium,
             textAlign = TextAlign.Center
         )
         TimeChooser(
             modifier = modifier
-                .fillMaxSize()
-                .weight(0.35f),
-            type = "minute",
+                .weight(0.375f)
+                .fillMaxSize(),
+            type = TimeType.MINUTE,
             onTimeChange = { selectedMinute = it },
-            default = minute
+            initial = minute
         )
         Column(
             modifier = Modifier
-                .weight(0.2f)
-                .clip(RoundedCornerShape(10.dp))
+                .weight(0.25f)
+                .fillMaxSize()
+                .padding(start = 16.dp)
+                .clip(RoundedCornerShape(8.dp))
                 .border(
                     color = MaterialTheme.colorScheme.primary,
                     width = 1.dp,
-                    shape = RoundedCornerShape(10.dp)
+                    shape = RoundedCornerShape(8.dp)
                 ),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .weight(0.5f)
+                    .fillMaxSize()
                     .background(
                         animateColorAsState(
                             targetValue = if (amPm == 0) MaterialTheme.colorScheme.primary else Color.Transparent,
@@ -378,9 +391,10 @@ private fun TimeChooserRow(
                         interactionSource = remember { MutableInteractionSource() },
                         onClick = { onAmPmChange(0) }
                     )
-                    .padding(8.dp),
+                    .padding(4.dp),
                 text = stringResource(id = R.string.am),
-                fontSize = 22.sp,
+                style = MaterialTheme.typography.titleLarge,
+                maxLines = 1,
                 textAlign = TextAlign.Center,
                 color = animateColorAsState(
                     targetValue = if (amPm == 0) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
@@ -389,7 +403,8 @@ private fun TimeChooserRow(
             )
             Text(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .weight(0.5f)
+                    .fillMaxSize()
                     .background(
                         animateColorAsState(
                             targetValue = if (amPm == 1) MaterialTheme.colorScheme.primary else Color.Transparent,
@@ -401,9 +416,10 @@ private fun TimeChooserRow(
                         interactionSource = remember { MutableInteractionSource() },
                         onClick = { onAmPmChange(1) }
                     )
-                    .padding(8.dp),
+                    .padding(4.dp),
                 text = stringResource(id = R.string.pm),
-                fontSize = 22.sp,
+                style = MaterialTheme.typography.titleLarge,
+                maxLines = 1,
                 textAlign = TextAlign.Center,
                 color = animateColorAsState(
                     targetValue = if (amPm == 1) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,

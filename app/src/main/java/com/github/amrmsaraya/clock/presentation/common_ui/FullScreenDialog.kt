@@ -1,11 +1,11 @@
 package com.github.amrmsaraya.clock.presentation.common_ui
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -26,12 +26,13 @@ fun FullScreenDialog(
             onDismissRequest = onDismiss,
             properties = DialogProperties(usePlatformDefaultWidth = false),
         ) {
-            Box(
+            Surface(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
-                    .clip(RoundedCornerShape(20.dp))
-                    .background(MaterialTheme.colorScheme.surface),
+                    .padding(16.dp),
+                shape = RoundedCornerShape(20.dp),
+                tonalElevation = 3.dp,
+                color = MaterialTheme.colorScheme.surface
             ) {
                 content()
             }

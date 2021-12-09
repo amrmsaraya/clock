@@ -64,7 +64,7 @@ fun MaterialClock(
             )
             drawCircle(
                 color = backgroundColor,
-                radius = radius * .03f,
+                radius = radius * .04f,
                 center = center
             )
         }
@@ -83,7 +83,7 @@ private fun DrawScope.hourHand(
             x = center.x + (radius * 0.6f) * cos(hour * Math.PI.toFloat() / 180),
             y = center.y + (radius * 0.6f) * sin(hour * Math.PI.toFloat() / 180)
         ),
-        strokeWidth = radius * 0.07f,
+        strokeWidth = radius * 0.04f,
         cap = StrokeCap.Round
     )
 }
