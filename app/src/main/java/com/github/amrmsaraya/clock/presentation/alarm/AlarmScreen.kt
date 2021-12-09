@@ -3,11 +3,8 @@ package com.github.amrmsaraya.clock.presentation.alarm
 import android.app.Activity
 import android.media.RingtoneManager
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,7 +15,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -34,7 +30,6 @@ import com.github.amrmsaraya.clock.presentation.common_ui.AddFAB
 import com.github.amrmsaraya.clock.presentation.common_ui.DeleteFAB
 import com.github.amrmsaraya.clock.presentation.common_ui.FullScreenDialog
 import com.github.amrmsaraya.clock.presentation.theme.Purple200
-import com.github.amrmsaraya.clock.presentation.theme.Purple50
 import com.github.amrmsaraya.clock.presentation.theme.Purple900
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -188,7 +183,11 @@ private fun AlarmScreenContent(
             when (selectMode) {
                 true -> DeleteFAB { onDelete() }
                 false -> {
-                    if (listState.firstVisibleItemIndex < 1) {
+                    AnimatedVisibility(
+                        visible = listState.firstVisibleItemIndex == 0 && listState.firstVisibleItemScrollOffset < 100,
+                        enter = fadeIn(tween(500)),
+                        exit = fadeOut(tween(500))
+                    ) {
                         AddFAB {
                             onShowAlarmDialog(
                                 Alarm(

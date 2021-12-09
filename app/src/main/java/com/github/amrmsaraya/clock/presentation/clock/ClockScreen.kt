@@ -1,12 +1,8 @@
 package com.github.amrmsaraya.clock.presentation.clock
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -14,7 +10,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.BottomDrawerValue
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.rememberBottomDrawerState
-import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.MaterialTheme
@@ -23,7 +18,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -55,7 +49,6 @@ fun ClockScreen(
     val worldClocks by uiState.worldClocks.collectAsState(initial = mapOf())
     var selectMode by remember { mutableStateOf(false) }
 
-    val scaffoldState = rememberScaffoldState()
     val drawerState = rememberBottomDrawerState(initialValue = BottomDrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val localKeyboard = LocalSoftwareKeyboardController.current
@@ -150,7 +143,11 @@ private fun ClockScreenContent(
                     }
                 }
             } else {
-                if (listState.firstVisibleItemIndex < 1) {
+                AnimatedVisibility(
+                    visible = listState.firstVisibleItemIndex == 0 && listState.firstVisibleItemScrollOffset < 50,
+                    enter = fadeIn(tween(500)),
+                    exit = fadeOut(tween(500))
+                ) {
                     AddFAB { onAddClock() }
                 }
             }
@@ -158,12 +155,13 @@ private fun ClockScreenContent(
         floatingActionButtonPosition = if (selectMode) FabPosition.Center else FabPosition.End
     ) {
         Column(
-            Modifier.fillMaxSize(),
+            Modifier
+                .fillMaxSize()
+                .padding(top = 16.dp, start = 16.dp, end = 16.dp),
             verticalArrangement = if (times.isEmpty()) Arrangement.Center else Arrangement.Top
         ) {
             MaterialClock(
                 modifier = Modifier
-                    .padding(16.dp)
                     .fillMaxWidth(0.8f)
                     .align(CenterHorizontally),
                 worldClock = worldClock,
@@ -172,7 +170,6 @@ private fun ClockScreenContent(
             )
             Spacer(modifier = Modifier.size(16.dp))
             LazyColumn(
-                modifier = Modifier.padding(16.dp),
                 state = listState,
                 horizontalAlignment = CenterHorizontally
             ) {
