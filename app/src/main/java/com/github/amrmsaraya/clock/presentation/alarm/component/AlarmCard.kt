@@ -9,6 +9,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Switch
 import androidx.compose.material.SwitchDefaults
+import androidx.compose.material3.LocalAbsoluteTonalElevation
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -17,11 +18,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.amrmsaraya.clock.R
+import kotlin.math.ln
 
 @ExperimentalFoundationApi
 @Composable
@@ -32,9 +35,7 @@ fun AlarmCard(
     amPm: String,
     days: String,
     activeBackgroundColor: Color,
-    inActiveBackgroundColor: Color,
     contentColor: Color,
-    ringtone: String,
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     onClick: () -> Unit,
@@ -44,13 +45,16 @@ fun AlarmCard(
         targetValue = if (checked) {
             activeBackgroundColor
         } else {
-            inActiveBackgroundColor
+            val elevation = LocalAbsoluteTonalElevation.current + 3.dp
+            val alpha = ((4.5f * ln(elevation.value + 1)) + 2f) / 100f
+            MaterialTheme.colorScheme.primary.copy(alpha = alpha)
+                .compositeOver(MaterialTheme.colorScheme.surface)
         },
         animationSpec = tween(1000)
     )
 
     val animateContentColor by animateColorAsState(
-        targetValue = if (checked) contentColor else activeBackgroundColor,
+        targetValue = if (checked) contentColor else MaterialTheme.colorScheme.outline,
         animationSpec = tween(1000)
     )
 

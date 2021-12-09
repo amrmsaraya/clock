@@ -18,6 +18,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -32,8 +33,8 @@ import com.github.amrmsaraya.clock.presentation.alarm.utils.Days
 import com.github.amrmsaraya.clock.presentation.common_ui.AddFAB
 import com.github.amrmsaraya.clock.presentation.common_ui.DeleteFAB
 import com.github.amrmsaraya.clock.presentation.common_ui.FullScreenDialog
-import com.github.amrmsaraya.clock.presentation.theme.Purple50
 import com.github.amrmsaraya.clock.presentation.theme.Purple200
+import com.github.amrmsaraya.clock.presentation.theme.Purple50
 import com.github.amrmsaraya.clock.presentation.theme.Purple900
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -241,16 +242,10 @@ private fun AlarmScreenContent(
                                     .map {
                                         it.activeBackgroundColor
                                     }.firstOrNull() ?: Purple200,
-                                inActiveBackgroundColor = Colors.values()
-                                    .filter { it.ordinal == alarm.color }
-                                    .map {
-                                        it.inActiveBackgroundColor
-                                    }.firstOrNull() ?: Purple50,
                                 contentColor = Colors.values().filter { it.ordinal == alarm.color }
                                     .map {
                                         it.contentColor
                                     }.firstOrNull() ?: Purple900,
-                                ringtone = alarm.ringtone,
                                 checked = alarm.enabled,
                                 onCheckedChange = { onCheckedChange(alarm.copy(enabled = it)) },
                                 onClick = {
