@@ -121,5 +121,5 @@ dependencies {
     implementation "com.google.accompanist:accompanist-pager:$accompanist_version"
 
     // Timer
-    implementation "com.github.amrmsaraya:timer:1.1"
+    implementation "com.github.amrmsaraya:timer:1.0.0"
 }
