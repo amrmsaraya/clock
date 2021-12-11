@@ -40,14 +40,15 @@ fun TimerScreen(
             timer = uiState.timer,
             sliderValue = sliderValue,
             animatedValue = animatedCircle,
-            isRunning = uiState.isRunning
+            status = uiState.status
         )
         Spacer(modifier = Modifier.size(16.dp))
         ControlRow(
-            isRunning = uiState.isRunning,
+            status = uiState.status,
             onStart = { viewModel.sendIntent(TimerIntent.Start) },
             onPause = { viewModel.sendIntent(TimerIntent.Pause) },
             onReset = { viewModel.sendIntent(TimerIntent.Reset) },
+            onLap = {}
         )
     }
 }

@@ -45,7 +45,7 @@ class TimerViewModel : ViewModel() {
             _uiState.value = TimerUiState(
                 timer = it,
                 configuredTime = timer.configuredTime,
-                isRunning = timer.isRunning
+                status = timer.status
             )
         }
     }

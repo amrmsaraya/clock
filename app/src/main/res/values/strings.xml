@@ -27,4 +27,6 @@
     <string name="ringtone">Ringtone</string>
     <string name="set_alarm_tone">Select alarm tone</string>
     <string name="time_zone_placeholder">City, country or region</string>
+    <string name="lap">Lap</string>
+    <string name="resume">Resume</string>
 </resources>

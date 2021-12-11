@@ -22,6 +22,7 @@ class StopwatchViewModel : ViewModel() {
     init {
         handleIntent()
         getStopwatch()
+        getLaps()
     }
 
     fun sendIntent(intent: StopwatchIntent) = viewModelScope.launch {
@@ -34,6 +35,7 @@ class StopwatchViewModel : ViewModel() {
                 StopwatchIntent.Start -> start()
                 StopwatchIntent.Pause -> pause()
                 StopwatchIntent.Reset -> reset()
+                StopwatchIntent.Lap -> lap()
                 is StopwatchIntent.Configure -> configure(it.delay)
             }
         }
@@ -41,10 +43,16 @@ class StopwatchViewModel : ViewModel() {
 
     private fun getStopwatch() = viewModelScope.launch {
         stopwatch.getStopwatch().collect {
-            _uiState.value = StopwatchUiState(
+            _uiState.value = _uiState.value.copy(
                 stopwatch = it,
-                isRunning = stopwatch.isRunning
+                status = stopwatch.status
             )
+        }
+    }
+
+    private fun getLaps() = viewModelScope.launch {
+        stopwatch.getLaps().collect {
+            _uiState.value = _uiState.value.copy(laps = it)
         }
     }
 
@@ -62,5 +70,9 @@ class StopwatchViewModel : ViewModel() {
 
     private fun reset() = viewModelScope.launch(Dispatchers.Default) {
         stopwatch.reset()
+    }
+
+    private fun lap() = viewModelScope.launch(Dispatchers.Default) {
+        stopwatch.lap()
     }
 }

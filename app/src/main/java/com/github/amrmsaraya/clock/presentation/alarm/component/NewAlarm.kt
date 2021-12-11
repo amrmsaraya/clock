@@ -38,7 +38,6 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
@@ -238,7 +237,7 @@ private fun ColorRow(
                         .padding(4.dp)
                         .size(animatedSize)
                         .clip(CircleShape)
-                        .background(color.compositeOver(androidx.compose.material3.MaterialTheme.colorScheme.surface))
+                        .background(color)
                         .clickable { onColorChange(index) }
                 ) {
                     if (index == selectedColor) {
@@ -270,8 +269,7 @@ private fun DaysRow(
         days.forEach { day ->
 
             val backgroundColor by animateColorAsState(
-                targetValue = if (day in selectedDays) MaterialTheme.colorScheme.primary else Color.Transparent,
-                animationSpec = tween(500)
+                if (day in selectedDays) MaterialTheme.colorScheme.primary else Color.Transparent,
             )
 
             Box(
@@ -380,9 +378,7 @@ private fun TimeChooserRow(
                     .fillMaxSize()
                     .background(
                         animateColorAsState(
-                            targetValue = if (amPm == 0) MaterialTheme.colorScheme.primary else Color.Transparent,
-                            animationSpec = tween(500)
-
+                            if (amPm == 0) MaterialTheme.colorScheme.primary else Color.Transparent
                         ).value
                     )
                     .clickable(
@@ -396,8 +392,7 @@ private fun TimeChooserRow(
                 maxLines = 1,
                 textAlign = TextAlign.Center,
                 color = animateColorAsState(
-                    targetValue = if (amPm == 0) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
-                    animationSpec = tween(500)
+                    if (amPm == 0) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
                 ).value
             )
             Text(
@@ -406,8 +401,7 @@ private fun TimeChooserRow(
                     .fillMaxSize()
                     .background(
                         animateColorAsState(
-                            targetValue = if (amPm == 1) MaterialTheme.colorScheme.primary else Color.Transparent,
-                            animationSpec = tween(500)
+                            if (amPm == 1) MaterialTheme.colorScheme.primary else Color.Transparent,
                         ).value
                     )
                     .clickable(

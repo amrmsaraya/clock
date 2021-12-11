@@ -61,6 +61,7 @@ dependencies {
     // local modules
     implementation project(path: ":domain")
     implementation project(path: ":data")
+    implementation project(path: ":timer")
 
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.appcompat:appcompat:1.4.0'
@@ -119,10 +120,4 @@ dependencies {
 
     // Pager
     implementation "com.google.accompanist:accompanist-pager:$accompanist_version"
-
-    // Timer
-    implementation 'com.github.amrmsaraya:timer:1.0'
-
-    // Snapper
-    implementation "dev.chrisbanes.snapper:snapper:0.1.0"
 }
