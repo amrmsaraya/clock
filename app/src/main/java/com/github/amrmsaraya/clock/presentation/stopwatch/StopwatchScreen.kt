@@ -46,7 +46,6 @@ fun StopwatchScreen(
 
     LaunchedEffect(key1 = true) {
         animatedValue = 1f
-
     }
 
     Column(
@@ -108,7 +107,9 @@ private fun Laps(modifier: Modifier = Modifier, laps: List<Pair<Time, Time>>) {
                     text = "+${stopwatchFormat(time.second, MaterialTheme.colorScheme.onSurface)}"
                 )
             }
-            Spacer(modifier = Modifier.size(8.dp))
+            if (index != laps.lastIndex) {
+                Spacer(modifier = Modifier.size(8.dp))
+            }
         }
     }
 }
