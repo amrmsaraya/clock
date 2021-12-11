@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.launch
 
 class StopwatchViewModel : ViewModel() {
-    private val stopwatch = Stopwatch()
+    private val stopwatch = Stopwatch(viewModelScope)
 
     private val intentChannel = Channel<StopwatchIntent>()
 

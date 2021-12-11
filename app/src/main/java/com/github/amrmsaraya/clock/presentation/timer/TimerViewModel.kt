@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.launch
 
 class TimerViewModel : ViewModel() {
-    private val timer = Timer()
+    private val timer = Timer(viewModelScope)
 
     private val intentChannel = Channel<TimerIntent>()
 
