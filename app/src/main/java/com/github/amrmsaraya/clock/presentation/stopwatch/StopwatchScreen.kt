@@ -38,7 +38,7 @@ fun StopwatchScreen(
     val uiState by viewModel.uiState
     val sliderValue = (uiState.stopwatch.seconds * 1000 + uiState.stopwatch.millis) / 60_000f
 
-    var animatedValue by remember { mutableStateOf(0f) }
+    var animatedValue by remember { mutableStateOf(if (uiState.status == Stopwatch.IDLE) 0f else 1f) }
     val animatedCircle by animateFloatAsState(
         targetValue = animatedValue,
         animationSpec = tween(1000)
@@ -46,6 +46,7 @@ fun StopwatchScreen(
 
     LaunchedEffect(key1 = true) {
         animatedValue = 1f
+
     }
 
     Column(
