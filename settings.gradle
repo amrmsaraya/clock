@@ -10,4 +10,3 @@ rootProject.name = "Clock"
 include ':app'
 include ':data'
 include ':domain'
-include ':timer'
