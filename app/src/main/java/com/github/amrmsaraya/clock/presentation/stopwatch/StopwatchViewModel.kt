@@ -5,13 +5,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.amrmsaraya.timer.Stopwatch
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class StopwatchViewModel : ViewModel() {
+@HiltViewModel
+class StopwatchViewModel @Inject constructor() : ViewModel() {
     private val stopwatch = Stopwatch(viewModelScope)
 
     private val intentChannel = Channel<StopwatchIntent>()

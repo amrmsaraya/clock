@@ -2,7 +2,6 @@ package com.github.amrmsaraya.clock.presentation.stopwatch
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -13,27 +12,20 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.github.amrmsaraya.clock.R
+import com.github.amrmsaraya.clock.presentation.common_ui.StopwatchTimer
 import com.github.amrmsaraya.clock.presentation.common_ui.getSurfaceColor
+import com.github.amrmsaraya.clock.presentation.common_ui.stopwatchTimerFormat
 import com.github.amrmsaraya.timer.Stopwatch
 import com.github.amrmsaraya.timer.Time
 
 @Composable
 fun StopwatchScreen(
     modifier: Modifier,
-    viewModel: StopwatchViewModel = viewModel()
+    viewModel: StopwatchViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState
     val sliderValue = (uiState.stopwatch.seconds * 1000 + uiState.stopwatch.millis) / 60_000f
@@ -102,9 +94,14 @@ private fun Laps(modifier: Modifier = Modifier, laps: List<Pair<Time, Time>>) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(text = "%02d".format(laps.lastIndex - index + 1))
-                Text(text = stopwatchFormat(time.first, MaterialTheme.colorScheme.onSurface))
+                Text(text = stopwatchTimerFormat(time.first, MaterialTheme.colorScheme.onSurface))
                 Text(
-                    text = "+${stopwatchFormat(time.second, MaterialTheme.colorScheme.onSurface)}"
+                    text = "+${
+                        stopwatchTimerFormat(
+                            time.second,
+                            MaterialTheme.colorScheme.onSurface
+                        )
+                    }"
                 )
             }
             if (index != laps.lastIndex) {
@@ -115,7 +112,7 @@ private fun Laps(modifier: Modifier = Modifier, laps: List<Pair<Time, Time>>) {
 }
 
 @Composable
-fun ControlRow(
+private fun ControlRow(
     modifier: Modifier = Modifier,
     status: Int,
     onStart: () -> Unit,
@@ -129,13 +126,7 @@ fun ControlRow(
                 modifier = Modifier.fillMaxWidth(0.5f),
                 onClick = onStart
             ) {
-                Text(
-                    text = if (status == Stopwatch.RUNNING) {
-                        stringResource(R.string.pause).uppercase()
-                    } else {
-                        stringResource(R.string.start).uppercase()
-                    }
-                )
+                Text(text = stringResource(R.string.start).uppercase())
             }
         }
     } else {
@@ -146,7 +137,8 @@ fun ControlRow(
         ) {
             FilledTonalButton(
                 modifier = Modifier.weight(0.5f),
-                onClick = { if (status == Stopwatch.RUNNING) onLap() else onReset() }) {
+                onClick = { if (status == Stopwatch.RUNNING) onLap() else onReset() }
+            ) {
                 Text(
                     text = if (status == Stopwatch.RUNNING) stringResource(R.string.lap).uppercase()
                     else stringResource(R.string.reset).uppercase(),
@@ -165,58 +157,6 @@ fun ControlRow(
                     }
                 )
             }
-        }
-    }
-}
-
-@Composable
-fun StopwatchTimer(
-    modifier: Modifier = Modifier,
-    timer: Time,
-    sliderValue: Float,
-    animatedValue: Float,
-    status: Int
-) {
-    val color = MaterialTheme.colorScheme.primary
-    val backgroundColor = MaterialTheme.colorScheme.outline
-
-    BoxWithConstraints(modifier = modifier, contentAlignment = Alignment.Center) {
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = stopwatchFormat(timer, color),
-            style = MaterialTheme.typography.headlineLarge,
-            textAlign = TextAlign.Center
-        )
-
-        Canvas(modifier = Modifier.size(if (maxWidth < maxHeight) maxWidth else maxHeight)) {
-            drawArc(
-                color = backgroundColor,
-                startAngle = -90f,
-                sweepAngle = animatedValue * 360,
-                useCenter = false,
-                style = Stroke(10f, cap = StrokeCap.Round),
-                size = Size(size.width, size.width),
-                alpha = 0.3f
-            )
-            drawArc(
-                color = color,
-                startAngle = -90f,
-                sweepAngle = sliderValue * 360,
-                useCenter = false,
-                style = Stroke(10f, cap = StrokeCap.Round),
-                size = Size(size.width, size.width),
-                alpha = if (status == Stopwatch.RUNNING) 1f else 0.5f
-            )
-        }
-    }
-}
-
-fun stopwatchFormat(time: Time, color: Color): AnnotatedString {
-    val format: (Int) -> String = { "%02d".format(it) }
-    return buildAnnotatedString {
-        append("${format(time.hours)}:${format(time.minutes)}:${format(time.seconds)}")
-        withStyle(style = SpanStyle(color = color)) {
-            append(":${format(time.millis / 10)}")
         }
     }
 }

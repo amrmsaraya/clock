@@ -2,10 +2,13 @@ package com.github.amrmsaraya.clock.di
 
 import com.github.amrmsaraya.clock.data.repositoryImpl.AlarmRepoImpl
 import com.github.amrmsaraya.clock.data.repositoryImpl.ClockRepoImpl
+import com.github.amrmsaraya.clock.data.repositoryImpl.TimerRepoImpl
 import com.github.amrmsaraya.clock.data.source.AlarmLocalDataSource
 import com.github.amrmsaraya.clock.data.source.ClockLocalDataSource
+import com.github.amrmsaraya.clock.data.source.TimerLocalDataSource
 import com.github.amrmsaraya.clock.domain.repository.AlarmRepo
 import com.github.amrmsaraya.clock.domain.repository.ClockRepo
+import com.github.amrmsaraya.clock.domain.repository.TimerRepo
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -26,6 +29,12 @@ class Repository {
     @Singleton
     fun provideAlarmRepo(localDataSource: AlarmLocalDataSource): AlarmRepo {
         return AlarmRepoImpl(localDataSource)
+    }
+
+    @Provides
+    @Singleton
+    fun provideTimerRepo(localDataSource: TimerLocalDataSource): TimerRepo {
+        return TimerRepoImpl(localDataSource)
     }
 
 }

@@ -4,6 +4,7 @@ import android.content.Context
 import com.github.amrmsaraya.clock.data.local.AlarmDao
 import com.github.amrmsaraya.clock.data.local.AppDatabase
 import com.github.amrmsaraya.clock.data.local.ClockDao
+import com.github.amrmsaraya.clock.data.local.TimerDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -25,5 +26,11 @@ class Room {
     @Provides
     fun provideAlarmDao(@ApplicationContext context: Context): AlarmDao {
         return AppDatabase.getDatabase(context).alarmDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideTimerDao(@ApplicationContext context: Context): TimerDao {
+        return AppDatabase.getDatabase(context).timerDao()
     }
 }
