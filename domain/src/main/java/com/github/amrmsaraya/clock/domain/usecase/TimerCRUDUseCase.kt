@@ -10,8 +10,8 @@ class TimerCRUDUseCase(private val timerRepo: TimerRepo) {
         timerRepo.insert(timer)
     }
 
-    suspend fun delete(timers: List<Timer>) {
-        timerRepo.delete(timers)
+    suspend fun delete(timer: Timer) {
+        timerRepo.delete(timer)
     }
 
     suspend fun getTimers(): Flow<List<Timer>> {

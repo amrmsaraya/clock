@@ -13,8 +13,8 @@ class TimerRepoImpl(private val localDataSource: TimerLocalDataSource) : TimerRe
         localDataSource.insert(timer.toTimerDTO())
     }
 
-    override suspend fun delete(timers: List<Timer>) {
-        localDataSource.delete(timers.map { it.toTimerDTO() })
+    override suspend fun delete(timer: Timer) {
+        localDataSource.delete(timer.toTimerDTO())
     }
 
     override suspend fun getTimers(): Flow<List<Timer>> {

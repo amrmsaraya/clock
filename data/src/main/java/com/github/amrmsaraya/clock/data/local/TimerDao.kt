@@ -10,7 +10,7 @@ interface TimerDao {
     suspend fun insert(timer: TimerDTO)
 
     @Delete
-    suspend fun delete(timers: List<TimerDTO>)
+    suspend fun delete(timer: TimerDTO)
 
     @Query("SELECT * FROM timer")
     fun getTimers(): Flow<List<TimerDTO>>

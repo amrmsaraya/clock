@@ -7,6 +7,6 @@ import com.github.amrmsaraya.clock.domain.entity.Timer as LocalTimer
 data class TimerUiState(
     val timer: Time = Time(),
     val timers: List<LocalTimer> = emptyList(),
-    val configuredTime: Long = 1,
+    val configuredTime: Long = 0,
     val status: Int = Timer.IDLE
 )

@@ -339,9 +339,9 @@ private fun TimeChooserRow(
             modifier = modifier
                 .weight(0.375f)
                 .fillMaxSize(),
-            type = TimeType.HOUR,
+            items = (1..12).toList(),
             onTimeChange = { selectedHour = it },
-            initial = hour,
+            initial = hour - 1,
         )
         Text(
             modifier = Modifier
@@ -355,7 +355,7 @@ private fun TimeChooserRow(
             modifier = modifier
                 .weight(0.375f)
                 .fillMaxSize(),
-            type = TimeType.MINUTE,
+            items = (0..59).toList(),
             onTimeChange = { selectedMinute = it },
             initial = minute
         )

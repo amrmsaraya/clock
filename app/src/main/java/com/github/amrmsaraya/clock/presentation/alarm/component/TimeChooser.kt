@@ -13,7 +13,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.ExperimentalUnitApi
 import androidx.compose.ui.unit.dp
-import com.github.amrmsaraya.clock.presentation.alarm.utils.TimeType
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.PagerDefaults
 import com.google.accompanist.pager.VerticalPager
@@ -25,16 +24,19 @@ import kotlinx.coroutines.flow.collect
 @Composable
 fun TimeChooser(
     modifier: Modifier,
-    type: TimeType,
     initial: Int,
+    items: List<Int>,
     onTimeChange: (Int) -> Unit
 ) {
-    val state = rememberPagerState(initialPage = if (type == TimeType.HOUR) initial - 1 else initial)
-    val list = if (type == TimeType.HOUR) (1..12).toList() else (0..59).toList()
+    val state = rememberPagerState(initialPage = initial)
+
+    LaunchedEffect(key1 = initial) {
+        state.scrollToPage(initial)
+    }
 
     LaunchedEffect(state) {
         snapshotFlow { state.currentPage }.collect {
-            onTimeChange(list[it])
+            onTimeChange(items[it])
         }
     }
 
@@ -43,15 +45,15 @@ fun TimeChooser(
             .fillMaxSize()
             .clip(RoundedCornerShape(8.dp))
             .background(MaterialTheme.colorScheme.primary),
-        count = list.size,
+        count = items.size,
         state = state,
         flingBehavior = PagerDefaults.flingBehavior(
             state = state,
-            maximumFlingDistance = { it.distanceToIndexSnap(list.lastIndex).toFloat() }
+            maximumFlingDistance = { it.distanceToIndexSnap(items.lastIndex).toFloat() }
         )
     ) {
         Text(
-            text = "%02d".format(list[it]),
+            text = "%02d".format(items[it]),
             color = MaterialTheme.colorScheme.onPrimary,
             style = MaterialTheme.typography.displayMedium,
             textAlign = TextAlign.Center

@@ -1,32 +1,33 @@
 package com.github.amrmsaraya.clock.presentation.timer
 
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyVerticalGrid
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.github.amrmsaraya.clock.R
+import com.github.amrmsaraya.clock.presentation.common_ui.FullScreenDialog
 import com.github.amrmsaraya.clock.presentation.common_ui.StopwatchTimer
+import com.github.amrmsaraya.clock.presentation.timer.component.NewTimerDialog
+import com.github.amrmsaraya.clock.presentation.timer.component.NewTimerTemplate
+import com.github.amrmsaraya.clock.presentation.timer.component.SetupTimer
+import com.github.amrmsaraya.clock.presentation.timer.component.TimerTemplateItem
 import com.github.amrmsaraya.timer.Stopwatch
 import com.github.amrmsaraya.timer.Timer
+import com.github.amrmsaraya.timer.toTime
+import com.github.amrmsaraya.clock.domain.entity.Timer as EntityTimer
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun TimerScreen(
     modifier: Modifier,
@@ -35,16 +36,73 @@ fun TimerScreen(
     val uiState by viewModel.uiState
     val sliderValue = uiState.timer.timeInMillis / uiState.configuredTime.toFloat()
 
-    var animatedValue by remember { mutableStateOf(0f) }
-    val animatedCircle by animateFloatAsState(
-        targetValue = animatedValue,
-        animationSpec = tween(1000)
-    )
+    var timer by remember { mutableStateOf(EntityTimer(timeMillis = 15 * 60 * 1000L)) }
+    var editMode by remember { mutableStateOf(false) }
 
-    LaunchedEffect(key1 = true) {
-        animatedValue = 1f
+    var showNewTimerDialog by remember { mutableStateOf(false) }
+
+    var selectedTemplate by remember { mutableStateOf<EntityTimer?>(null) }
+
+    FullScreenDialog(
+        visible = showNewTimerDialog,
+        onDismiss = { showNewTimerDialog = false }
+    ) {
+        NewTimerDialog(
+            timer = timer,
+            editMode = editMode,
+            onDismiss = { showNewTimerDialog = false },
+            onSave = { viewModel.sendIntent(TimerIntent.Insert(it)) },
+            onDelete = { viewModel.sendIntent(TimerIntent.Delete(it)) }
+        )
     }
 
+    TimerScreenContent(
+        modifier = modifier,
+        uiState = uiState,
+        sliderValue = sliderValue,
+        selectedTemplate = selectedTemplate,
+        onNewTimerClick = {
+            timer = EntityTimer(title = "Timer", timeMillis = 15 * 60 * 1000L)
+            editMode = false
+            showNewTimerDialog = true
+        },
+        onEditTimerClick = {
+            timer = it
+            editMode = true
+            showNewTimerDialog = true
+        },
+        onTemplateClick = {
+            viewModel.sendIntent(TimerIntent.Configure(timeMillis = it.timeMillis))
+            selectedTemplate = it
+        },
+        onTimeChange = {
+            viewModel.sendIntent(TimerIntent.Configure(timeMillis = it))
+            selectedTemplate?.let { timer ->
+                if (timer.timeMillis != it) {
+                    selectedTemplate = null
+                }
+            }
+        },
+        onStart = { viewModel.sendIntent(TimerIntent.Start) },
+        onPause = { viewModel.sendIntent(TimerIntent.Pause) },
+        onReset = { viewModel.sendIntent(TimerIntent.Reset) }
+    )
+}
+
+@Composable
+private fun TimerScreenContent(
+    modifier: Modifier,
+    uiState: TimerUiState,
+    sliderValue: Float,
+    selectedTemplate: EntityTimer?,
+    onNewTimerClick: () -> Unit,
+    onEditTimerClick: (EntityTimer) -> Unit,
+    onTimeChange: (Long) -> Unit,
+    onTemplateClick: (EntityTimer) -> Unit,
+    onStart: () -> Unit,
+    onPause: () -> Unit,
+    onReset: () -> Unit
+) {
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -52,48 +110,46 @@ fun TimerScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
-        StopwatchTimer(
-            modifier = Modifier
-                .weight(0.5f)
-                .fillMaxWidth()
-                .padding(bottom = 16.dp),
-            timer = uiState.timer,
-            sliderValue = sliderValue,
-            animatedValue = animatedCircle,
-            status = uiState.status
-        )
-        Column(modifier = Modifier.weight(0.5f)) {
-            BoxWithConstraints(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
+        if (uiState.status == Timer.IDLE) {
+            Box(
+                modifier = Modifier.weight(0.5f),
+                contentAlignment = Alignment.Center
             ) {
-                LazyVerticalGrid(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    cells = GridCells.Fixed(3),
-                ) {
-                    items(6) {
-                        Column(
-                            modifier = Modifier
-                                .size(maxWidth / 3)
-                                .padding(8.dp)
-                                .clip(CircleShape)
-                                .background(MaterialTheme.colorScheme.primary)
-                                .clickable(
-                                    indication = null,
-                                    interactionSource = remember{ MutableInteractionSource()},
-                                    onClick = {}
-                                ),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            Text(text = "Title", color = MaterialTheme.colorScheme.onPrimary)
-                            Spacer(modifier = Modifier.size(4.dp))
-                            Text(text = "00:15:00", color = MaterialTheme.colorScheme.onPrimary)
-                        }
-                    }
-                }
+                SetupTimer(
+                    modifier = Modifier
+                        .fillMaxWidth(0.9f)
+                        .height(80.dp),
+                    timer = uiState.configuredTime.toTime(),
+                    onTimeChange = onTimeChange
+                )
+            }
+        } else {
+            StopwatchTimer(
+                modifier = Modifier
+                    .weight(0.5f)
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
+                timer = uiState.timer,
+                sliderValue = sliderValue,
+                animatedValue = 1f,
+                status = uiState.status
+            )
+        }
+        Column(
+            modifier = Modifier.weight(0.5f),
+            Arrangement.Bottom
+        ) {
+            if (uiState.status == Timer.IDLE) {
+                TimerTemplates(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    timers = uiState.timers,
+                    selectedTemplate = selectedTemplate,
+                    onNewTimerClick = onNewTimerClick,
+                    onTemplateClick = onTemplateClick,
+                    onEditTimerClick = onEditTimerClick
+                )
             }
 
             ControlRow(
@@ -101,10 +157,39 @@ fun TimerScreen(
                     .fillMaxWidth()
                     .padding(top = 16.dp, bottom = 16.dp),
                 status = uiState.status,
-                onStart = { viewModel.sendIntent(TimerIntent.Start) },
-                onPause = { viewModel.sendIntent(TimerIntent.Pause) },
-                onReset = { viewModel.sendIntent(TimerIntent.Reset) },
+                onStart = onStart,
+                onPause = onPause,
+                onReset = onReset,
             )
+        }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun TimerTemplates(
+    modifier: Modifier = Modifier,
+    timers: List<EntityTimer>,
+    selectedTemplate: EntityTimer?,
+    onNewTimerClick: () -> Unit,
+    onTemplateClick: (EntityTimer) -> Unit,
+    onEditTimerClick: (EntityTimer) -> Unit
+) {
+    BoxWithConstraints(modifier = modifier) {
+        LazyVerticalGrid(
+            modifier = Modifier.fillMaxSize(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            cells = GridCells.Fixed(3),
+        ) {
+            items(timers) {
+                TimerTemplateItem(
+                    timer = it,
+                    selected = it == selectedTemplate,
+                    onClick = { onTemplateClick(it) },
+                    onLongClick = { onEditTimerClick(it) }
+                )
+            }
+            item { NewTimerTemplate(onClick = onNewTimerClick) }
         }
     }
 }

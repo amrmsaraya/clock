@@ -31,7 +31,7 @@ class TimerViewModel @Inject constructor(
         handleIntent()
         getTimer()
         getLocalTimers()
-        configure(10_000)
+        configure(timeMillis = 15 * 60 * 1000)
     }
 
     fun sendIntent(intent: TimerIntent) = viewModelScope.launch {
@@ -45,24 +45,26 @@ class TimerViewModel @Inject constructor(
                 TimerIntent.Pause -> pause()
                 TimerIntent.Reset -> reset()
                 is TimerIntent.Configure -> configure(it.timeMillis, it.delay)
+                is TimerIntent.Insert -> insert(it.timer)
+                is TimerIntent.Delete -> delete(it.timer)
+                TimerIntent.GetTimers -> Unit
             }
         }
     }
 
     private fun getTimer() = viewModelScope.launch {
         timer.getTimer(onFinish = { reset() }).collect {
-            _uiState.value = TimerUiState(
+            _uiState.value = _uiState.value.copy(
                 timer = it,
-                configuredTime = timer.configuredTime,
                 status = timer.status
             )
         }
     }
 
-    private fun configure(timeMillis: Long, delay: Long = 10) =
-        viewModelScope.launch(Dispatchers.Default) {
-            timer.configure(timeMillis, delay)
-        }
+    private fun configure(timeMillis: Long, delay: Long = 10) = viewModelScope.launch {
+        timer.configure(timeMillis, delay)
+        _uiState.value = _uiState.value.copy(configuredTime = timeMillis)
+    }
 
     private fun start() = viewModelScope.launch(Dispatchers.Default) {
         timer.start()
@@ -80,8 +82,8 @@ class TimerViewModel @Inject constructor(
         timerCRUDUseCase.insert(timer)
     }
 
-    private fun delete(timers: List<LocalTimer>) = viewModelScope.launch(Dispatchers.Default) {
-        timerCRUDUseCase.delete(timers)
+    private fun delete(timer: LocalTimer) = viewModelScope.launch(Dispatchers.Default) {
+        timerCRUDUseCase.delete(timer)
     }
 
     private fun getLocalTimers() = viewModelScope.launch(Dispatchers.Default) {

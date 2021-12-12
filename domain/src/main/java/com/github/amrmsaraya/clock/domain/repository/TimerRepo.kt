@@ -5,6 +5,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface TimerRepo {
     suspend fun insert(timer: Timer)
-    suspend fun delete(timers: List<Timer>)
+    suspend fun delete(timer: Timer)
     suspend fun getTimers(): Flow<List<Timer>>
 }

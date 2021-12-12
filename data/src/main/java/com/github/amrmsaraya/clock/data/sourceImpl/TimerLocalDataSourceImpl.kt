@@ -11,8 +11,8 @@ class TimerLocalDataSourceImpl(private val timerDao: TimerDao) : TimerLocalDataS
         timerDao.insert(timer)
     }
 
-    override suspend fun delete(timers: List<TimerDTO>) {
-        timerDao.delete(timers)
+    override suspend fun delete(timer: TimerDTO) {
+        timerDao.delete(timer)
     }
 
     override suspend fun getTimers(): Flow<List<TimerDTO>> {
