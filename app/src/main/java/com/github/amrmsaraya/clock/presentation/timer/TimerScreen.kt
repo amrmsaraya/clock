@@ -1,5 +1,6 @@
 package com.github.amrmsaraya.clock.presentation.timer
 
+import androidx.compose.animation.*
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.GridCells
@@ -110,40 +111,62 @@ private fun TimerScreenContent(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
-        if (uiState.status == Timer.IDLE) {
-            Box(
-                modifier = Modifier.weight(0.5f),
-                contentAlignment = Alignment.Center
+        Box(
+            modifier = Modifier.weight(0.5f),
+            contentAlignment = Alignment.Center
+        ) {
+            androidx.compose.animation.AnimatedVisibility(
+                visible = uiState.status == Timer.IDLE,
+                enter = fadeIn() + expandVertically(),
+                exit = fadeOut() + shrinkVertically()
             ) {
-                SetupTimer(
-                    modifier = Modifier
-                        .fillMaxWidth(0.9f)
-                        .height(80.dp),
-                    timer = uiState.configuredTime.toTime(),
-                    onTimeChange = onTimeChange
-                )
+                Box(
+                    Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    SetupTimer(
+                        modifier = Modifier
+                            .fillMaxWidth(0.9f)
+                            .height(80.dp),
+                        timer = uiState.configuredTime.toTime(),
+                        onTimeChange = onTimeChange
+                    )
+                }
             }
-        } else {
-            StopwatchTimer(
-                modifier = Modifier
-                    .weight(0.5f)
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp),
-                timer = uiState.timer,
-                sliderValue = sliderValue,
-                animatedValue = 1f,
-                status = uiState.status
-            )
+
+            androidx.compose.animation.AnimatedVisibility(
+                visible = uiState.status != Timer.IDLE,
+                enter = fadeIn() + expandVertically(),
+                exit = fadeOut() + shrinkVertically()
+            ) {
+                Box(
+                    Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    StopwatchTimer(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 16.dp),
+                        timer = uiState.timer,
+                        sliderValue = sliderValue,
+                        animatedValue = 1f,
+                        status = uiState.status
+                    )
+                }
+            }
         }
+
         Column(
             modifier = Modifier.weight(0.5f),
-            Arrangement.Bottom
+            verticalArrangement = Arrangement.Bottom
         ) {
-            if (uiState.status == Timer.IDLE) {
+            AnimatedVisibility(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                visible = uiState.status == Timer.IDLE,
+            ) {
                 TimerTemplates(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
                     timers = uiState.timers,
                     selectedTemplate = selectedTemplate,
                     onNewTimerClick = onNewTimerClick,
@@ -153,7 +176,7 @@ private fun TimerScreenContent(
             }
 
             ControlRow(
-                modifier = Modifier
+                Modifier
                     .fillMaxWidth()
                     .padding(top = 16.dp, bottom = 16.dp),
                 status = uiState.status,
@@ -202,8 +225,12 @@ private fun ControlRow(
     onPause: () -> Unit,
     onReset: () -> Unit,
 ) {
-    if (status == Timer.IDLE) {
-        Box(modifier = modifier, contentAlignment = Alignment.Center) {
+    Box(modifier = modifier, contentAlignment = Alignment.Center) {
+        AnimatedVisibility(
+            visible = status == Timer.IDLE,
+            enter = fadeIn() + expandHorizontally(),
+            exit = fadeOut() + shrinkHorizontally()
+        ) {
             Button(
                 modifier = Modifier.fillMaxWidth(0.5f),
                 onClick = onStart
@@ -211,30 +238,36 @@ private fun ControlRow(
                 Text(text = stringResource(R.string.start).uppercase())
             }
         }
-    } else {
-        Row(
-            modifier = modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceEvenly
+
+        AnimatedVisibility(
+            visible = status != Timer.IDLE,
+            enter = fadeIn() + expandHorizontally(),
+            exit = fadeOut() + shrinkHorizontally()
         ) {
-            FilledTonalButton(
-                modifier = Modifier.weight(0.5f),
-                onClick = onReset
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                Text(text = stringResource(R.string.reset).uppercase())
-            }
-            Spacer(modifier = Modifier.size(16.dp))
-            Button(
-                modifier = Modifier.weight(0.5f),
-                onClick = { if (status == Stopwatch.RUNNING) onPause() else onStart() }
-            ) {
-                Text(
-                    text = if (status == Stopwatch.RUNNING) {
-                        stringResource(R.string.pause).uppercase()
-                    } else {
-                        stringResource(R.string.resume).uppercase()
-                    }
-                )
+                FilledTonalButton(
+                    modifier = Modifier.weight(0.5f),
+                    onClick = onReset
+                ) {
+                    Text(text = stringResource(R.string.reset).uppercase())
+                }
+                Spacer(modifier = Modifier.size(16.dp))
+                Button(
+                    modifier = Modifier.weight(0.5f),
+                    onClick = { if (status == Stopwatch.RUNNING) onPause() else onStart() }
+                ) {
+                    Text(
+                        text = if (status == Stopwatch.RUNNING) {
+                            stringResource(R.string.pause).uppercase()
+                        } else {
+                            stringResource(R.string.resume).uppercase()
+                        }
+                    )
+                }
             }
         }
     }

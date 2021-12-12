@@ -1,5 +1,6 @@
 package com.github.amrmsaraya.clock.presentation.stopwatch
 
+import androidx.compose.animation.*
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -94,7 +95,12 @@ private fun Laps(modifier: Modifier = Modifier, laps: List<Pair<Time, Time>>) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(text = "%02d".format(laps.lastIndex - index + 1))
-                Text(text = stopwatchTimerFormat(time.first, MaterialTheme.colorScheme.onSurface))
+                Text(
+                    text = stopwatchTimerFormat(
+                        time.first,
+                        MaterialTheme.colorScheme.onSurface
+                    )
+                )
                 Text(
                     text = "+${
                         stopwatchTimerFormat(
@@ -120,8 +126,12 @@ private fun ControlRow(
     onReset: () -> Unit,
     onLap: () -> Unit
 ) {
-    if (status == Stopwatch.IDLE) {
-        Box(modifier = modifier, contentAlignment = Alignment.Center) {
+    Box(modifier = modifier, contentAlignment = Alignment.Center) {
+        AnimatedVisibility(
+            status == Stopwatch.IDLE,
+            enter = fadeIn() + expandHorizontally(),
+            exit = fadeOut() + shrinkHorizontally()
+        ) {
             Button(
                 modifier = Modifier.fillMaxWidth(0.5f),
                 onClick = onStart
@@ -129,33 +139,39 @@ private fun ControlRow(
                 Text(text = stringResource(R.string.start).uppercase())
             }
         }
-    } else {
-        Row(
-            modifier = modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceEvenly
+
+        AnimatedVisibility(
+            status != Stopwatch.IDLE,
+            enter = fadeIn(tween()) + expandHorizontally(tween()),
+            exit = fadeOut(tween()) + shrinkHorizontally(tween())
         ) {
-            FilledTonalButton(
-                modifier = Modifier.weight(0.5f),
-                onClick = { if (status == Stopwatch.RUNNING) onLap() else onReset() }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                Text(
-                    text = if (status == Stopwatch.RUNNING) stringResource(R.string.lap).uppercase()
-                    else stringResource(R.string.reset).uppercase(),
-                )
-            }
-            Spacer(modifier = Modifier.size(16.dp))
-            Button(
-                modifier = Modifier.weight(0.5f),
-                onClick = { if (status == Stopwatch.RUNNING) onPause() else onStart() }
-            ) {
-                Text(
-                    text = if (status == Stopwatch.RUNNING) {
-                        stringResource(R.string.pause).uppercase()
-                    } else {
-                        stringResource(R.string.resume).uppercase()
-                    }
-                )
+                FilledTonalButton(
+                    modifier = Modifier.weight(0.5f),
+                    onClick = { if (status == Stopwatch.RUNNING) onLap() else onReset() }
+                ) {
+                    Text(
+                        text = if (status == Stopwatch.RUNNING) stringResource(R.string.lap).uppercase()
+                        else stringResource(R.string.reset).uppercase(),
+                    )
+                }
+                Spacer(modifier = Modifier.size(16.dp))
+                Button(
+                    modifier = Modifier.weight(0.5f),
+                    onClick = { if (status == Stopwatch.RUNNING) onPause() else onStart() }
+                ) {
+                    Text(
+                        text = if (status == Stopwatch.RUNNING) {
+                            stringResource(R.string.pause).uppercase()
+                        } else {
+                            stringResource(R.string.resume).uppercase()
+                        }
+                    )
+                }
             }
         }
     }
