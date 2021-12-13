@@ -13,6 +13,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -23,6 +24,10 @@ import com.github.amrmsaraya.clock.presentation.timer.component.NewTimerDialog
 import com.github.amrmsaraya.clock.presentation.timer.component.NewTimerTemplate
 import com.github.amrmsaraya.clock.presentation.timer.component.SetupTimer
 import com.github.amrmsaraya.clock.presentation.timer.component.TimerTemplateItem
+import com.github.amrmsaraya.clock.presentation.timer.utils.configureTimerService
+import com.github.amrmsaraya.clock.presentation.timer.utils.registerTimerReceiver
+import com.github.amrmsaraya.clock.presentation.timer.utils.sendTimerBroadcastAction
+import com.github.amrmsaraya.clock.presentation.timer.utils.startTimerService
 import com.github.amrmsaraya.timer.Stopwatch
 import com.github.amrmsaraya.timer.Timer
 import com.github.amrmsaraya.timer.toTime
@@ -34,7 +39,10 @@ fun TimerScreen(
     modifier: Modifier,
     viewModel: TimerViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
+
     val uiState by viewModel.uiState
+
     val sliderValue = uiState.timer.timeInMillis / uiState.configuredTime.toFloat()
 
     var timer by remember { mutableStateOf(EntityTimer(timeMillis = 15 * 60 * 1000L)) }
@@ -43,6 +51,17 @@ fun TimerScreen(
     var showNewTimerDialog by remember { mutableStateOf(false) }
 
     var selectedTemplate by remember { mutableStateOf<EntityTimer?>(null) }
+
+
+    DisposableEffect(key1 = true) {
+        val timerReceiver = context.registerTimerReceiver { timer, status ->
+            viewModel.sendIntent(TimerIntent.UpdateTimer(timer, status))
+        }
+
+        onDispose {
+            context.unregisterReceiver(timerReceiver)
+        }
+    }
 
     FullScreenDialog(
         visible = showNewTimerDialog,
@@ -73,20 +92,26 @@ fun TimerScreen(
             showNewTimerDialog = true
         },
         onTemplateClick = {
-            viewModel.sendIntent(TimerIntent.Configure(timeMillis = it.timeMillis))
+            viewModel.sendIntent(TimerIntent.ConfigureTime(it.timeMillis))
             selectedTemplate = it
         },
         onTimeChange = {
-            viewModel.sendIntent(TimerIntent.Configure(timeMillis = it))
+            viewModel.sendIntent(TimerIntent.ConfigureTime(it))
             selectedTemplate?.let { timer ->
                 if (timer.timeMillis != it) {
                     selectedTemplate = null
                 }
             }
         },
-        onStart = { viewModel.sendIntent(TimerIntent.Start) },
-        onPause = { viewModel.sendIntent(TimerIntent.Pause) },
-        onReset = { viewModel.sendIntent(TimerIntent.Reset) }
+        onStart = {
+            if(uiState.configuredTime > 0) {
+                context.startTimerService(uiState.configuredTime)
+                context.configureTimerService(uiState.configuredTime)
+                context.sendTimerBroadcastAction("start")
+            }
+        },
+        onPause = { context.sendTimerBroadcastAction("pause") },
+        onReset = { context.sendTimerBroadcastAction("reset") }
     )
 }
 

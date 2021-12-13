@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.github.amrmsaraya.clock">
 
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
     <application
         android:name=".di.App"
         android:allowBackup="true"
@@ -10,6 +12,26 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Clock">
+
+        <receiver
+            android:name=".services.CancelStopwatchActionReceiver"
+            android:enabled="true"
+            android:exported="false" />
+        <receiver
+            android:name=".services.CancelTimerActionReceiver"
+            android:enabled="true"
+            android:exported="false" />
+
+        <service
+            android:name=".services.StopwatchService"
+            android:enabled="true"
+            android:exported="false" />
+
+        <service
+            android:name=".services.TimerService"
+            android:enabled="true"
+            android:exported="false" />
+
         <activity
             android:name=".presentation.main_activity.MainActivity"
             android:exported="true"

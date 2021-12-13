@@ -23,7 +23,6 @@
     <string name="new_alarm">New Alarm</string>
     <string name="edit_alarm">Edit Alarm</string>
     <string name="add_new_alarm">Click "+" to add a new alarm</string>
-    <string name="cancel">Cancel</string>
     <string name="ringtone">Ringtone</string>
     <string name="set_alarm_tone">Select alarm tone</string>
     <string name="time_zone_placeholder">City, country or region</string>
@@ -32,4 +31,5 @@
     <string name="new_timer">New Timer</string>
     <string name="edit_timer">Edit Timer</string>
     <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
 </resources>

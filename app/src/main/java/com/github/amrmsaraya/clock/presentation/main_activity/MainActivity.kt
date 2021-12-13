@@ -15,6 +15,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.rememberNavController
 import com.github.amrmsaraya.clock.presentation.navigation.BottomNavigationBar
 import com.github.amrmsaraya.clock.presentation.navigation.Navigation
+import com.github.amrmsaraya.clock.presentation.navigation.Screens
 import com.github.amrmsaraya.clock.presentation.theme.ClockTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
@@ -34,19 +35,27 @@ class MainActivity : ComponentActivity() {
                 delay(200)
                 keepSplash = false
             }
-
-            App()
+            App(intent.getStringExtra("route"))
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun App() {
+fun App(route: String? = null) {
     ClockTheme {
         Surface(color = MaterialTheme.colorScheme.surface) {
             val navController = rememberNavController()
             var showBottomNavigation by remember { mutableStateOf(true) }
+
+            LaunchedEffect(key1 = route) {
+                route?.let {
+                    navController.navigate(route) {
+                        popUpTo(Screens.Alarm.route)
+                        launchSingleTop = true
+                    }
+                }
+            }
 
             Scaffold(
                 modifier = Modifier.fillMaxSize(),

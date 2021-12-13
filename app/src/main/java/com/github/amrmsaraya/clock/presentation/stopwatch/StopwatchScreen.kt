@@ -13,6 +13,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -20,6 +21,10 @@ import com.github.amrmsaraya.clock.R
 import com.github.amrmsaraya.clock.presentation.common_ui.StopwatchTimer
 import com.github.amrmsaraya.clock.presentation.common_ui.getSurfaceColor
 import com.github.amrmsaraya.clock.presentation.common_ui.stopwatchTimerFormat
+import com.github.amrmsaraya.clock.presentation.stopwatch.utils.registerLapsReceiver
+import com.github.amrmsaraya.clock.presentation.stopwatch.utils.registerStopwatchReceiver
+import com.github.amrmsaraya.clock.presentation.stopwatch.utils.sendStopwatchBroadcastAction
+import com.github.amrmsaraya.clock.presentation.stopwatch.utils.startStopwatchService
 import com.github.amrmsaraya.timer.Stopwatch
 import com.github.amrmsaraya.timer.Time
 
@@ -28,7 +33,10 @@ fun StopwatchScreen(
     modifier: Modifier,
     viewModel: StopwatchViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
+
     val uiState by viewModel.uiState
+
     val sliderValue = (uiState.stopwatch.seconds * 1000 + uiState.stopwatch.millis) / 60_000f
 
     var animatedValue by remember { mutableStateOf(if (uiState.status == Stopwatch.IDLE) 0f else 1f) }
@@ -39,6 +47,24 @@ fun StopwatchScreen(
 
     LaunchedEffect(key1 = true) {
         animatedValue = 1f
+    }
+
+    DisposableEffect(key1 = true) {
+        val stopwatchReceiver = context.registerStopwatchReceiver { stopwatch, status ->
+            viewModel.uiState.value = viewModel.uiState.value.copy(
+                stopwatch = stopwatch,
+                status = status
+            )
+        }
+
+        val lapsReceiver = context.registerLapsReceiver { laps ->
+            viewModel.uiState.value = viewModel.uiState.value.copy(laps = laps)
+        }
+
+        onDispose {
+            context.unregisterReceiver(stopwatchReceiver)
+            context.unregisterReceiver(lapsReceiver)
+        }
     }
 
     Column(
@@ -66,10 +92,13 @@ fun StopwatchScreen(
             ControlRow(
                 modifier = Modifier.padding(top = 16.dp, bottom = 16.dp),
                 status = uiState.status,
-                onStart = { viewModel.sendIntent(StopwatchIntent.Start) },
-                onPause = { viewModel.sendIntent(StopwatchIntent.Pause) },
-                onReset = { viewModel.sendIntent(StopwatchIntent.Reset) },
-                onLap = { viewModel.sendIntent(StopwatchIntent.Lap) }
+                onStart = {
+                    context.startStopwatchService()
+                    context.sendStopwatchBroadcastAction("start")
+                },
+                onPause = { context.sendStopwatchBroadcastAction("pause") },
+                onReset = { context.sendStopwatchBroadcastAction("reset") },
+                onLap = { context.sendStopwatchBroadcastAction("lap") }
             )
         }
     }

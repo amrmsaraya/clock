@@ -63,14 +63,21 @@ fun StopwatchTimer(
     }
 }
 
-fun stopwatchTimerFormat(time: Time, color: Color, withMillis: Boolean = true): AnnotatedString {
+fun stopwatchTimerFormat(
+    time: Time,
+    color: Color? = null,
+    withMillis: Boolean = true
+): AnnotatedString {
     val format: (Int) -> String = { "%02d".format(it) }
     return buildAnnotatedString {
         append("${format(time.hours)}:${format(time.minutes)}:${format(time.seconds)}")
-        if(withMillis) {
-            withStyle(style = SpanStyle(color = color)) {
-                append(":${format(time.millis / 10)}")
-            }
+        if (withMillis) {
+            color?.let {
+                withStyle(style = SpanStyle(color = color)) {
+                    append(":${format(time.millis / 10)}")
+                }
+            } ?: append(":${format(time.millis / 10)}")
+
         }
     }
 }
