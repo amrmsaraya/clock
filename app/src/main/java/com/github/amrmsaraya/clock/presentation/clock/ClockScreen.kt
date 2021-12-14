@@ -117,7 +117,7 @@ private fun ClockScreenContent(
     val selectedItems = remember { mutableStateListOf<TimeZone>() }
     val deletedItems = remember { mutableStateListOf<TimeZone>() }
     val scope = rememberCoroutineScope()
-    val animationDuration = 1000
+    val animationDuration = 300
     val listState = rememberLazyListState()
 
     LaunchedEffect(isDeleted) {
@@ -166,7 +166,7 @@ private fun ClockScreenContent(
                     .align(CenterHorizontally),
                 worldClock = worldClock,
                 frameColor = MaterialTheme.colorScheme.primary,
-                handleColor = MaterialTheme.colorScheme.outline
+                handleColor = MaterialTheme.colorScheme.primary
             )
             Spacer(modifier = Modifier.size(16.dp))
             LazyColumn(
@@ -177,7 +177,7 @@ private fun ClockScreenContent(
                     AnimatedVisibility(
                         visible = !deletedItems.contains(timeZone),
                         enter = EnterTransition.None,
-                        exit = shrinkVertically(tween(animationDuration)) + fadeOut()
+                        exit = shrinkVertically() + fadeOut()
                     ) {
                         WorldClockRow(
                             worldClock = times[timeZone]!!,

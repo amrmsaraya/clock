@@ -115,7 +115,7 @@ fun AlarmScreen(
                 deletedAlarms.addAll(selectedAlarms)
                 selectMode = false
 
-                delay((1000 + 1000 * .2f).roundToLong())
+                delay((300 + 300 * .2f).roundToLong())
                 viewModel.sendIntent(AlarmIntent.DeleteAlarms(selectedAlarms))
 
                 isDeleteInProgress = false
@@ -216,7 +216,7 @@ private fun AlarmScreenContent(
                     AnimatedVisibility(
                         visible = !deletedAlarms.contains(alarm),
                         enter = EnterTransition.None,
-                        exit = shrinkVertically(tween(1000)) + fadeOut()
+                        exit = shrinkVertically() + fadeOut()
                     ) {
                         Row(
                             Modifier.padding(bottom = 16.dp),

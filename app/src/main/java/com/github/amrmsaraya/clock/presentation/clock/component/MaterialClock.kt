@@ -29,7 +29,6 @@ fun MaterialClock(
         modifier = modifier,
         contentAlignment = Alignment.Center
     ) {
-        val mColor = MaterialTheme.colorScheme.primary
         val backgroundColor = MaterialTheme.colorScheme.surface
 
         Canvas(modifier = Modifier.size(if (maxWidth < maxHeight) maxWidth else maxHeight)) {
@@ -38,7 +37,7 @@ fun MaterialClock(
                 color = frameColor,
                 radius = radius,
                 center = center,
-                style = Stroke(radius * 0.07f, cap = StrokeCap.Round)
+                style = Stroke(radius * 0.03f, cap = StrokeCap.Round)
             )
             hourHand(
                 hour = worldClock.hours,
@@ -59,12 +58,12 @@ fun MaterialClock(
             }
             drawCircle(
                 color = handleColor,
-                radius = radius * .07f,
+                radius = radius * .06f,
                 center = center
             )
             drawCircle(
                 color = backgroundColor,
-                radius = radius * .04f,
+                radius = radius * .03f,
                 center = center
             )
         }
@@ -83,7 +82,7 @@ private fun DrawScope.hourHand(
             x = center.x + (radius * 0.6f) * cos(hour * Math.PI.toFloat() / 180),
             y = center.y + (radius * 0.6f) * sin(hour * Math.PI.toFloat() / 180)
         ),
-        strokeWidth = radius * 0.04f,
+        strokeWidth = radius * 0.03f,
         cap = StrokeCap.Round
     )
 }
@@ -100,7 +99,7 @@ private fun DrawScope.minutesHand(
             x = center.x + (radius * 0.85f) * cos(minute * Math.PI.toFloat() / 180),
             y = center.y + (radius * 0.85f) * sin(minute * Math.PI.toFloat() / 180)
         ),
-        strokeWidth = radius * 0.04f,
+        strokeWidth = radius * 0.03f,
         cap = StrokeCap.Round
     )
 }
@@ -114,10 +113,10 @@ private fun DrawScope.secondsHand(
         color = color,
         start = Offset(x = center.x, y = center.y),
         end = Offset(
-            x = center.x + (radius * 0.7f) * cos(second * Math.PI.toFloat() / 180),
-            y = center.y + (radius * 0.7f) * sin(second * Math.PI.toFloat() / 180)
+            x = center.x + (radius * 0.725f) * cos(second * Math.PI.toFloat() / 180),
+            y = center.y + (radius * 0.725f) * sin(second * Math.PI.toFloat() / 180)
         ),
-        strokeWidth = radius * 0.02f,
+        strokeWidth = radius * 0.01f,
         cap = StrokeCap.Round
     )
 }

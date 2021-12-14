@@ -57,7 +57,7 @@ fun WorldClockRow(
                 modifier = Modifier.size(50.dp),
                 worldClock = worldClock,
                 frameColor = MaterialTheme.colorScheme.primary,
-                handleColor = MaterialTheme.colorScheme.outline,
+                handleColor = MaterialTheme.colorScheme.primary,
                 showSeconds = false
             )
             Spacer(modifier = Modifier.size(16.dp))
