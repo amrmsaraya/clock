@@ -40,24 +40,26 @@ class ClockViewModel @Inject constructor(
         emitWorldClocks()
     }
 
-    private fun handleIntents() = viewModelScope.launch {
+    private fun handleIntents() = viewModelScope.launch(Dispatchers.Default) {
         intentChannel.consumeAsFlow().collect {
             when (it) {
                 is ClockIntent.InsertClock -> insertClock(it.timeZone)
                 is ClockIntent.DeleteClocks -> deleteClocks(it.timeZones)
                 is ClockIntent.GetClocks -> Unit
                 is ClockIntent.ResetDeleteFlag -> {
-                    _uiState.value = uiState.value.copy(isDeleted = false)
+                    withContext(Dispatchers.Main) {
+                        _uiState.value = uiState.value.copy(isDeleted = false)
+                    }
                 }
             }
         }
     }
 
-    fun sendIntent(clockIntent: ClockIntent) = viewModelScope.launch {
+    fun sendIntent(clockIntent: ClockIntent) = viewModelScope.launch(Dispatchers.Default) {
         intentChannel.send(clockIntent)
     }
 
-    private fun insertClock(timeZone: TimeZone) = viewModelScope.launch {
+    private fun insertClock(timeZone: TimeZone) = viewModelScope.launch(Dispatchers.Default) {
         clockCRUDUseCase.insert(
             Clock(
                 id = timeZone.id,
@@ -67,7 +69,7 @@ class ClockViewModel @Inject constructor(
     }
 
     private fun deleteClocks(timeZones: List<TimeZone>) =
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             clockCRUDUseCase.delete(
                 timeZones.map {
                     Clock(

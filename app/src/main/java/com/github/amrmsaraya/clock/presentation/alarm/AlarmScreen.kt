@@ -33,7 +33,6 @@ import com.github.amrmsaraya.clock.presentation.theme.Purple200
 import com.github.amrmsaraya.clock.presentation.theme.Purple900
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlin.math.roundToLong
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
@@ -115,15 +114,18 @@ fun AlarmScreen(
                 deletedAlarms.addAll(selectedAlarms)
                 selectMode = false
 
-                delay((300 + 300 * .2f).roundToLong())
+                delay(300 * 2)
                 viewModel.sendIntent(AlarmIntent.DeleteAlarms(selectedAlarms))
 
                 isDeleteInProgress = false
             }
         },
         onCleanUp = {
-            deletedAlarms.clear()
-            selectedAlarms.clear()
+            scope.launch {
+                delay(300 * 2)
+                deletedAlarms.clear()
+                selectedAlarms.clear()
+            }
         }
     )
 

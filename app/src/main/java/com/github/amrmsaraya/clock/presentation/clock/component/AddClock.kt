@@ -103,7 +103,7 @@ private fun SearchTextField(
                 .fillMaxWidth()
                 .padding(top = 8.dp),
             shape = CircleShape,
-            tonalElevation = 10.dp,
+            tonalElevation = 12.dp,
         ) {
             Row(
                 Modifier.padding(start = 16.dp, end = 16.dp, top = 10.dp, bottom = 10.dp),

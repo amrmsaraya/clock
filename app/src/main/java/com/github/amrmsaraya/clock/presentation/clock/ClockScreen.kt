@@ -117,12 +117,11 @@ private fun ClockScreenContent(
     val selectedItems = remember { mutableStateListOf<TimeZone>() }
     val deletedItems = remember { mutableStateListOf<TimeZone>() }
     val scope = rememberCoroutineScope()
-    val animationDuration = 300
     val listState = rememberLazyListState()
 
     LaunchedEffect(isDeleted) {
         if (isDeleted) {
-            delay(1000)
+            delay(300 * 2)
             deletedItems.clear()
             selectedItems.clear()
             onResetDeleteFlag()
@@ -138,7 +137,7 @@ private fun ClockScreenContent(
                         deletedItems.addAll(selectedItems)
                         onSelectMode(false)
 
-                        delay((animationDuration + animationDuration * .2f).roundToLong())
+                        delay(300 * 2)
                         onDeleteClocks(selectedItems)
                     }
                 }
