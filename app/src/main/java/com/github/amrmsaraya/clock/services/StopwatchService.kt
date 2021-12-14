@@ -42,7 +42,7 @@ class StopwatchService : Service() {
                     "pause" -> scope.launch { stopwatch.pause() }
                     "reset" -> scope.launch {
                         stopwatch.reset()
-                        delay(500)
+                        stopForeground(true)
                         stopSelf()
                     }
                     "lap" -> scope.launch { stopwatch.lap() }
@@ -84,10 +84,11 @@ class StopwatchService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        scope.cancel()
-        stopwatch.clear()
         unregisterReceiver(broadcastReceiver)
         unregisterReceiver(cancelActionReceiver)
+        scope.cancel()
+        stopwatch.clear()
+        println("onDestroy")
     }
 
     private suspend fun collectLaps() {
@@ -151,7 +152,7 @@ class StopwatchService : Service() {
         val cancelPendingIntent =
             Intent(this, CancelStopwatchActionReceiver::class.java).let { intent ->
                 intent.action = STOPWATCH_ACTION_ACTION
-                intent.putExtra("action", "reset")
+                intent.putExtra("action", "cancel")
 
                 PendingIntent.getBroadcast(
                     this,

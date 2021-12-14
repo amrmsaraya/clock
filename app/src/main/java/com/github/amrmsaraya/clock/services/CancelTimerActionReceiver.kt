@@ -9,7 +9,7 @@ class CancelTimerActionReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         intent.getStringExtra("action")?.let {
-            if (it == "reset") {
+            if (it == "cancel") {
                 context.sendTimerBroadcastAction("reset")
             }
         }

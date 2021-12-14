@@ -9,7 +9,7 @@ class CancelStopwatchActionReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         intent.getStringExtra("action")?.let {
-            if(it == "reset") {
+            if(it == "cancel") {
                 context.sendStopwatchBroadcastAction("reset")
             }
         }

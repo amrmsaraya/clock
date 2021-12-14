@@ -151,7 +151,7 @@ private fun TimerScreenContent(
                 ) {
                     SetupTimer(
                         modifier = Modifier
-                            .fillMaxWidth(0.9f)
+                            .fillMaxWidth()
                             .height(80.dp),
                         timer = uiState.configuredTime.toTime(),
                         onTimeChange = onTimeChange

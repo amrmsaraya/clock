@@ -5,7 +5,8 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.media.MediaPlayer
+import android.media.Ringtone
+import android.media.RingtoneManager
 import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
@@ -29,6 +30,8 @@ class TimerService : Service() {
 
     private val scope = CoroutineScope(Dispatchers.IO + Job())
 
+    private lateinit var notificationSound: Ringtone
+
     val timer = Timer()
     var isStarted = false
 
@@ -43,6 +46,7 @@ class TimerService : Service() {
                     "pause" -> scope.launch { timer.pause() }
                     "reset" -> scope.launch {
                         timer.reset()
+                        stopForeground(true)
                         stopSelf()
                     }
                     else -> Unit
@@ -63,6 +67,11 @@ class TimerService : Service() {
     override fun onCreate() {
         super.onCreate()
 
+        notificationSound = RingtoneManager.getRingtone(
+            this,
+            RingtoneManager.getActualDefaultRingtoneUri(this, RingtoneManager.TYPE_NOTIFICATION)
+        )
+
         createNotificationChannel()
         startForeground(NOTIFICATION_ID, createNotification())
 
@@ -79,6 +88,7 @@ class TimerService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        println("onStartCommand")
         if (!isStarted) {
             isStarted = true
             intent?.getLongExtra("configuredTime", 0L)?.let { configuredTime ->
@@ -95,10 +105,11 @@ class TimerService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        scope.cancel()
-        timer.clear()
         unregisterReceiver(broadcastReceiver)
         unregisterReceiver(cancelTimerActionReceiver)
+        scope.cancel()
+        timer.clear()
+        println("onDestroy")
     }
 
     private suspend fun collectTimer() {
@@ -108,12 +119,7 @@ class TimerService : Service() {
         timer.getTimer {
             scope.launch(Dispatchers.Main) {
                 timer.reset()
-
-                val bill = MediaPlayer.create(this@TimerService, R.raw.bill_ring)
-                bill.start()
-                delay(1000)
-                bill.stop()
-
+                notificationSound.play()
                 stopSelf()
             }
         }.collect { time ->
@@ -163,7 +169,7 @@ class TimerService : Service() {
         val cancelPendingIntent =
             Intent(this, CancelTimerActionReceiver::class.java).let { intent ->
                 intent.action = TIMER_ACTION_ACTION
-                intent.putExtra("action", "reset")
+                intent.putExtra("action", "cancel")
 
                 PendingIntent.getBroadcast(
                     this,
