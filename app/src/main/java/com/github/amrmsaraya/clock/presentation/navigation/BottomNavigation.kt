@@ -69,6 +69,7 @@ private fun BottomNavigation(
                 colors = NavigationBarItemDefaults.colors(
                     indicatorColor = MaterialTheme.colorScheme.primary,
                     selectedIconColor = MaterialTheme.colorScheme.onPrimary,
+                    selectedTextColor = MaterialTheme.colorScheme.primary
                 ),
                 onClick = {
                     navController.navigate(screen.route) {
