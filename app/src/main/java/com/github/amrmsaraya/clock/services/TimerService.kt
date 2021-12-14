@@ -46,6 +46,7 @@ class TimerService : Service() {
                     "pause" -> scope.launch { timer.pause() }
                     "reset" -> scope.launch {
                         timer.reset()
+                        delay(100)
                         stopForeground(true)
                         stopSelf()
                     }
@@ -204,8 +205,6 @@ class TimerService : Service() {
                 .setSmallIcon(R.drawable.ic_logo_24)
                 .setContentIntent(pendingIntent)
                 .addAction(R.drawable.ic_logo_24, getString(R.string.cancel), cancelPendingIntent)
-                .setColor(android.graphics.Color.parseColor("#FFb9c3ff"))
-                .setColorized(true)
                 .setSilent(true)
                 .setOngoing(true)
                 .build()
@@ -216,8 +215,6 @@ class TimerService : Service() {
                 .setSmallIcon(R.drawable.ic_logo_24)
                 .setContentIntent(pendingIntent)
                 .addAction(R.drawable.ic_logo_24, getString(R.string.cancel), cancelPendingIntent)
-                .setColor(android.graphics.Color.parseColor("#FFb9c3ff"))
-                .setColorized(true)
                 .setSilent(true)
                 .setOngoing(true)
                 .build()

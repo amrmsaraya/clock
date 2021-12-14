@@ -42,6 +42,7 @@ class StopwatchService : Service() {
                     "pause" -> scope.launch { stopwatch.pause() }
                     "reset" -> scope.launch {
                         stopwatch.reset()
+                        delay(100)
                         stopForeground(true)
                         stopSelf()
                     }
@@ -187,8 +188,6 @@ class StopwatchService : Service() {
                 .setSmallIcon(R.drawable.ic_logo_24)
                 .setContentIntent(pendingIntent)
                 .addAction(R.drawable.ic_logo_24, getString(R.string.cancel), cancelPendingIntent)
-                .setColor(android.graphics.Color.parseColor("#FFb9c3ff"))
-                .setColorized(true)
                 .setSilent(true)
                 .setOngoing(true)
                 .build()
@@ -199,8 +198,6 @@ class StopwatchService : Service() {
                 .setSmallIcon(R.drawable.ic_logo_24)
                 .setContentIntent(pendingIntent)
                 .addAction(R.drawable.ic_logo_24, getString(R.string.cancel), cancelPendingIntent)
-                .setColor(android.graphics.Color.parseColor("#FFb9c3ff"))
-                .setColorized(true)
                 .setSilent(true)
                 .setOngoing(true)
                 .build()
