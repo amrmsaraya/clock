@@ -126,14 +126,14 @@ private fun Laps(modifier: Modifier = Modifier, laps: List<Pair<Time, Time>>) {
                     text = stopwatchTimerFormat(
                         time.first,
                         MaterialTheme.colorScheme.onSurface
-                    )
+                    ).text
                 )
                 Text(
                     text = "+${
                         stopwatchTimerFormat(
                             time.second,
                             MaterialTheme.colorScheme.onSurface
-                        )
+                        ).text
                     }"
                 )
             }

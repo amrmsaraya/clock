@@ -18,6 +18,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.sp
 import com.github.amrmsaraya.timer.Stopwatch
 import com.github.amrmsaraya.timer.Time
 
@@ -73,11 +74,10 @@ fun stopwatchTimerFormat(
         append("${format(time.hours)}:${format(time.minutes)}:${format(time.seconds)}")
         if (withMillis) {
             color?.let {
-                withStyle(style = SpanStyle(color = color)) {
-                    append(":${format(time.millis / 10)}")
+                withStyle(style = SpanStyle(color = color, fontSize = 26.sp)) {
+                    append(".${format(time.millis / 10)}")
                 }
             } ?: append(":${format(time.millis / 10)}")
-
         }
     }
 }
