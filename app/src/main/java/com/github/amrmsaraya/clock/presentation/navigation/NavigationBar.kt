@@ -1,10 +1,7 @@
 package com.github.amrmsaraya.clock.presentation.navigation
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
@@ -29,7 +26,7 @@ fun BottomNavigationBar(navController: NavHostController) {
 
     if (currentDestination?.route in screens.map { it.route }) {
         Column {
-            BottomNavigation(
+            NavigationBar(
                 navController = navController,
                 currentDestination = currentDestination,
                 screens = screens
@@ -39,7 +36,7 @@ fun BottomNavigationBar(navController: NavHostController) {
 }
 
 @Composable
-private fun BottomNavigation(
+private fun NavigationBar(
     navController: NavHostController,
     currentDestination: NavDestination?,
     screens: List<Screens>
@@ -50,18 +47,18 @@ private fun BottomNavigation(
                 selected = currentDestination?.route == screen.route,
                 icon = {
                     when (currentDestination?.route == screen.route) {
-                        true -> androidx.compose.material3.Icon(
+                        true -> Icon(
                             imageVector = screen.activeIcon,
                             contentDescription = null
                         )
-                        false -> androidx.compose.material3.Icon(
+                        false -> Icon(
                             imageVector = screen.inactiveIcon,
                             contentDescription = null
                         )
                     }
                 },
                 label = {
-                    androidx.compose.material3.Text(
+                    Text(
                         text = stringResource(id = screen.title),
                         maxLines = 1
                     )
@@ -72,9 +69,11 @@ private fun BottomNavigation(
                     selectedTextColor = MaterialTheme.colorScheme.primary
                 ),
                 onClick = {
-                    navController.navigate(screen.route) {
-                        popUpTo(navController.graph.findStartDestination().id)
-                        launchSingleTop = true
+                    if (screen.route != currentDestination?.route) {
+                        navController.navigate(screen.route) {
+                            popUpTo(navController.graph.findStartDestination().id)
+                            launchSingleTop = true
+                        }
                     }
                 }
             )
