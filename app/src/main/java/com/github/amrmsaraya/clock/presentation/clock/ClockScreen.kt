@@ -7,9 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.BottomDrawerValue
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.rememberBottomDrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.MaterialTheme
@@ -26,12 +24,12 @@ import com.github.amrmsaraya.clock.presentation.clock.component.AddClock
 import com.github.amrmsaraya.clock.presentation.clock.component.MaterialClock
 import com.github.amrmsaraya.clock.presentation.clock.component.WorldClockRow
 import com.github.amrmsaraya.clock.presentation.common_ui.AddFAB
-import com.github.amrmsaraya.clock.presentation.common_ui.BottomDrawerSheet
 import com.github.amrmsaraya.clock.presentation.common_ui.DeleteFAB
+import com.github.amrmsaraya.clock.presentation.common_ui.getSurfaceColor
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.*
-import kotlin.math.roundToLong
 
 @OptIn(
     ExperimentalMaterialApi::class,
@@ -48,63 +46,71 @@ fun ClockScreen(
     val localClock by uiState.localClock.collectAsState(initial = WorldClock())
     val worldClocks by uiState.worldClocks.collectAsState(initial = mapOf())
     var selectMode by remember { mutableStateOf(false) }
-
-    val drawerState = rememberBottomDrawerState(initialValue = BottomDrawerValue.Closed)
-    val scope = rememberCoroutineScope()
     val localKeyboard = LocalSoftwareKeyboardController.current
+
+    var showDialog by remember { mutableStateOf(false) }
 
     BackHandler {
         when {
-            drawerState.isOpen -> scope.launch {
+            showDialog -> {
+                showDialog = false
                 onShowBottomNavigation(true)
-                drawerState.close()
             }
             selectMode -> selectMode = false
-
             else -> onBackPress()
-
         }
     }
 
-    BottomDrawerSheet(
-        modifier = modifier.fillMaxSize(),
-        drawerState = drawerState,
-        drawerContent = {
-            AddClock(
-                timeZones = uiState.timeZones,
-                onClick = {
-                    viewModel.sendIntent(ClockIntent.InsertClock(it))
-                    scope.launch {
-                        localKeyboard?.hide()
-                        onShowBottomNavigation(true)
-                        drawerState.close()
-                    }
-                }
-            )
-        },
-        content = {
-            ClockScreenContent(
-                worldClock = localClock,
-                times = worldClocks,
-                selectMode = selectMode,
-                isDeleted = uiState.isDeleted,
-                onAddClock = {
-                    scope.launch {
-                        onShowBottomNavigation(false)
-                        drawerState.expand()
-                    }
-                },
-                onDeleteClocks = { viewModel.sendIntent(ClockIntent.DeleteClocks(it)) },
-                onSelectMode = { selectMode = it },
-                onResetDeleteFlag = { viewModel.sendIntent(ClockIntent.ResetDeleteFlag) }
-            )
-        }
-    )
+    AnimatedVisibility(
+        visible = showDialog,
+        enter = slideInHorizontally(
+            initialOffsetX = { it },
+        ),
+        exit = slideOutHorizontally(
+            targetOffsetX = { it }
+        )
+    ) {
+        AddClock(
+            timeZones = uiState.timeZones,
+            onClick = {
+                viewModel.sendIntent(ClockIntent.InsertClock(it))
+                localKeyboard?.hide()
+                showDialog = false
+                onShowBottomNavigation(true)
+            }
+        )
+    }
+
+    AnimatedVisibility(
+        visible = !showDialog,
+        enter = slideInHorizontally(
+            initialOffsetX = { -it },
+        ),
+        exit = slideOutHorizontally(
+            targetOffsetX = { -it }
+        )
+    ) {
+        ClockScreenContent(
+            modifier = modifier,
+            worldClock = localClock,
+            times = worldClocks,
+            selectMode = selectMode,
+            isDeleted = uiState.isDeleted,
+            onAddClock = {
+                showDialog = true
+                onShowBottomNavigation(false)
+            },
+            onDeleteClocks = { viewModel.sendIntent(ClockIntent.DeleteClocks(it)) },
+            onSelectMode = { selectMode = it },
+            onResetDeleteFlag = { viewModel.sendIntent(ClockIntent.ResetDeleteFlag) }
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ClockScreenContent(
+    modifier: Modifier = Modifier,
     worldClock: WorldClock,
     times: Map<TimeZone, WorldClock>,
     selectMode: Boolean,
@@ -129,7 +135,7 @@ private fun ClockScreenContent(
     }
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         floatingActionButton = {
             if (selectMode) {
                 DeleteFAB {

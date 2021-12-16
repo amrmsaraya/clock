@@ -1,7 +1,6 @@
 package com.github.amrmsaraya.clock.presentation.clock.component
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -11,10 +10,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,7 +25,11 @@ import kotlinx.coroutines.launch
 import java.util.*
 
 @Composable
-fun AddClock(timeZones: List<TimeZone>, onClick: (TimeZone) -> Unit) {
+fun AddClock(
+    modifier: Modifier = Modifier,
+    timeZones: List<TimeZone>,
+    onClick: (TimeZone) -> Unit,
+) {
     val lazyListState = rememberLazyListState()
     val scope = rememberCoroutineScope()
 
@@ -43,44 +43,46 @@ fun AddClock(timeZones: List<TimeZone>, onClick: (TimeZone) -> Unit) {
         zones.addAll(timeZones)
     }
 
-    SearchTextField(
-        search = search,
-        onSearch = { search = it },
-        onClearSearch = { search = "" }
-    )
+    Column(modifier = modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp)) {
+        SearchTextField(
+            search = search,
+            onSearch = { search = it },
+            onClearSearch = { search = "" },
+        )
 
-    Spacer(modifier = Modifier.size(16.dp))
+        Spacer(modifier = Modifier.size(16.dp))
 
-    LazyColumn(
-        modifier = Modifier.fillMaxWidth(),
-        state = lazyListState
-    ) {
-        items(zones) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(CircleShape)
-                    .clickable {
-                        search = ""
-                        zones.clear()
-                        zones.addAll(timeZones)
-                        onClick(it)
-                        scope.launch { lazyListState.scrollToItem(0) }
-                    },
-            ) {
-                Column(
-                    Modifier.padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 4.dp),
-                    verticalArrangement = Arrangement.Center
+        LazyColumn(
+            modifier = Modifier.fillMaxWidth(),
+            state = lazyListState
+        ) {
+            items(zones) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(CircleShape)
+                        .clickable {
+                            search = ""
+                            zones.clear()
+                            zones.addAll(timeZones)
+                            onClick(it)
+                            scope.launch { lazyListState.scrollToItem(0) }
+                        },
                 ) {
-                    Text(text = it.id.substringAfter('/'), fontSize = 18.sp)
-                    Text(
-                        text = it.getDisplayName(false, TimeZone.SHORT),
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.outline
-                    )
+                    Column(
+                        Modifier.padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 4.dp),
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(text = it.id.substringAfter('/'), fontSize = 18.sp)
+                        Text(
+                            text = it.getDisplayName(false, TimeZone.SHORT),
+                            fontSize = 14.sp,
+                            color = MaterialTheme.colorScheme.outline
+                        )
+                    }
                 }
+                Spacer(modifier = Modifier.size(10.dp))
             }
-            Spacer(modifier = Modifier.size(10.dp))
         }
     }
 }
@@ -89,7 +91,7 @@ fun AddClock(timeZones: List<TimeZone>, onClick: (TimeZone) -> Unit) {
 private fun SearchTextField(
     search: String,
     onSearch: (String) -> Unit,
-    onClearSearch: () -> Unit
+    onClearSearch: () -> Unit,
 ) {
     BasicTextField(
         value = search,
@@ -101,19 +103,18 @@ private fun SearchTextField(
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
+                .height(60.dp)
                 .padding(top = 8.dp),
             shape = CircleShape,
-            tonalElevation = 12.dp,
+            tonalElevation = 3.dp,
         ) {
             Row(
-                Modifier.padding(start = 16.dp, end = 16.dp, top = 10.dp, bottom = 10.dp),
+                Modifier.padding(start = 16.dp, end = 8.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Row(
-                    modifier = Modifier
-                        .padding(end = 8.dp)
-                        .weight(1f),
+                    modifier = Modifier.weight(1f),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
@@ -126,7 +127,7 @@ private fun SearchTextField(
                         if (search.isEmpty()) {
                             Text(
                                 text = stringResource(R.string.time_zone_placeholder),
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = .5f),
+                                color = MaterialTheme.colorScheme.outline,
                                 fontSize = 18.sp
                             )
                         }
@@ -134,19 +135,13 @@ private fun SearchTextField(
                     }
                 }
                 if (search.isNotEmpty()) {
-                    Icon(
-                        modifier = Modifier
-                            .clickable(
-                                interactionSource = remember { MutableInteractionSource() },
-                                indication = null,
-                                onClick = {
-                                    onClearSearch()
-                                }
-                            ),
-                        imageVector = Icons.Default.Cancel,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = .5f)
-                    )
+                    IconButton(onClick = onClearSearch) {
+                        Icon(
+                            imageVector = Icons.Default.Cancel,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.outline
+                        )
+                    }
                 }
             }
         }

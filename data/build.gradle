@@ -1,7 +1,7 @@
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
-    id "com.google.devtools.ksp" version "1.5.31-1.0.0"
+    id "com.google.devtools.ksp" version "1.6.10-1.0.2"
 }
 
 android {
@@ -33,7 +33,7 @@ android {
 dependencies {
 
     def coroutine_version = '1.5.2'
-    def room_version = "2.4.0-rc01"
+    def room_version = "2.4.0"
 
     // local modules
     implementation project(path: ":domain")

@@ -115,8 +115,6 @@ private fun Laps(modifier: Modifier = Modifier, laps: List<Pair<Time, Time>>) {
                     .background(
                         getSurfaceColor(
                             elevation = LocalAbsoluteTonalElevation.current + 3.dp,
-                            primaryColor = MaterialTheme.colorScheme.primary,
-                            surfaceColor = MaterialTheme.colorScheme.surface
                         )
                     )
                     .padding(16.dp),
