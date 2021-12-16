@@ -32,7 +32,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             // Keep splash screen
             LaunchedEffect(true) {
-                delay(200)
+                delay(100)
                 keepSplash = false
             }
             App(intent.getStringExtra("route"))
