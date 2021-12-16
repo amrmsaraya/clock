@@ -73,13 +73,8 @@ private fun BottomNavigation(
                 ),
                 onClick = {
                     navController.navigate(screen.route) {
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            if (screen is Alarm || screen is Clock) {
-                                saveState = true
-                            }
-                        }
+                        popUpTo(navController.graph.findStartDestination().id)
                         launchSingleTop = true
-                        restoreState = true
                     }
                 }
             )
