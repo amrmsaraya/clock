@@ -139,10 +139,9 @@ class StopwatchService : Service() {
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val id = NOTIFICATION_CHANNEL_ID
+            val name = getString(R.string.stopwatch)
             val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel = NotificationChannel(id, id, importance).apply {
-                description = "descriptionText"
-            }
+            val channel = NotificationChannel(id, name, importance)
             val notificationManager: NotificationManager =
                 getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
@@ -185,9 +184,13 @@ class StopwatchService : Service() {
             NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
                 .setContentTitle(getString(R.string.stopwatch))
                 .setContentText(content)
-                .setSmallIcon(R.drawable.ic_logo_24)
+                .setSmallIcon(R.drawable.ic_norification_logo)
+                .addAction(
+                    R.drawable.ic_norification_logo,
+                    getString(R.string.cancel),
+                    cancelPendingIntent
+                )
                 .setContentIntent(pendingIntent)
-                .addAction(R.drawable.ic_logo_24, getString(R.string.cancel), cancelPendingIntent)
                 .setSilent(true)
                 .setOngoing(true)
                 .build()
@@ -195,9 +198,13 @@ class StopwatchService : Service() {
             NotificationCompat.Builder(this)
                 .setContentTitle(getString(R.string.stopwatch))
                 .setContentText(content)
-                .setSmallIcon(R.drawable.ic_logo_24)
+                .setSmallIcon(R.drawable.ic_norification_logo)
+                .addAction(
+                    R.drawable.ic_norification_logo,
+                    getString(R.string.cancel),
+                    cancelPendingIntent
+                )
                 .setContentIntent(pendingIntent)
-                .addAction(R.drawable.ic_logo_24, getString(R.string.cancel), cancelPendingIntent)
                 .setSilent(true)
                 .setOngoing(true)
                 .build()
