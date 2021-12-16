@@ -248,6 +248,7 @@ private fun AlarmScreenContent(
                                         it.contentColor
                                     }.firstOrNull() ?: Purple900,
                                 checked = alarm.enabled,
+                                selectMode = selectMode,
                                 onCheckedChange = { onCheckedChange(alarm.copy(enabled = it)) },
                                 onClick = {
                                     if (selectMode) {

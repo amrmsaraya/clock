@@ -36,6 +36,7 @@ fun AlarmCard(
     days: String,
     activeBackgroundColor: Color,
     contentColor: Color,
+    selectMode: Boolean,
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     onClick: () -> Unit,
@@ -103,16 +104,18 @@ fun AlarmCard(
                     maxLines = 1
                 )
             }
-            Switch(
-                checked = checked,
-                onCheckedChange = onCheckedChange,
-                colors = SwitchDefaults.colors(
-                    checkedThumbColor = animateContentColor,
-                    checkedTrackColor = animateContentColor,
-                    uncheckedThumbColor = animateContentColor,
-                    uncheckedTrackColor = animateContentColor
+            if(!selectMode) {
+                Switch(
+                    checked = checked,
+                    onCheckedChange = onCheckedChange,
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = animateContentColor,
+                        checkedTrackColor = animateContentColor,
+                        uncheckedThumbColor = animateContentColor,
+                        uncheckedTrackColor = animateContentColor
+                    )
                 )
-            )
+            }
         }
     }
 }
