@@ -1,7 +1,12 @@
 package com.github.amrmsaraya.clock.presentation.alarm
 
 import android.app.Activity
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
 import android.media.RingtoneManager
+import android.os.Build
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
@@ -10,8 +15,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.*
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,17 +37,17 @@ import com.github.amrmsaraya.clock.presentation.common_ui.DeleteFAB
 import com.github.amrmsaraya.clock.presentation.common_ui.FullScreenDialog
 import com.github.amrmsaraya.clock.presentation.theme.Purple200
 import com.github.amrmsaraya.clock.presentation.theme.Purple900
+import com.github.amrmsaraya.clock.services.alarm.AlarmReceiver
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.*
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun AlarmScreen(
     modifier: Modifier,
     viewModel: AlarmViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState
-    val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
@@ -71,6 +77,7 @@ fun AlarmScreen(
         editMode = alarmEditMode,
         alarm = alarm,
         onSave = {
+            setAlarm(context, it)
             viewModel.sendIntent(AlarmIntent.InsertAlarm(it))
             showAlarmDialog = false
         },
@@ -80,7 +87,6 @@ fun AlarmScreen(
 
     AlarmScreenContent(
         modifier = modifier,
-        scaffoldState = scaffoldState,
         alarms = uiState.alarms,
         onCheckedChange = { viewModel.sendIntent(AlarmIntent.InsertAlarm(it)) },
         onShowAlarmDialog = { receivedAlarm, editMode ->
@@ -153,12 +159,10 @@ fun NewAlarmDialog(
     }
 }
 
-@ExperimentalFoundationApi
-@ExperimentalMaterialApi
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 private fun AlarmScreenContent(
     modifier: Modifier = Modifier,
-    scaffoldState: ScaffoldState,
     alarms: List<Alarm>,
     onCheckedChange: (Alarm) -> Unit,
     onShowAlarmDialog: (Alarm, Boolean) -> Unit,
@@ -179,8 +183,6 @@ private fun AlarmScreenContent(
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
-        scaffoldState = scaffoldState,
-        backgroundColor = MaterialTheme.colorScheme.background,
         floatingActionButton = {
             when (selectMode) {
                 true -> DeleteFAB { onDelete() }
@@ -282,4 +284,77 @@ private fun AlarmScreenContent(
             }
         }
     }
+}
+
+fun setAlarm(context: Context, alarm: Alarm) {
+    val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+    val pendingIntent = Intent(context, AlarmReceiver::class.java).let { intent ->
+
+        intent.putExtra("id", alarm.id.toInt())
+        intent.putExtra("title", alarm.title)
+        intent.putExtra("hour", alarm.hour)
+        intent.putExtra("minute", alarm.minute)
+        intent.putExtra("amPm", alarm.amPm)
+        intent.putExtra("ringtone", alarm.ringtone)
+        intent.putExtra("color", alarm.color)
+
+        PendingIntent.getBroadcast(
+            context,
+            alarm.id.toInt(),
+            intent,
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                PendingIntent.FLAG_UPDATE_CURRENT + PendingIntent.FLAG_MUTABLE
+            } else {
+                PendingIntent.FLAG_UPDATE_CURRENT
+            }
+        )
+
+    }
+
+    val calendar = Calendar.getInstance().apply {
+
+        if (alarm.hour > get(Calendar.HOUR)) {
+            set(Calendar.DAY_OF_YEAR, get(Calendar.DAY_OF_YEAR) + 1)
+        } else {
+            if (alarm.minute > get(Calendar.MINUTE) && alarm.hour != get(Calendar.HOUR)) {
+                set(Calendar.DAY_OF_YEAR, get(Calendar.DAY_OF_YEAR) + 1)
+            }
+        }
+
+        set(Calendar.HOUR, alarm.hour)
+        set(Calendar.MINUTE, alarm.minute)
+        set(Calendar.AM_PM, alarm.amPm)
+        set(Calendar.SECOND, 0)
+        set(Calendar.MILLISECOND, 0)
+    }
+
+    alarmManager.setAlarmClock(
+        AlarmManager.AlarmClockInfo(
+            calendar.timeInMillis,
+            pendingIntent
+        ),
+        pendingIntent
+    )
+
+    println(alarmManager.nextAlarmClock.triggerTime)
+}
+
+fun cancelAlarm(context: Context, alarm: Alarm) {
+    val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+    val pendingIntent = Intent(context, AlarmReceiver::class.java).let { intent ->
+        PendingIntent.getBroadcast(
+            context,
+            alarm.id.toInt(),
+            intent,
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                PendingIntent.FLAG_UPDATE_CURRENT + PendingIntent.FLAG_MUTABLE
+            } else {
+                PendingIntent.FLAG_UPDATE_CURRENT
+            }
+        )
+    }
+
+    alarmManager.cancel(pendingIntent)
 }

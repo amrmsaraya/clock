@@ -7,6 +7,7 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -69,7 +70,11 @@ private val DarkThemeColors = darkColorScheme(
 )
 
 @Composable
-fun ClockTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
+fun ClockTheme(
+    darkTheme: Boolean = isSystemInDarkTheme(),
+    matchSystemBars: Color? = null,
+    content: @Composable () -> Unit
+) {
     val colors = if (darkTheme) {
         DarkThemeColors
     } else {
@@ -83,8 +88,12 @@ fun ClockTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable 
     val color = colors.primary.copy(alpha = alpha).compositeOver(colors.surface)
 
     SideEffect {
-        systemUiController.setNavigationBarColor(color = color)
-        systemUiController.setStatusBarColor(color = colors.surface)
+        if (matchSystemBars != null) {
+            systemUiController.setSystemBarsColor(matchSystemBars)
+        } else {
+            systemUiController.setNavigationBarColor(color = color)
+            systemUiController.setStatusBarColor(color = colors.surface)
+        }
     }
 
     MaterialTheme(

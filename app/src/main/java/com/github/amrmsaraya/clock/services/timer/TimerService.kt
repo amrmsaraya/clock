@@ -1,4 +1,4 @@
-package com.github.amrmsaraya.clock.services
+package com.github.amrmsaraya.clock.services.timer
 
 import android.app.*
 import android.content.BroadcastReceiver
@@ -9,13 +9,14 @@ import android.media.Ringtone
 import android.media.RingtoneManager
 import android.os.Build
 import android.os.IBinder
-import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.github.amrmsaraya.clock.BuildConfig
 import com.github.amrmsaraya.clock.R
 import com.github.amrmsaraya.clock.presentation.common_ui.stopwatchTimerFormat
 import com.github.amrmsaraya.clock.presentation.main_activity.MainActivity
 import com.github.amrmsaraya.clock.presentation.navigation.Screens
+import com.github.amrmsaraya.clock.utils.createNotification
+import com.github.amrmsaraya.clock.utils.createNotificationChannel
 import com.github.amrmsaraya.timer.Time
 import com.github.amrmsaraya.timer.Timer
 import kotlinx.coroutines.*
@@ -32,15 +33,14 @@ class TimerService : Service() {
 
     private lateinit var notificationSound: Ringtone
 
-    val timer = Timer()
-    var isStarted = false
+    private val timer = Timer()
+    private var isStarted = false
 
-    private val cancelTimerActionReceiver = CancelTimerActionReceiver()
+    private val cancelTimerActionReceiver = TimerCancelReceiver()
 
     private val broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             intent?.getStringExtra("action")?.let {
-                println(it)
                 when (it) {
                     "start" -> scope.launch { timer.start() }
                     "pause" -> scope.launch { timer.pause() }
@@ -73,7 +73,12 @@ class TimerService : Service() {
             RingtoneManager.getActualDefaultRingtoneUri(this, RingtoneManager.TYPE_NOTIFICATION)
         )
 
-        createNotificationChannel()
+        createNotificationChannel(
+            id = NOTIFICATION_CHANNEL_ID,
+            name = getString(R.string.timer),
+            importance = NotificationManager.IMPORTANCE_DEFAULT
+        )
+
         startForeground(NOTIFICATION_ID, createNotification())
 
         IntentFilter().also {
@@ -89,7 +94,6 @@ class TimerService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        println("onStartCommand")
         if (!isStarted) {
             isStarted = true
             intent?.getLongExtra("configuredTime", 0L)?.let { configuredTime ->
@@ -129,7 +133,12 @@ class TimerService : Service() {
 
             if (job == null) {
                 job = scope.launch(Dispatchers.Main) {
-                    updateNotification(notificationTime)
+                    NotificationManagerCompat.from(this@TimerService).notify(
+                        NOTIFICATION_ID,
+                        createNotification(
+                            stopwatchTimerFormat(time = time, withMillis = false).text
+                        )
+                    )
                     delay(1000)
                     job = null
                 }
@@ -144,30 +153,10 @@ class TimerService : Service() {
         }
     }
 
-    private fun updateNotification(time: Time) {
-        NotificationManagerCompat.from(this@TimerService).notify(
-            NOTIFICATION_ID,
-            createNotification(
-                stopwatchTimerFormat(time = time, withMillis = false).text
-            )
-        )
-    }
-
-    private fun createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val id = NOTIFICATION_CHANNEL_ID
-            val name = getString(R.string.timer)
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel = NotificationChannel(id, name, importance)
-            val notificationManager: NotificationManager =
-                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
-        }
-    }
 
     private fun createNotification(content: String = ""): Notification {
         val cancelPendingIntent =
-            Intent(this, CancelTimerActionReceiver::class.java).let { intent ->
+            Intent(this, TimerCancelReceiver::class.java).let { intent ->
                 intent.action = TIMER_ACTION_ACTION
                 intent.putExtra("action", "cancel")
 
@@ -197,35 +186,16 @@ class TimerService : Service() {
                 )
             }
 
-        val notification = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
-                .setContentTitle(getString(R.string.timer))
-                .setContentText(content)
-                .setSmallIcon(R.drawable.ic_norification_logo)
-                .addAction(
-                    R.drawable.ic_norification_logo,
-                    getString(R.string.cancel),
-                    cancelPendingIntent
-                )
-                .setContentIntent(pendingIntent)
-                .setSilent(true)
-                .setOngoing(true)
-                .build()
-        } else {
-            NotificationCompat.Builder(this)
-                .setContentTitle(getString(R.string.timer))
-                .setContentText(content)
-                .setSmallIcon(R.drawable.ic_norification_logo)
-                .addAction(
-                    R.drawable.ic_norification_logo,
-                    getString(R.string.cancel),
-                    cancelPendingIntent
-                )
-                .setContentIntent(pendingIntent)
-                .setSilent(true)
-                .setOngoing(true)
-                .build()
-        }
-        return notification
+        return createNotification(
+            channelId = NOTIFICATION_CHANNEL_ID,
+            title = getString(R.string.timer),
+            content = content,
+            icon = R.drawable.ic_norification_logo,
+            isSilent = true,
+            isOnGoing = true,
+            intent = pendingIntent,
+            actionTitle = getString(R.string.cancel),
+            actionIntent = cancelPendingIntent
+        )
     }
 }

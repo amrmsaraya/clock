@@ -99,9 +99,12 @@ fun BoxWithConstraintsScope.TimerTemplateItem(
 }
 
 @Composable
-fun BoxWithConstraintsScope.NewTimerTemplate(onClick: () -> Unit) {
+fun BoxWithConstraintsScope.NewTimerTemplate(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
     Surface(
-        modifier = Modifier
+        modifier = modifier
             .size(maxWidth / 3)
             .padding(8.dp),
         shape = CircleShape,

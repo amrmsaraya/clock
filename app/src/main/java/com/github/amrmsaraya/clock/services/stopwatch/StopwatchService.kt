@@ -1,4 +1,4 @@
-package com.github.amrmsaraya.clock.services
+package com.github.amrmsaraya.clock.services.stopwatch
 
 import android.app.*
 import android.content.BroadcastReceiver
@@ -7,13 +7,14 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
 import android.os.IBinder
-import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.github.amrmsaraya.clock.BuildConfig
 import com.github.amrmsaraya.clock.R
 import com.github.amrmsaraya.clock.presentation.common_ui.stopwatchTimerFormat
 import com.github.amrmsaraya.clock.presentation.main_activity.MainActivity
 import com.github.amrmsaraya.clock.presentation.navigation.Screens
+import com.github.amrmsaraya.clock.utils.createNotification
+import com.github.amrmsaraya.clock.utils.createNotificationChannel
 import com.github.amrmsaraya.timer.Stopwatch
 import com.github.amrmsaraya.timer.Time
 import kotlinx.coroutines.*
@@ -33,7 +34,7 @@ class StopwatchService : Service() {
     val stopwatch = Stopwatch()
     var isStarted = false
 
-    private val cancelActionReceiver = CancelStopwatchActionReceiver()
+    private val cancelActionReceiver = StopwatchCancelReceiver()
     private val broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             intent?.getStringExtra("action")?.let {
@@ -56,7 +57,12 @@ class StopwatchService : Service() {
     override fun onCreate() {
         super.onCreate()
 
-        createNotificationChannel()
+        createNotificationChannel(
+            id = NOTIFICATION_CHANNEL_ID,
+            name = getString(R.string.stopwatch),
+            importance = NotificationManager.IMPORTANCE_DEFAULT
+        )
+
         startForeground(NOTIFICATION_ID, createNotification())
 
         IntentFilter().also { intent ->
@@ -136,21 +142,9 @@ class StopwatchService : Service() {
         )
     }
 
-    private fun createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val id = NOTIFICATION_CHANNEL_ID
-            val name = getString(R.string.stopwatch)
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel = NotificationChannel(id, name, importance)
-            val notificationManager: NotificationManager =
-                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
-        }
-    }
-
     private fun createNotification(content: String = ""): Notification {
         val cancelPendingIntent =
-            Intent(this, CancelStopwatchActionReceiver::class.java).let { intent ->
+            Intent(this, StopwatchCancelReceiver::class.java).let { intent ->
                 intent.action = STOPWATCH_ACTION_ACTION
                 intent.putExtra("action", "cancel")
 
@@ -180,35 +174,16 @@ class StopwatchService : Service() {
                 )
             }
 
-        val notification = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
-                .setContentTitle(getString(R.string.stopwatch))
-                .setContentText(content)
-                .setSmallIcon(R.drawable.ic_norification_logo)
-                .addAction(
-                    R.drawable.ic_norification_logo,
-                    getString(R.string.cancel),
-                    cancelPendingIntent
-                )
-                .setContentIntent(pendingIntent)
-                .setSilent(true)
-                .setOngoing(true)
-                .build()
-        } else {
-            NotificationCompat.Builder(this)
-                .setContentTitle(getString(R.string.stopwatch))
-                .setContentText(content)
-                .setSmallIcon(R.drawable.ic_norification_logo)
-                .addAction(
-                    R.drawable.ic_norification_logo,
-                    getString(R.string.cancel),
-                    cancelPendingIntent
-                )
-                .setContentIntent(pendingIntent)
-                .setSilent(true)
-                .setOngoing(true)
-                .build()
-        }
-        return notification
+        return createNotification(
+            channelId = NOTIFICATION_CHANNEL_ID,
+            title = getString(R.string.stopwatch),
+            content = content,
+            icon = R.drawable.ic_norification_logo,
+            isSilent = true,
+            isOnGoing = true,
+            intent = pendingIntent,
+            actionTitle = getString(R.string.cancel),
+            actionIntent = cancelPendingIntent
+        )
     }
 }

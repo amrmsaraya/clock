@@ -5,10 +5,10 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
-import com.github.amrmsaraya.clock.services.STOPWATCH_ACTION_ACTION
-import com.github.amrmsaraya.clock.services.STOPWATCH_LAPS_ACTION
-import com.github.amrmsaraya.clock.services.STOPWATCH_TIME_ACTION
-import com.github.amrmsaraya.clock.services.StopwatchService
+import com.github.amrmsaraya.clock.services.stopwatch.STOPWATCH_ACTION_ACTION
+import com.github.amrmsaraya.clock.services.stopwatch.STOPWATCH_LAPS_ACTION
+import com.github.amrmsaraya.clock.services.stopwatch.STOPWATCH_TIME_ACTION
+import com.github.amrmsaraya.clock.services.stopwatch.StopwatchService
 import com.github.amrmsaraya.timer.Stopwatch
 import com.github.amrmsaraya.timer.Time
 import com.github.amrmsaraya.timer.toTime

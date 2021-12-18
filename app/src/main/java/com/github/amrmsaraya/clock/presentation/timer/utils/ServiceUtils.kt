@@ -5,9 +5,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
-import com.github.amrmsaraya.clock.services.TIMER_ACTION_ACTION
-import com.github.amrmsaraya.clock.services.TIMER_TIME_ACTION
-import com.github.amrmsaraya.clock.services.TimerService
+import com.github.amrmsaraya.clock.services.timer.TIMER_ACTION_ACTION
+import com.github.amrmsaraya.clock.services.timer.TIMER_TIME_ACTION
+import com.github.amrmsaraya.clock.services.timer.TimerService
 import com.github.amrmsaraya.timer.Time
 import com.github.amrmsaraya.timer.Timer
 import com.github.amrmsaraya.timer.toTime

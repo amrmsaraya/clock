@@ -50,7 +50,6 @@ import com.github.amrmsaraya.clock.R
 import com.github.amrmsaraya.clock.domain.entity.Alarm
 import com.github.amrmsaraya.clock.presentation.alarm.utils.Colors
 import com.github.amrmsaraya.clock.presentation.alarm.utils.Days
-import com.github.amrmsaraya.clock.presentation.alarm.utils.TimeType
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -184,6 +183,10 @@ private fun RingtoneRow(
     onClick: () -> Unit,
 ) {
     val context = LocalContext.current
+    val ringtoneTitle by remember {
+        mutableStateOf(RingtoneManager.getRingtone(context, ringtone).getTitle(context))
+    }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -200,10 +203,7 @@ private fun RingtoneRow(
             Text(text = stringResource(R.string.ringtone))
             Spacer(modifier = Modifier.size(4.dp))
             Text(
-                text = RingtoneManager.getRingtone(
-                    context,
-                    ringtone
-                ).getTitle(context),
+                text = ringtoneTitle,
                 color = MaterialTheme.colorScheme.outline
             )
         }
@@ -485,16 +485,13 @@ private fun ringtonePicker(
     getRingtone: ManagedActivityResultLauncher<IntentSenderRequest, ActivityResult>
 ) {
     val existingRingtoneUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
-    val intent = Intent(RingtoneManager.ACTION_RINGTONE_PICKER)
-
-    intent.putExtra(
-        RingtoneManager.EXTRA_RINGTONE_TITLE,
-        context.getString(R.string.set_alarm_tone)
-    )
-    intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALARM)
-    intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, existingRingtoneUri)
-    intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, false)
-    intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true)
+    val intent = Intent(RingtoneManager.ACTION_RINGTONE_PICKER).apply {
+        putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, context.getString(R.string.set_alarm_tone))
+        putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALARM)
+        putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, existingRingtoneUri)
+        putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, false)
+        putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true)
+    }
 
     val pendingIntent = IntentSenderRequest.Builder(
         PendingIntent.getActivity(
@@ -504,5 +501,6 @@ private fun ringtonePicker(
             PendingIntent.FLAG_IMMUTABLE
         )
     ).build()
+
     getRingtone.launch(pendingIntent)
 }
