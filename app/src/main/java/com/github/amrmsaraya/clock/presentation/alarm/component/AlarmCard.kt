@@ -125,7 +125,8 @@ fun AlarmCard(
                             }
                             if (ringIn.toTime().minutes > 0) {
                                 append(" ${ringIn.toTime().minutes} min")
-                            } else {
+                            }
+                            if (ringIn < 60 * 1000) {
                                 append(" ${stringResource(R.string.few_seconds)}")
                             }
 
