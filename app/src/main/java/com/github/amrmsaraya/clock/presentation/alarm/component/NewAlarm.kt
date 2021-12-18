@@ -94,6 +94,12 @@ fun NewAlarm(
                 }
         }
 
+
+    LaunchedEffect(key1 = ringtone) {
+        println("RINGTONE = $ringtone")
+    }
+
+
     Column(modifier = modifier.verticalScroll(state = rememberScrollState())) {
         HeaderRow(
             title = title,
@@ -183,9 +189,8 @@ private fun RingtoneRow(
     onClick: () -> Unit,
 ) {
     val context = LocalContext.current
-    val ringtoneTitle by remember {
-        mutableStateOf(RingtoneManager.getRingtone(context, ringtone).getTitle(context))
-    }
+    val ringtoneTitle =
+        RingtoneManager.getRingtone(context, ringtone).getTitle(context)
 
     Row(
         modifier = Modifier
