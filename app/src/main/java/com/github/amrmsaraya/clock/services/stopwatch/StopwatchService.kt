@@ -95,7 +95,6 @@ class StopwatchService : Service() {
         unregisterReceiver(cancelActionReceiver)
         scope.cancel()
         stopwatch.clear()
-        println("onDestroy")
     }
 
     private suspend fun collectLaps() {

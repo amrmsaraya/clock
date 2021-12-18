@@ -14,5 +14,7 @@ data class AlarmDTO(
     val color: Int,
     val repeatOn: List<Int>,
     val ringtone: String,
-    val enabled: Boolean = true
+    val enabled: Boolean = true,
+    val ringTime: Long = 0,
+    val snooze: Long = 5 * 60 * 1000
 )

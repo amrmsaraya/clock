@@ -14,6 +14,7 @@ import com.github.amrmsaraya.clock.utils.createNotificationChannel
 
 class AlarmReceiver : BroadcastReceiver() {
 
+
     override fun onReceive(context: Context, intent: Intent) {
         val pendingIntent = Intent(context, AlarmActivity::class.java).let {
 
@@ -22,9 +23,9 @@ class AlarmReceiver : BroadcastReceiver() {
             it.putExtra("minute", intent.getIntExtra("minute", 0))
             it.putExtra("amPm", intent.getIntExtra("amPm", 0))
             it.putExtra("color", intent.getIntExtra("color", 0))
-
             it.putExtra("title", intent.getStringExtra("title"))
             it.putExtra("ringtone", intent.getStringExtra("ringtone"))
+            it.putExtra("repeatOn", intent.getIntArrayExtra("repeatOn"))
 
             PendingIntent.getActivity(
                 context,

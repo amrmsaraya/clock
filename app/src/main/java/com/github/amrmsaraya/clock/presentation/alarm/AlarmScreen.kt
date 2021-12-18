@@ -1,12 +1,7 @@
 package com.github.amrmsaraya.clock.presentation.alarm
 
 import android.app.Activity
-import android.app.AlarmManager
-import android.app.PendingIntent
-import android.content.Context
-import android.content.Intent
 import android.media.RingtoneManager
-import android.os.Build
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
@@ -37,10 +32,10 @@ import com.github.amrmsaraya.clock.presentation.common_ui.DeleteFAB
 import com.github.amrmsaraya.clock.presentation.common_ui.FullScreenDialog
 import com.github.amrmsaraya.clock.presentation.theme.Purple200
 import com.github.amrmsaraya.clock.presentation.theme.Purple900
-import com.github.amrmsaraya.clock.services.alarm.AlarmReceiver
+import com.github.amrmsaraya.clock.utils.cancelAlarm
+import com.github.amrmsaraya.clock.utils.setAlarm
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.util.*
 
 @Composable
 fun AlarmScreen(
@@ -61,7 +56,6 @@ fun AlarmScreen(
     var alarmEditMode by remember { mutableStateOf(false) }
     var alarm by remember { mutableStateOf(Alarm(ringtone = "")) }
 
-
     BackHandler {
         when {
             selectMode -> {
@@ -77,18 +71,26 @@ fun AlarmScreen(
         editMode = alarmEditMode,
         alarm = alarm,
         onSave = {
-            setAlarm(context, it)
-            viewModel.sendIntent(AlarmIntent.InsertAlarm(it))
+            context.cancelAlarm(it)
+            val ringTime = context.setAlarm(it)
+            viewModel.sendIntent(AlarmIntent.InsertAlarm(it.copy(ringTime = ringTime)))
             showAlarmDialog = false
         },
         onCancel = { showAlarmDialog = false }
     )
 
-
     AlarmScreenContent(
         modifier = modifier,
         alarms = uiState.alarms,
-        onCheckedChange = { viewModel.sendIntent(AlarmIntent.InsertAlarm(it)) },
+        onCheckedChange = {
+            if (it.enabled) {
+                val ringTime = context.setAlarm(it)
+                viewModel.sendIntent(AlarmIntent.InsertAlarm(it.copy(ringTime = ringTime)))
+            } else {
+                context.cancelAlarm(it)
+                viewModel.sendIntent(AlarmIntent.InsertAlarm(it))
+            }
+        },
         onShowAlarmDialog = { receivedAlarm, editMode ->
             alarm = receivedAlarm
             alarmEditMode = editMode
@@ -122,6 +124,7 @@ fun AlarmScreen(
 
                 delay(300 * 2)
                 viewModel.sendIntent(AlarmIntent.DeleteAlarms(selectedAlarms))
+                deletedAlarms.forEach { context.cancelAlarm(it) }
 
                 isDeleteInProgress = false
             }
@@ -134,7 +137,6 @@ fun AlarmScreen(
             }
         }
     )
-
 }
 
 @Composable
@@ -195,6 +197,7 @@ private fun AlarmScreenContent(
                         AddFAB {
                             onShowAlarmDialog(
                                 Alarm(
+                                    id = alarms.lastOrNull()?.id?.plus(1) ?: 1,
                                     ringtone = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
                                         .toString()
                                 ),
@@ -238,8 +241,9 @@ private fun AlarmScreenContent(
                                     R.string.pm
                                 ),
                                 days = Days.values().filter { it.ordinal in alarm.repeatOn }.map {
-                                    stringResource(id = it.stringRes)
-                                }.joinToString("  "),
+                                    stringResource(id = it.string)
+                                }.joinToString(" "),
+                                ringTime = alarm.ringTime,
                                 activeBackgroundColor = Colors.values()
                                     .filter { it.ordinal == alarm.color }
                                     .map {
@@ -284,77 +288,4 @@ private fun AlarmScreenContent(
             }
         }
     }
-}
-
-fun setAlarm(context: Context, alarm: Alarm) {
-    val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-
-    val pendingIntent = Intent(context, AlarmReceiver::class.java).let { intent ->
-
-        intent.putExtra("id", alarm.id.toInt())
-        intent.putExtra("title", alarm.title)
-        intent.putExtra("hour", alarm.hour)
-        intent.putExtra("minute", alarm.minute)
-        intent.putExtra("amPm", alarm.amPm)
-        intent.putExtra("ringtone", alarm.ringtone)
-        intent.putExtra("color", alarm.color)
-
-        PendingIntent.getBroadcast(
-            context,
-            alarm.id.toInt(),
-            intent,
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                PendingIntent.FLAG_UPDATE_CURRENT + PendingIntent.FLAG_MUTABLE
-            } else {
-                PendingIntent.FLAG_UPDATE_CURRENT
-            }
-        )
-
-    }
-
-    val calendar = Calendar.getInstance().apply {
-
-        if (alarm.hour > get(Calendar.HOUR)) {
-            set(Calendar.DAY_OF_YEAR, get(Calendar.DAY_OF_YEAR) + 1)
-        } else {
-            if (alarm.minute > get(Calendar.MINUTE) && alarm.hour != get(Calendar.HOUR)) {
-                set(Calendar.DAY_OF_YEAR, get(Calendar.DAY_OF_YEAR) + 1)
-            }
-        }
-
-        set(Calendar.HOUR, alarm.hour)
-        set(Calendar.MINUTE, alarm.minute)
-        set(Calendar.AM_PM, alarm.amPm)
-        set(Calendar.SECOND, 0)
-        set(Calendar.MILLISECOND, 0)
-    }
-
-    alarmManager.setAlarmClock(
-        AlarmManager.AlarmClockInfo(
-            calendar.timeInMillis,
-            pendingIntent
-        ),
-        pendingIntent
-    )
-
-    println(alarmManager.nextAlarmClock.triggerTime)
-}
-
-fun cancelAlarm(context: Context, alarm: Alarm) {
-    val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-
-    val pendingIntent = Intent(context, AlarmReceiver::class.java).let { intent ->
-        PendingIntent.getBroadcast(
-            context,
-            alarm.id.toInt(),
-            intent,
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                PendingIntent.FLAG_UPDATE_CURRENT + PendingIntent.FLAG_MUTABLE
-            } else {
-                PendingIntent.FLAG_UPDATE_CURRENT
-            }
-        )
-    }
-
-    alarmManager.cancel(pendingIntent)
 }

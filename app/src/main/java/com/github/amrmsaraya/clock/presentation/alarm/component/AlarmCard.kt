@@ -1,5 +1,6 @@
 package com.github.amrmsaraya.clock.presentation.alarm.component
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -22,8 +23,8 @@ import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.github.amrmsaraya.clock.R
+import com.github.amrmsaraya.timer.toTime
 import kotlin.math.ln
 
 @ExperimentalFoundationApi
@@ -34,6 +35,7 @@ fun AlarmCard(
     time: String,
     amPm: String,
     days: String,
+    ringTime: Long,
     activeBackgroundColor: Color,
     contentColor: Color,
     selectMode: Boolean,
@@ -53,6 +55,8 @@ fun AlarmCard(
         },
         animationSpec = tween(1000)
     )
+
+    val ringIn = ringTime - System.currentTimeMillis()
 
     val animateContentColor by animateColorAsState(
         targetValue = if (checked) contentColor else MaterialTheme.colorScheme.outline,
@@ -83,7 +87,7 @@ fun AlarmCard(
                     Text(
                         text = "$time $amPm",
                         color = animateContentColor,
-                        fontSize = 20.sp
+                        style = MaterialTheme.typography.headlineSmall
                     )
                     if (title.isNotEmpty()) {
                         Spacer(modifier = Modifier.size(8.dp))
@@ -97,14 +101,43 @@ fun AlarmCard(
                 }
                 Spacer(modifier = Modifier.size(4.dp))
                 Text(
-                    text = if (days.isNotEmpty()) days else stringResource(R.string.ring_once),
+                    text = when {
+                        days.split(" ").size == 7 -> stringResource(R.string.everyday)
+                        days.isNotEmpty() -> days
+                        days.isEmpty() -> stringResource(R.string.ring_once)
+                        else -> ""
+                    },
                     style = MaterialTheme.typography.bodyMedium,
-                    color = animateContentColor,
+                    color = animateContentColor.copy(alpha = 0.8f),
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1
                 )
+                AnimatedVisibility(checked && ringIn > 0) {
+                    Spacer(modifier = Modifier.size(4.dp))
+                    Text(
+                        text = buildString {
+                            append(stringResource(R.string.ring_in))
+                            if (ringIn / (1000 * 60 * 60 * 24) > 0) {
+                                append(" ${ringIn / (1000 * 60 * 60 * 24)} d")
+                            }
+                            if (ringIn.toTime().hours % 24 > 0) {
+                                append(" ${ringIn.toTime().hours % 24} h")
+                            }
+                            if (ringIn.toTime().minutes > 0) {
+                                append(" ${ringIn.toTime().minutes} min")
+                            } else {
+                                append(" ${stringResource(R.string.few_seconds)}")
+                            }
+
+                        },
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = animateContentColor.copy(alpha = 0.8f),
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 1
+                    )
+                }
             }
-            if(!selectMode) {
+            if (!selectMode) {
                 Switch(
                     checked = checked,
                     onCheckedChange = onCheckedChange,

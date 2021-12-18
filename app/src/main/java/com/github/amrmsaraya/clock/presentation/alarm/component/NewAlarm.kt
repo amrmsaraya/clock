@@ -16,6 +16,8 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -27,10 +29,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.NavigateNext
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
@@ -50,6 +49,8 @@ import com.github.amrmsaraya.clock.R
 import com.github.amrmsaraya.clock.domain.entity.Alarm
 import com.github.amrmsaraya.clock.presentation.alarm.utils.Colors
 import com.github.amrmsaraya.clock.presentation.alarm.utils.Days
+import com.github.amrmsaraya.clock.presentation.common_ui.FullScreenDialog
+import com.github.amrmsaraya.timer.toTime
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -65,13 +66,6 @@ fun NewAlarm(
 
     val days = Days.values()
     val selectedDays = remember { mutableStateListOf<Days>() }
-    if (selectedDays.isEmpty()) {
-        selectedDays.addAll(
-            alarm.repeatOn.map { ordinal ->
-                Days.values().first { it.ordinal == ordinal }
-            }
-        )
-    }
 
     val backgroundColor = Colors.values().map { it.activeBackgroundColor }
     var selectedColor by remember { mutableStateOf(alarm.color) }
@@ -79,6 +73,7 @@ fun NewAlarm(
     var title by remember { mutableStateOf(alarm.title) }
     var amPm by remember { mutableStateOf(alarm.amPm) }
     var ringtone by remember { mutableStateOf(alarm.ringtone.toUri()) }
+    var snooze by remember { mutableStateOf(alarm.snooze) }
 
     val colorRowScrollState = rememberScrollState()
     val daysRowScrollState = rememberScrollState()
@@ -94,11 +89,24 @@ fun NewAlarm(
                 }
         }
 
+    var showSnoozeDialog by remember { mutableStateOf(false) }
 
-    LaunchedEffect(key1 = ringtone) {
-        println("RINGTONE = $ringtone")
+    LaunchedEffect(key1 = true) {
+        if (selectedDays.isEmpty()) {
+            selectedDays.addAll(
+                alarm.repeatOn.map { ordinal ->
+                    Days.values().first { it.ordinal == ordinal }
+                }
+            )
+        }
     }
 
+    SnoozeDialog(
+        visible = showSnoozeDialog,
+        snooze = snooze,
+        onDismiss = { showSnoozeDialog = false },
+        onSelect = { snooze = it }
+    )
 
     Column(modifier = modifier.verticalScroll(state = rememberScrollState())) {
         HeaderRow(
@@ -108,6 +116,7 @@ fun NewAlarm(
             minute = selectedMinute,
             amPm = amPm,
             ringtone = ringtone,
+            snooze = snooze,
             selectedColor = selectedColor,
             selectedDays = selectedDays,
             alarm = alarm,
@@ -135,7 +144,9 @@ fun NewAlarm(
                 .align(Alignment.CenterHorizontally)
                 .horizontalScroll(daysRowScrollState),
             days = days,
-            selectedDays = selectedDays
+            selectedDays = selectedDays,
+            onDayAdded = { selectedDays.add(it) },
+            onDayRemoved = { selectedDays.remove(it) }
         )
 
         Spacer(modifier = Modifier.size(16.dp))
@@ -180,6 +191,13 @@ fun NewAlarm(
             ringtone = ringtone,
             onClick = { ringtonePicker(context, getRingtone) }
         )
+
+        Spacer(modifier = Modifier.size(16.dp))
+
+        SnoozeRow(
+            snooze = snooze,
+            onClick = { showSnoozeDialog = true }
+        )
     }
 }
 
@@ -209,6 +227,35 @@ private fun RingtoneRow(
             Spacer(modifier = Modifier.size(4.dp))
             Text(
                 text = ringtoneTitle,
+                color = MaterialTheme.colorScheme.outline
+            )
+        }
+        Icon(imageVector = Icons.Default.NavigateNext, contentDescription = null)
+    }
+}
+
+@Composable
+private fun SnoozeRow(
+    snooze: Long,
+    onClick: () -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 8.dp)
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() },
+                onClick = onClick
+            ),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Column {
+            Text(text = stringResource(R.string.snooze))
+            Spacer(modifier = Modifier.size(4.dp))
+            Text(
+                text = "${snooze.toTime().minutes} ${stringResource(R.string.minutes)}",
                 color = MaterialTheme.colorScheme.outline
             )
         }
@@ -265,7 +312,9 @@ private fun ColorRow(
 private fun DaysRow(
     modifier: Modifier,
     days: Array<Days>,
-    selectedDays: SnapshotStateList<Days>
+    selectedDays: SnapshotStateList<Days>,
+    onDayAdded: (Days) -> Unit,
+    onDayRemoved: (Days) -> Unit
 ) {
     Row(
         modifier = modifier,
@@ -292,16 +341,16 @@ private fun DaysRow(
                         interactionSource = remember { MutableInteractionSource() },
                         onClick = {
                             if (day in selectedDays) {
-                                selectedDays.remove(day)
+                                onDayRemoved(day)
                             } else {
-                                selectedDays.add(day)
+                                onDayAdded(day)
                             }
                         }
                     ),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = stringResource(id = day.stringRes),
+                    text = stringResource(id = day.letter),
                     color = animateColorAsState(
                         targetValue = if (day in selectedDays) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
                         animationSpec = tween(500)
@@ -437,6 +486,7 @@ private fun HeaderRow(
     minute: Int,
     amPm: Int,
     ringtone: Uri,
+    snooze: Long,
     selectedColor: Int,
     selectedDays: SnapshotStateList<Days>,
     alarm: Alarm,
@@ -475,12 +525,77 @@ private fun HeaderRow(
                         amPm = amPm,
                         color = selectedColor,
                         repeatOn = selectedDays.map { it.ordinal },
-                        ringtone = ringtone.toString()
+                        ringtone = ringtone.toString(),
+                        snooze = snooze
                     )
                 )
             }
         ) {
             Icon(imageVector = Icons.Default.Done, contentDescription = null)
+        }
+    }
+}
+
+@Composable
+fun SnoozeDialog(
+    visible: Boolean,
+    snooze: Long,
+    onDismiss: () -> Unit,
+    onSelect: (Long) -> Unit
+) {
+    val snoozeList = remember {
+        mutableStateListOf<Long>(
+            5 * 60 * 1000,
+            10 * 60 * 1000,
+            15 * 60 * 1000,
+            20 * 60 * 1000,
+            30 * 60 * 1000,
+        )
+    }
+
+    FullScreenDialog(visible = visible, onDismiss = onDismiss) {
+        Column(
+            modifier = Modifier.padding(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                modifier = Modifier.padding(top = 8.dp),
+                text = stringResource(id = R.string.snooze),
+                style = MaterialTheme.typography.titleLarge
+            )
+
+            Spacer(modifier = Modifier.size(8.dp))
+
+            LazyColumn(Modifier.fillMaxWidth()) {
+                items(snoozeList) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable(
+                                indication = null,
+                                interactionSource = remember { MutableInteractionSource() },
+                                onClick = {
+                                    onSelect(it)
+                                    onDismiss()
+                                }
+                            ),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        RadioButton(
+                            selected = snooze == it,
+                            onClick = {
+                                onSelect(it)
+                                onDismiss()
+                            }
+                        )
+                        Text(text = "${it.toTime().minutes} ${stringResource(R.string.minutes)}")
+                    }
+//
+//                    if (it != snoozeList.last()) {
+//                        Spacer(modifier = Modifier.size(4.dp))
+//                    }
+                }
+            }
         }
     }
 }

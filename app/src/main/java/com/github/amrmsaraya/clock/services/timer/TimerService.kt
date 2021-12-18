@@ -56,7 +56,6 @@ class TimerService : Service() {
 
             intent?.getLongExtra("configuredTime", 0L)?.let { configuredTime ->
                 if (configuredTime > 0) {
-                    println("CONFIGURE $configuredTime")
                     timer.configure(configuredTime)
                 }
             }
@@ -114,7 +113,6 @@ class TimerService : Service() {
         unregisterReceiver(cancelTimerActionReceiver)
         scope.cancel()
         timer.clear()
-        println("onDestroy")
     }
 
     private suspend fun collectTimer() {

@@ -13,7 +13,9 @@ internal fun AlarmDTO.toAlarm(): Alarm {
         color = color,
         repeatOn = repeatOn,
         ringtone = ringtone,
-        enabled = enabled
+        enabled = enabled,
+        ringTime = ringTime,
+        snooze = snooze
     )
 }
 
@@ -27,6 +29,8 @@ internal fun Alarm.toAlarmDTO(): AlarmDTO {
         color = color,
         repeatOn = repeatOn,
         ringtone = ringtone,
-        enabled = enabled
+        enabled = enabled,
+        ringTime = ringTime,
+        snooze = snooze
     )
 }
