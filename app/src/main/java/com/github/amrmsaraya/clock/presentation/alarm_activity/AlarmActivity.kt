@@ -26,10 +26,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import com.github.amrmsaraya.clock.R
@@ -51,7 +52,6 @@ import java.util.*
 class AlarmActivity : ComponentActivity() {
 
     private lateinit var ringtone: Ringtone
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -95,12 +95,13 @@ class AlarmActivity : ComponentActivity() {
         ringtone = RingtoneManager.getRingtone(this, ringtoneUri).apply {
             audioAttributes =
                 AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_ALARM).build()
+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 isLooping = true
             }
+
             play()
         }
-
 
         setContent {
             val scope = rememberCoroutineScope()
@@ -162,131 +163,197 @@ fun App(
         matchSystemBars = backgroundColor
     ) {
         Surface(color = backgroundColor) {
-            val context = LocalContext.current
+            AlarmContent(
+                title = title,
+                hour = hour,
+                minute = minute,
+                contentColor = contentColor,
+                onSnooze = onSnooze,
+                onStop = onStop
+            )
+        }
+    }
+}
 
-            BoxWithConstraints(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                var size by remember { mutableStateOf(maxWidth * 0.6f) }
-                val animatedSize by animateDpAsState(
-                    targetValue = size,
-                    animationSpec = tween(3000)
-                )
 
-                LaunchedEffect(key1 = animatedSize) {
-                    if (animatedSize == maxWidth * 0.6f) {
-                        size = maxWidth * 0.8f
-                    } else if (animatedSize == maxWidth * 0.8f) {
-                        size = maxWidth * 0.6f
-                    }
-                }
+@Composable
+private fun AlarmContent(
+    title: String,
+    hour: Int,
+    minute: Int,
+    contentColor: Color,
+    onSnooze: () -> Unit,
+    onStop: () -> Unit
+) {
+    BoxWithConstraints(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        var size by remember { mutableStateOf(maxWidth * 0.6f) }
+        val animatedSize by animateDpAsState(
+            targetValue = size,
+            animationSpec = tween(3000)
+        )
 
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Column(
-                        modifier = Modifier
-                            .weight(0.3f)
-                            .fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                text = hour.toString(),
-                                style = MaterialTheme.typography.displayLarge,
-                                color = contentColor,
-                            )
-                            Spacer(modifier = Modifier.size(8.dp))
-                            Text(
-                                text = ":",
-                                style = MaterialTheme.typography.displayLarge,
-                                color = contentColor,
-                            )
-                            Spacer(modifier = Modifier.size(8.dp))
-                            Text(
-                                text = "%02d".format(minute),
-                                style = MaterialTheme.typography.displayLarge,
-                                color = contentColor,
-                            )
-                        }
-                        Text(
-                            text = SimpleDateFormat(
-                                "E, MMM dd",
-                                Locale.getDefault()
-                            ).format(System.currentTimeMillis()),
-                            style = MaterialTheme.typography.titleMedium,
-                            textAlign = TextAlign.Center,
-                            color = contentColor,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-                    Box(
-                        modifier = Modifier.weight(0.5f),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(animatedSize)
-                                .background(contentColor.copy(alpha = 0.075f), shape = CircleShape)
-                        )
-                        Column(
-                            Modifier
-                                .size(this@BoxWithConstraints.maxWidth * 0.7f)
-                                .clip(CircleShape)
-                                .background(contentColor.copy(alpha = 0.1f))
-                                .clickable { onSnooze() },
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            if (title.isNotEmpty()) {
-                                Text(
-                                    modifier = Modifier.fillMaxWidth(0.8f),
-                                    text = title,
-                                    style = MaterialTheme.typography.titleLarge,
-                                    textAlign = TextAlign.Center,
-                                    color = contentColor,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                                Spacer(modifier = Modifier.size(8.dp))
-                            }
-                            Text(
-                                modifier = Modifier.fillMaxWidth(0.8f),
-                                text = stringResource(R.string.tap_to_snooze),
-                                color = contentColor,
-                                textAlign = TextAlign.Center,
-                                style = if (title.isNotEmpty()) {
-                                    MaterialTheme.typography.titleMedium
-                                } else {
-                                    MaterialTheme.typography.titleLarge
-                                },
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
-                    }
-
-                    Box(
-                        modifier = Modifier
-                            .weight(0.2f)
-                            .fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            modifier = Modifier
-                                .size(70.dp)
-                                .clip(CircleShape)
-                                .background(contentColor.copy(alpha = 0.1f))
-                                .clickable { onStop() }
-                                .padding(16.dp),
-                            imageVector = Icons.Default.Close,
-                            contentDescription = null,
-                            tint = contentColor
-                        )
-                    }
-                }
+        LaunchedEffect(key1 = animatedSize) {
+            if (animatedSize == maxWidth * 0.6f) {
+                size = maxWidth * 0.8f
+            } else if (animatedSize == maxWidth * 0.8f) {
+                size = maxWidth * 0.6f
             }
         }
+
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            TimeAndDate(
+                modifier = Modifier
+                    .weight(0.3f)
+                    .fillMaxSize(),
+                hour = hour,
+                minute = minute,
+                contentColor = contentColor
+            )
+
+            TitleAndSnooze(
+                modifier = Modifier.weight(0.5f),
+                title = title,
+                contentColor = contentColor,
+                animatedSize = animatedSize,
+                maxWidth = this@BoxWithConstraints.maxWidth * 0.7f,
+                onSnooze = onSnooze
+            )
+
+            StopButton(
+                modifier = Modifier
+                    .weight(0.2f)
+                    .fillMaxSize(),
+                contentColor = contentColor,
+                onStop = onStop
+            )
+        }
+    }
+}
+
+@Composable
+private fun TitleAndSnooze(
+    modifier: Modifier = Modifier,
+    title: String,
+    contentColor: Color,
+    animatedSize: Dp,
+    maxWidth: Dp,
+    onSnooze: () -> Unit
+) {
+    Box(
+        modifier = modifier,
+        contentAlignment = Alignment.Center
+    ) {
+        Box(
+            modifier = Modifier
+                .size(animatedSize)
+                .background(contentColor.copy(alpha = 0.075f), shape = CircleShape)
+        )
+        Column(
+            Modifier
+                .size(maxWidth)
+                .clip(CircleShape)
+                .background(contentColor.copy(alpha = 0.1f))
+                .clickable { onSnooze() },
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            if (title.isNotEmpty()) {
+                Text(
+                    modifier = Modifier.fillMaxWidth(0.8f),
+                    text = title,
+                    style = MaterialTheme.typography.titleLarge,
+                    textAlign = TextAlign.Center,
+                    color = contentColor,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Spacer(modifier = Modifier.size(8.dp))
+            }
+            Text(
+                modifier = Modifier.fillMaxWidth(0.8f),
+                text = stringResource(R.string.tap_to_snooze),
+                color = contentColor,
+                textAlign = TextAlign.Center,
+                style = if (title.isNotEmpty()) {
+                    MaterialTheme.typography.titleMedium
+                } else {
+                    MaterialTheme.typography.titleLarge
+                },
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+    }
+}
+
+@Composable
+private fun TimeAndDate(
+    modifier: Modifier = Modifier,
+    hour: Int,
+    minute: Int,
+    contentColor: Color
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = hour.toString(),
+                style = MaterialTheme.typography.displayLarge,
+                color = contentColor,
+            )
+            Spacer(modifier = Modifier.size(8.dp))
+            Text(
+                text = ":",
+                style = MaterialTheme.typography.displayLarge,
+                color = contentColor,
+            )
+            Spacer(modifier = Modifier.size(8.dp))
+            Text(
+                text = "%02d".format(minute),
+                style = MaterialTheme.typography.displayLarge,
+                color = contentColor,
+            )
+        }
+        Text(
+            text = SimpleDateFormat(
+                "E, MMM dd",
+                Locale.getDefault()
+            ).format(System.currentTimeMillis()),
+            style = MaterialTheme.typography.titleMedium,
+            textAlign = TextAlign.Center,
+            color = contentColor,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
+}
+
+@Composable
+private fun StopButton(
+    modifier: Modifier = Modifier,
+    contentColor: Color,
+    onStop: () -> Unit
+) {
+    Box(
+        modifier = modifier,
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            modifier = Modifier
+                .size(70.dp)
+                .clip(CircleShape)
+                .background(contentColor.copy(alpha = 0.1f))
+                .clickable { onStop() }
+                .padding(16.dp),
+            imageVector = Icons.Default.Close,
+            contentDescription = null,
+            tint = contentColor
+        )
     }
 }
