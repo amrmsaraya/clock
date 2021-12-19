@@ -201,167 +201,61 @@ fun NewAlarm(
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-private fun RingtoneRow(
+private fun HeaderRow(
+    title: String,
+    editMode: Boolean,
+    hour: Int,
+    minute: Int,
+    amPm: Int,
     ringtone: Uri,
-    onClick: () -> Unit,
-) {
-    val context = LocalContext.current
-    val ringtoneTitle =
-        RingtoneManager.getRingtone(context, ringtone).getTitle(context)
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 8.dp)
-            .clickable(
-                indication = null,
-                interactionSource = remember { MutableInteractionSource() },
-                onClick = onClick
-            ),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Column {
-            Text(text = stringResource(R.string.ringtone))
-            Spacer(modifier = Modifier.size(4.dp))
-            Text(
-                text = ringtoneTitle,
-                color = MaterialTheme.colorScheme.outline
-            )
-        }
-        Icon(imageVector = Icons.Default.NavigateNext, contentDescription = null)
-    }
-}
-
-@Composable
-private fun SnoozeRow(
     snooze: Long,
-    onClick: () -> Unit,
+    selectedColor: Int,
+    selectedDays: SnapshotStateList<Days>,
+    alarm: Alarm,
+    onCancel: () -> Unit,
+    onSave: (Alarm) -> Unit
 ) {
+    val localKeyboard = LocalSoftwareKeyboardController.current
+
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 8.dp)
-            .clickable(
-                indication = null,
-                interactionSource = remember { MutableInteractionSource() },
-                onClick = onClick
-            ),
+        modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Column {
-            Text(text = stringResource(R.string.snooze))
-            Spacer(modifier = Modifier.size(4.dp))
-            Text(
-                text = "${snooze.toTime().minutes} ${stringResource(R.string.minutes)}",
-                color = MaterialTheme.colorScheme.outline
-            )
-        }
-        Icon(imageVector = Icons.Default.NavigateNext, contentDescription = null)
-    }
-}
-
-@Composable
-private fun ColorRow(
-    scrollState: ScrollState,
-    backgroundColor: List<Color>,
-    selectedColor: Int,
-    onColorChange: (Int) -> Unit,
-) {
-    Column {
-        Text(text = stringResource(R.string.select_color))
-        Spacer(modifier = Modifier.size(8.dp))
-        Row(
-            Modifier
-                .horizontalScroll(scrollState)
-                .height(60.dp),
-            verticalAlignment = Alignment.CenterVertically
+        IconButton(
+            onClick = {
+                localKeyboard?.hide()
+                onCancel()
+            }
         ) {
-            backgroundColor.forEachIndexed { index, color ->
-                val animatedSize by animateDpAsState(
-                    targetValue = if (index == selectedColor) 45.dp else 35.dp,
-                    animationSpec = tween(500)
-                )
-                Box(
-                    modifier = Modifier
-                        .padding(4.dp)
-                        .size(animatedSize)
-                        .clip(CircleShape)
-                        .background(color)
-                        .clickable { onColorChange(index) }
-                ) {
-                    if (index == selectedColor) {
-                        Icon(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(8.dp),
-                            imageVector = Icons.Default.Done,
-                            contentDescription = null,
-                            tint = Color.White
-                        )
-                    }
-                }
-            }
+            Icon(imageVector = Icons.Default.Close, contentDescription = null)
         }
-    }
-}
 
-@Composable
-private fun DaysRow(
-    modifier: Modifier,
-    days: Array<Days>,
-    selectedDays: SnapshotStateList<Days>,
-    onDayAdded: (Days) -> Unit,
-    onDayRemoved: (Days) -> Unit
-) {
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        days.forEach { day ->
+        Text(
+            text = if (editMode) stringResource(R.string.edit_alarm) else stringResource(R.string.new_alarm),
+            style = MaterialTheme.typography.titleLarge
+        )
 
-            val backgroundColor by animateColorAsState(
-                if (day in selectedDays) MaterialTheme.colorScheme.primary else Color.Transparent,
-            )
-
-            Box(
-                modifier = Modifier
-                    .size(35.dp)
-                    .clip(CircleShape)
-                    .border(
-                        width = 1.dp,
-                        color = if (day in selectedDays) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
-                        shape = CircleShape
+        IconButton(
+            onClick = {
+                localKeyboard?.hide()
+                onSave(
+                    alarm.copy(
+                        title = title,
+                        hour = hour,
+                        minute = minute,
+                        amPm = amPm,
+                        color = selectedColor,
+                        repeatOn = selectedDays.map { it.ordinal },
+                        ringtone = ringtone.toString(),
+                        snooze = snooze
                     )
-                    .background(color = backgroundColor)
-                    .clickable(
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() },
-                        onClick = {
-                            if (day in selectedDays) {
-                                onDayRemoved(day)
-                            } else {
-                                onDayAdded(day)
-                            }
-                        }
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = stringResource(id = day.letter),
-                    color = animateColorAsState(
-                        targetValue = if (day in selectedDays) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
-                        animationSpec = tween(500)
-                    ).value,
-                    style = MaterialTheme.typography.bodyLarge,
-                    textAlign = TextAlign.Center
                 )
             }
-            if (days.last() != day) {
-                Spacer(modifier = Modifier.size(8.dp))
-            }
+        ) {
+            Icon(imageVector = Icons.Default.Done, contentDescription = null)
         }
     }
 }
@@ -477,62 +371,169 @@ private fun TimeChooserRow(
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-private fun HeaderRow(
-    title: String,
-    editMode: Boolean,
-    hour: Int,
-    minute: Int,
-    amPm: Int,
-    ringtone: Uri,
-    snooze: Long,
-    selectedColor: Int,
+private fun DaysRow(
+    modifier: Modifier,
+    days: Array<Days>,
     selectedDays: SnapshotStateList<Days>,
-    alarm: Alarm,
-    onCancel: () -> Unit,
-    onSave: (Alarm) -> Unit
+    onDayAdded: (Days) -> Unit,
+    onDayRemoved: (Days) -> Unit
 ) {
-    val localKeyboard = LocalSoftwareKeyboardController.current
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        days.forEach { day ->
+
+            val backgroundColor by animateColorAsState(
+                if (day in selectedDays) MaterialTheme.colorScheme.primary else Color.Transparent,
+            )
+
+            Box(
+                modifier = Modifier
+                    .size(35.dp)
+                    .clip(CircleShape)
+                    .border(
+                        width = 1.dp,
+                        color = if (day in selectedDays) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
+                        shape = CircleShape
+                    )
+                    .background(color = backgroundColor)
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() },
+                        onClick = {
+                            if (day in selectedDays) {
+                                onDayRemoved(day)
+                            } else {
+                                onDayAdded(day)
+                            }
+                        }
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = stringResource(id = day.letter),
+                    color = animateColorAsState(
+                        targetValue = if (day in selectedDays) MaterialTheme.colorScheme.onPrimary
+                        else MaterialTheme.colorScheme.onSurface,
+                        animationSpec = tween(500)
+                    ).value,
+                    style = MaterialTheme.typography.bodyLarge,
+                    textAlign = TextAlign.Center
+                )
+            }
+            if (days.last() != day) {
+                Spacer(modifier = Modifier.size(8.dp))
+            }
+        }
+    }
+}
+
+@Composable
+private fun ColorRow(
+    scrollState: ScrollState,
+    backgroundColor: List<Color>,
+    selectedColor: Int,
+    onColorChange: (Int) -> Unit,
+) {
+    Column {
+        Text(text = stringResource(R.string.select_color))
+        Spacer(modifier = Modifier.size(8.dp))
+        Row(
+            Modifier
+                .horizontalScroll(scrollState)
+                .height(60.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            backgroundColor.forEachIndexed { index, color ->
+                val animatedSize by animateDpAsState(
+                    targetValue = if (index == selectedColor) 45.dp else 35.dp,
+                    animationSpec = tween(500)
+                )
+                Box(
+                    modifier = Modifier
+                        .padding(4.dp)
+                        .size(animatedSize)
+                        .clip(CircleShape)
+                        .background(color)
+                        .clickable { onColorChange(index) }
+                ) {
+                    if (index == selectedColor) {
+                        Icon(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(8.dp),
+                            imageVector = Icons.Default.Done,
+                            contentDescription = null,
+                            tint = Color.White
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun RingtoneRow(
+    ringtone: Uri,
+    onClick: () -> Unit,
+) {
+    val context = LocalContext.current
+    val ringtoneTitle =
+        RingtoneManager.getRingtone(context, ringtone).getTitle(context)
 
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 8.dp)
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() },
+                onClick = onClick
+            ),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        IconButton(
-            onClick = {
-                localKeyboard?.hide()
-                onCancel()
-            }
-        ) {
-            Icon(imageVector = Icons.Default.Close, contentDescription = null)
+        Column {
+            Text(text = stringResource(R.string.ringtone))
+            Spacer(modifier = Modifier.size(4.dp))
+            Text(
+                text = ringtoneTitle,
+                color = MaterialTheme.colorScheme.outline
+            )
         }
+        Icon(imageVector = Icons.Default.NavigateNext, contentDescription = null)
+    }
+}
 
-        Text(
-            text = if (editMode) stringResource(R.string.edit_alarm) else stringResource(R.string.new_alarm),
-            style = MaterialTheme.typography.titleLarge
-        )
-
-        IconButton(
-            onClick = {
-                localKeyboard?.hide()
-                onSave(
-                    alarm.copy(
-                        title = title,
-                        hour = hour,
-                        minute = minute,
-                        amPm = amPm,
-                        color = selectedColor,
-                        repeatOn = selectedDays.map { it.ordinal },
-                        ringtone = ringtone.toString(),
-                        snooze = snooze
-                    )
-                )
-            }
-        ) {
-            Icon(imageVector = Icons.Default.Done, contentDescription = null)
+@Composable
+private fun SnoozeRow(
+    snooze: Long,
+    onClick: () -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 8.dp)
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() },
+                onClick = onClick
+            ),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Column {
+            Text(text = stringResource(R.string.snooze))
+            Spacer(modifier = Modifier.size(4.dp))
+            Text(
+                text = "${snooze.toTime().minutes} ${stringResource(R.string.minutes)}",
+                color = MaterialTheme.colorScheme.outline
+            )
         }
+        Icon(imageVector = Icons.Default.NavigateNext, contentDescription = null)
     }
 }
 
@@ -590,10 +591,6 @@ fun SnoozeDialog(
                         )
                         Text(text = "${it.toTime().minutes} ${stringResource(R.string.minutes)}")
                     }
-//
-//                    if (it != snoozeList.last()) {
-//                        Spacer(modifier = Modifier.size(4.dp))
-//                    }
                 }
             }
         }
@@ -607,7 +604,7 @@ private fun ringtonePicker(
     val existingRingtoneUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
     val intent = Intent(RingtoneManager.ACTION_RINGTONE_PICKER).apply {
         putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, context.getString(R.string.set_alarm_tone))
-        putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALARM)
+        putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALL)
         putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, existingRingtoneUri)
         putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, false)
         putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true)
