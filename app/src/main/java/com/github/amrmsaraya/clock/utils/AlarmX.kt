@@ -64,8 +64,10 @@ fun Context.setAlarm(
                 set(Calendar.DAY_OF_WEEK, getDayOfWeek(repeatOn, repeat, currentTime))
 
                 if (timeInMillis < currentTime.timeInMillis) {
-                    set(Calendar.WEEK_OF_YEAR, currentTime.get(Calendar.WEEK_OF_YEAR) + 1)
-                    set(Calendar.DAY_OF_WEEK, getDayOfWeek(repeatOn, true, currentTime))
+                    set(Calendar.DAY_OF_WEEK, getDayOfWeek(repeatOn, true, this))
+                    if (get(Calendar.DAY_OF_WEEK) == currentTime.get(Calendar.DAY_OF_WEEK)) {
+                        set(Calendar.WEEK_OF_YEAR, currentTime.get(Calendar.WEEK_OF_YEAR) + 1)
+                    }
                 }
             }
         }
@@ -83,18 +85,17 @@ fun Context.setAlarm(
 
 private fun getDayOfWeek(
     repeatOn: List<Days>,
-    isRepeat: Boolean,
-    currentTime: Calendar
+    getNextDay: Boolean,
+    calendar: Calendar
 ): Int {
     val dayOfWeek = repeatOn.filter {
-        if (isRepeat) {
-            it.calendar > currentTime.get(Calendar.DAY_OF_WEEK)
+        if (getNextDay) {
+            it.calendar > calendar.get(Calendar.DAY_OF_WEEK)
         } else {
-            it.calendar >= currentTime.get(Calendar.DAY_OF_WEEK)
+            it.calendar >= calendar.get(Calendar.DAY_OF_WEEK)
         }
-    }.minOfOrNull { it.calendar } ?: repeatOn.filter {
-        it.calendar >= Calendar.SUNDAY
-    }.minOf { it.calendar }
+    }.minOfOrNull { it.calendar } ?: repeatOn.minOf { it.calendar }
+
     return dayOfWeek
 }
 
