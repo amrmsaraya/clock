@@ -9,7 +9,7 @@ java {
 }
 
 dependencies {
-    def coroutine_version = '1.5.2'
+    def coroutine_version = '1.6.0-RC3'
 
     // Coroutine
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutine_version"

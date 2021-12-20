@@ -25,7 +25,8 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -52,9 +53,9 @@ android {
 
 dependencies {
     def lifecycle_version = '2.4.0'
-    def accompanist_version = '0.21.4-beta'
-    def coroutine_version = '1.5.2'
-    def navigation_version = '2.4.0-beta02'
+    def accompanist_version = '0.21.5-rc'
+    def coroutine_version = '1.6.0-RC3'
+    def navigation_version = '2.4.0-rc01'
     def room_version = "2.4.0"
     def workManager_version = '2.7.1'
 

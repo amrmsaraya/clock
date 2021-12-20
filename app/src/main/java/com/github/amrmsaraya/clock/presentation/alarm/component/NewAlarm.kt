@@ -289,7 +289,7 @@ private fun TimeChooserRow(
                 .fillMaxSize(),
             items = (1..12).toList(),
             onTimeChange = { selectedHour = it },
-            initial = hour - 1,
+            initial = if (hour == 0) 12 - 1 else hour - 1,
         )
         Text(
             modifier = Modifier
