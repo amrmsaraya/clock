@@ -234,6 +234,51 @@ private fun AlarmContent(
 }
 
 @Composable
+private fun TimeAndDate(
+    modifier: Modifier = Modifier,
+    hour: Int,
+    minute: Int,
+    contentColor: Color
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = hour.toString(),
+                style = MaterialTheme.typography.displayLarge,
+                color = contentColor,
+            )
+            Spacer(modifier = Modifier.size(8.dp))
+            Text(
+                text = ":",
+                style = MaterialTheme.typography.displayLarge,
+                color = contentColor,
+            )
+            Spacer(modifier = Modifier.size(8.dp))
+            Text(
+                text = "%02d".format(minute),
+                style = MaterialTheme.typography.displayLarge,
+                color = contentColor,
+            )
+        }
+        Text(
+            text = SimpleDateFormat(
+                "E, MMM dd",
+                Locale.getDefault()
+            ).format(System.currentTimeMillis()),
+            style = MaterialTheme.typography.titleMedium,
+            textAlign = TextAlign.Center,
+            color = contentColor,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
+}
+
+@Composable
 private fun TitleAndSnooze(
     modifier: Modifier = Modifier,
     title: String,
@@ -286,51 +331,6 @@ private fun TitleAndSnooze(
                 overflow = TextOverflow.Ellipsis
             )
         }
-    }
-}
-
-@Composable
-private fun TimeAndDate(
-    modifier: Modifier = Modifier,
-    hour: Int,
-    minute: Int,
-    contentColor: Color
-) {
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = hour.toString(),
-                style = MaterialTheme.typography.displayLarge,
-                color = contentColor,
-            )
-            Spacer(modifier = Modifier.size(8.dp))
-            Text(
-                text = ":",
-                style = MaterialTheme.typography.displayLarge,
-                color = contentColor,
-            )
-            Spacer(modifier = Modifier.size(8.dp))
-            Text(
-                text = "%02d".format(minute),
-                style = MaterialTheme.typography.displayLarge,
-                color = contentColor,
-            )
-        }
-        Text(
-            text = SimpleDateFormat(
-                "E, MMM dd",
-                Locale.getDefault()
-            ).format(System.currentTimeMillis()),
-            style = MaterialTheme.typography.titleMedium,
-            textAlign = TextAlign.Center,
-            color = contentColor,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
     }
 }
 
