@@ -75,7 +75,10 @@ class AlarmReceiver : BroadcastReceiver() {
         val notification = context.createNotification(
             channelId = NOTIFICATION_CHANNEL_ID,
             title = context.getString(R.string.alarm),
-            content = alarm.title,
+            content = when (alarm.title.isEmpty()) {
+                true -> "${"%02d".format(alarm.hour)}: ${"%02d".format(alarm.minute)}"
+                false -> alarm.title
+            },
             icon = R.drawable.ic_norification_logo,
             isSilent = true,
             isOnGoing = true,
