@@ -32,7 +32,7 @@ android {
 
 dependencies {
 
-    def coroutine_version = '1.5.2'
+    def coroutine_version = '1.6.0-RC3'
     def room_version = "2.4.0"
 
     // local modules
