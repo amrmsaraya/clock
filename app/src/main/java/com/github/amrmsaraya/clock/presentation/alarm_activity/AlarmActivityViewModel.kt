@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.github.amrmsaraya.clock.domain.entity.Alarm
 import com.github.amrmsaraya.clock.domain.usecase.AlarmCRUDUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -14,7 +13,7 @@ class AlarmActivityViewModel @Inject constructor(
     private val alarmCRUDUseCase: AlarmCRUDUseCase
 ) : ViewModel() {
 
-    fun insertAlarm(alarm: Alarm) = viewModelScope.launch(Dispatchers.Default) {
+    fun insertAlarm(alarm: Alarm) = viewModelScope.launch {
         alarmCRUDUseCase.insert(alarm)
     }
 }

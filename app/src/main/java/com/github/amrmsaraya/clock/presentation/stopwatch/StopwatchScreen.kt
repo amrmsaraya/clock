@@ -51,14 +51,14 @@ fun StopwatchScreen(
 
     DisposableEffect(key1 = true) {
         val stopwatchReceiver = context.registerStopwatchReceiver { stopwatch, status ->
-            viewModel.uiState.value = viewModel.uiState.value.copy(
+            viewModel.updateStopwatch(
                 stopwatch = stopwatch,
                 status = status
             )
         }
 
         val lapsReceiver = context.registerLapsReceiver { laps ->
-            viewModel.uiState.value = viewModel.uiState.value.copy(laps = laps)
+            viewModel.updateLaps(laps = laps)
         }
 
         onDispose {

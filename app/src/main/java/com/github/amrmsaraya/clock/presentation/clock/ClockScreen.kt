@@ -25,8 +25,6 @@ import com.github.amrmsaraya.clock.presentation.clock.component.MaterialClock
 import com.github.amrmsaraya.clock.presentation.clock.component.WorldClockRow
 import com.github.amrmsaraya.clock.presentation.common_ui.AddFAB
 import com.github.amrmsaraya.clock.presentation.common_ui.DeleteFAB
-import com.github.amrmsaraya.clock.presentation.common_ui.getSurfaceColor
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.*
@@ -95,14 +93,12 @@ fun ClockScreen(
             worldClock = localClock,
             times = worldClocks,
             selectMode = selectMode,
-            isDeleted = uiState.isDeleted,
             onAddClock = {
                 showDialog = true
                 onShowBottomNavigation(false)
             },
             onDeleteClocks = { viewModel.sendIntent(ClockIntent.DeleteClocks(it)) },
             onSelectMode = { selectMode = it },
-            onResetDeleteFlag = { viewModel.sendIntent(ClockIntent.ResetDeleteFlag) }
         )
     }
 }
@@ -114,8 +110,6 @@ private fun ClockScreenContent(
     worldClock: WorldClock,
     times: Map<TimeZone, WorldClock>,
     selectMode: Boolean,
-    isDeleted: Boolean,
-    onResetDeleteFlag: () -> Unit,
     onAddClock: () -> Unit,
     onDeleteClocks: (List<TimeZone>) -> Unit,
     onSelectMode: (Boolean) -> Unit,
@@ -125,13 +119,10 @@ private fun ClockScreenContent(
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
 
-    LaunchedEffect(isDeleted) {
-        if (isDeleted) {
-            delay(300 * 2)
-            deletedItems.clear()
-            selectedItems.clear()
-            onResetDeleteFlag()
-        }
+    LaunchedEffect(times) {
+        delay(300 * 2)
+        deletedItems.clear()
+        selectedItems.clear()
     }
 
     Scaffold(

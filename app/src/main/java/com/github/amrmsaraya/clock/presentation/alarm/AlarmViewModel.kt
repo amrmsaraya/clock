@@ -7,12 +7,9 @@ import androidx.lifecycle.viewModelScope
 import com.github.amrmsaraya.clock.domain.entity.Alarm
 import com.github.amrmsaraya.clock.domain.usecase.AlarmCRUDUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -44,19 +41,17 @@ class AlarmViewModel @Inject constructor(
         }
     }
 
-    private fun insertAlarm(alarm: Alarm) = viewModelScope.launch(Dispatchers.Default) {
+    private fun insertAlarm(alarm: Alarm) = viewModelScope.launch {
         alarmCRUDUseCase.insert(alarm)
     }
 
-    private fun deleteAlarm(alarms: List<Alarm>) = viewModelScope.launch(Dispatchers.Default) {
+    private fun deleteAlarm(alarms: List<Alarm>) = viewModelScope.launch {
         alarmCRUDUseCase.delete(alarms)
     }
 
-    private fun getAlarms() = viewModelScope.launch(Dispatchers.Default) {
+    private fun getAlarms() = viewModelScope.launch {
         alarmCRUDUseCase.getClocks().collect {
-            withContext(Dispatchers.Main) {
-                _uiState.value = _uiState.value.copy(alarms = it)
-            }
+            _uiState.value = _uiState.value.copy(alarms = it)
         }
     }
 }

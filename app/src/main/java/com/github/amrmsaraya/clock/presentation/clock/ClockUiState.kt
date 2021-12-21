@@ -8,6 +8,5 @@ import java.util.*
 data class ClockUiState(
     val localClock: Flow<WorldClock> = flow { },
     val worldClocks: Flow<Map<TimeZone, WorldClock>> = flow { },
-    val timeZones: List<TimeZone> = emptyList(),
-    val isDeleted: Boolean = false
+    val timeZones: List<TimeZone> = emptyList()
 )

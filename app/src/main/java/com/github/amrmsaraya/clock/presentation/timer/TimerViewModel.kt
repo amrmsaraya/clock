@@ -7,12 +7,9 @@ import androidx.lifecycle.viewModelScope
 import com.github.amrmsaraya.clock.domain.usecase.TimerCRUDUseCase
 import com.github.amrmsaraya.timer.Time
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import com.github.amrmsaraya.clock.domain.entity.Timer as LocalTimer
 
@@ -20,6 +17,7 @@ import com.github.amrmsaraya.clock.domain.entity.Timer as LocalTimer
 class TimerViewModel @Inject constructor(
     private val timerCRUDUseCase: TimerCRUDUseCase
 ) : ViewModel() {
+
     private val intentChannel = Channel<TimerIntent>()
 
     private var _uiState = mutableStateOf(TimerUiState(configuredTime = 15 * 60 * 1000))
@@ -54,24 +52,20 @@ class TimerViewModel @Inject constructor(
     }
 
     private fun configureTime(timeMillis: Long) = viewModelScope.launch {
-        _uiState.value = _uiState.value.copy(
-            configuredTime = timeMillis
-        )
+        _uiState.value = _uiState.value.copy(configuredTime = timeMillis)
     }
 
-    private fun insert(timer: LocalTimer) = viewModelScope.launch(Dispatchers.Default) {
+    private fun insert(timer: LocalTimer) = viewModelScope.launch {
         timerCRUDUseCase.insert(timer)
     }
 
-    private fun delete(timer: LocalTimer) = viewModelScope.launch(Dispatchers.Default) {
+    private fun delete(timer: LocalTimer) = viewModelScope.launch {
         timerCRUDUseCase.delete(timer)
     }
 
-    private fun getLocalTimers() = viewModelScope.launch(Dispatchers.Default) {
+    private fun getLocalTimers() = viewModelScope.launch {
         timerCRUDUseCase.getTimers().collect {
-            withContext(Dispatchers.Main) {
-                _uiState.value = _uiState.value.copy(timers = it)
-            }
+            _uiState.value = _uiState.value.copy(timers = it)
         }
     }
 }
