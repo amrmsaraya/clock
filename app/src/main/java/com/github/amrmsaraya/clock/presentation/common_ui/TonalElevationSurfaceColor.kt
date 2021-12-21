@@ -8,7 +8,7 @@ import androidx.compose.ui.unit.Dp
 import kotlin.math.ln
 
 @Composable
-fun getSurfaceColor(elevation: Dp, ): Color {
+fun getSurfaceColor(elevation: Dp): Color {
     val alpha = ((4.5f * ln(elevation.value + 1)) + 2f) / 100f
     return MaterialTheme.colorScheme.primary.copy(alpha = alpha)
         .compositeOver(MaterialTheme.colorScheme.surface)

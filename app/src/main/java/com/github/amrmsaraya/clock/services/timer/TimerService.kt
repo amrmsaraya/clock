@@ -20,7 +20,6 @@ import com.github.amrmsaraya.clock.utils.createNotificationChannel
 import com.github.amrmsaraya.timer.Time
 import com.github.amrmsaraya.timer.Timer
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.collect
 
 private const val NOTIFICATION_ID = 11
 private const val NOTIFICATION_CHANNEL_ID = "${BuildConfig.APPLICATION_ID}.TIMER"

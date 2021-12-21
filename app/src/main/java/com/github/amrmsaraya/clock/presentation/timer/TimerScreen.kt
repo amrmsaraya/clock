@@ -104,7 +104,7 @@ fun TimerScreen(
             }
         },
         onStart = {
-            if(uiState.configuredTime > 0) {
+            if (uiState.configuredTime > 0) {
                 context.startTimerService(uiState.configuredTime)
                 context.configureTimerService(uiState.configuredTime)
                 context.sendTimerBroadcastAction("start")

@@ -36,7 +36,7 @@ fun EmptyAlarms(visible: Boolean) {
                     modifier = Modifier.size(100.dp),
                     imageVector = Icons.Outlined.AlarmAdd,
                     contentDescription = null,
-                    tint =  MaterialTheme.colorScheme.primary
+                    tint = MaterialTheme.colorScheme.primary
                 )
                 Spacer(modifier = Modifier.size(8.dp))
                 Text(

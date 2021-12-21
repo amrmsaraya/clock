@@ -18,7 +18,6 @@ import com.github.amrmsaraya.clock.utils.createNotificationChannel
 import com.github.amrmsaraya.timer.Stopwatch
 import com.github.amrmsaraya.timer.Time
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.collect
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 

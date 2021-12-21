@@ -72,14 +72,10 @@ private val DarkThemeColors = darkColorScheme(
 @Composable
 fun ClockTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    matchSystemBars: Color? = null,
+    systemBarsColor: Color? = null,
     content: @Composable () -> Unit
 ) {
-    val colors = if (darkTheme) {
-        DarkThemeColors
-    } else {
-        LightThemeColors
-    }
+    val colors = if (darkTheme) DarkThemeColors else LightThemeColors
 
     val systemUiController = rememberSystemUiController()
 
@@ -88,8 +84,8 @@ fun ClockTheme(
     val color = colors.primary.copy(alpha = alpha).compositeOver(colors.surface)
 
     SideEffect {
-        if (matchSystemBars != null) {
-            systemUiController.setSystemBarsColor(matchSystemBars)
+        if (systemBarsColor != null) {
+            systemUiController.setSystemBarsColor(systemBarsColor)
         } else {
             systemUiController.setNavigationBarColor(color = color)
             systemUiController.setStatusBarColor(color = colors.surface)

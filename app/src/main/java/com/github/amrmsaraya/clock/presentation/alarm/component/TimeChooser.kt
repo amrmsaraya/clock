@@ -18,7 +18,6 @@ import com.google.accompanist.pager.PagerDefaults
 import com.google.accompanist.pager.VerticalPager
 import com.google.accompanist.pager.rememberPagerState
 import dev.chrisbanes.snapper.ExperimentalSnapperApi
-import kotlinx.coroutines.flow.collect
 
 @OptIn(ExperimentalUnitApi::class, ExperimentalSnapperApi::class, ExperimentalPagerApi::class)
 @Composable

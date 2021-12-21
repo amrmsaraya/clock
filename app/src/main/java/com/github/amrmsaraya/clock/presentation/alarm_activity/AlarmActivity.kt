@@ -7,8 +7,6 @@ import android.media.Ringtone
 import android.media.RingtoneManager
 import android.os.Build
 import android.os.Bundle
-import android.view.View
-import android.view.WindowInsets
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -59,16 +57,6 @@ class AlarmActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         turnScreenOnAndKeyguardOff()
-
-        // Hide System Bars
-        window.decorView.apply {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                windowInsetsController?.hide(WindowInsets.Type.systemBars())
-            } else {
-                systemUiVisibility =
-                    View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN
-            }
-        }
 
         val viewModel by viewModels<AlarmActivityViewModel>()
         val calendar = Calendar.getInstance()
@@ -152,7 +140,7 @@ fun App(
         )
     }
 
-    ClockTheme(matchSystemBars = backgroundColor) {
+    ClockTheme(systemBarsColor = backgroundColor) {
         Surface(color = backgroundColor) {
             AlarmContent(
                 title = title,
