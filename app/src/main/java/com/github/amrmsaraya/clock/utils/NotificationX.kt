@@ -68,6 +68,7 @@ fun Context.createNotification(
             setSmallIcon(icon)
             setSilent(isSilent)
             setOngoing(isOnGoing)
+            setPriority(priority)
 
             intent?.let {
                 setContentIntent(intent)
@@ -79,6 +80,10 @@ fun Context.createNotification(
                     actionTitle,
                     actionIntent
                 )
+            }
+
+            if (isFullScreen) {
+                setFullScreenIntent(intent, true)
             }
 
         }.build()

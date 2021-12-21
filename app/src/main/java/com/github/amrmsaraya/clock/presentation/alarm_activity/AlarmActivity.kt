@@ -7,6 +7,8 @@ import android.media.Ringtone
 import android.media.RingtoneManager
 import android.os.Build
 import android.os.Bundle
+import android.view.View
+import android.view.WindowInsets
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -39,11 +41,11 @@ import com.github.amrmsaraya.clock.presentation.alarm.utils.Colors
 import com.github.amrmsaraya.clock.presentation.theme.ClockTheme
 import com.github.amrmsaraya.clock.presentation.theme.md_theme_dark_onPrimary
 import com.github.amrmsaraya.clock.presentation.theme.md_theme_dark_primary
+import com.github.amrmsaraya.clock.services.alarm.ALARM_NOTIFICATION_ID
 import com.github.amrmsaraya.clock.utils.setAlarm
 import com.github.amrmsaraya.clock.utils.turnScreenOffAndKeyguardOn
 import com.github.amrmsaraya.clock.utils.turnScreenOnAndKeyguardOff
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
@@ -56,36 +58,30 @@ class AlarmActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val viewModel by viewModels<AlarmActivityViewModel>()
-        val calendar = Calendar.getInstance()
-
         turnScreenOnAndKeyguardOff()
 
-        val id = intent.getIntExtra("id", 0)
-        val title = intent.getStringExtra("title") ?: ""
-        val hour = intent.getIntExtra("hour", 0)
-        val minute = intent.getIntExtra("minute", 0)
-        val amPm = intent.getIntExtra("amPm", 0)
-        val color = intent.getIntExtra("color", 0)
-        val repeatOn = intent.getIntArrayExtra("repeatOn") ?: intArrayOf()
+        // Hide System Bars
+        window.decorView.apply {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                windowInsetsController?.hide(WindowInsets.Type.systemBars())
+            } else {
+                systemUiVisibility =
+                    View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN
+            }
+        }
 
+        val viewModel by viewModels<AlarmActivityViewModel>()
+        val calendar = Calendar.getInstance()
         val alarm = Alarm(
-            id = id.toLong(),
-            title = title,
-            hour = hour,
-            minute = minute,
-            amPm = amPm,
-            color = color,
-            repeatOn = repeatOn.toList(),
+            id = intent.getIntExtra("id", 0).toLong(),
+            title = intent.getStringExtra("title") ?: "",
+            hour = intent.getIntExtra("hour", 0),
+            minute = intent.getIntExtra("minute", 0),
+            amPm = intent.getIntExtra("amPm", 0),
+            color = intent.getIntExtra("color", 0),
+            repeatOn = intent.getIntArrayExtra("repeatOn")?.toList() ?: intArrayOf().toList(),
             ringtone = intent.getStringExtra("ringtone") ?: "",
         )
-
-        if (repeatOn.isEmpty()) {
-            viewModel.insertAlarm(alarm.copy(enabled = false))
-        } else {
-            val ringTime = setAlarm(alarm, repeat = true)
-            viewModel.insertAlarm(alarm.copy(ringTime = ringTime))
-        }
 
         val ringtoneUri =
             intent.getStringExtra("ringtone")?.toUri() ?: RingtoneManager.getDefaultUri(
@@ -95,26 +91,23 @@ class AlarmActivity : ComponentActivity() {
         ringtone = RingtoneManager.getRingtone(this, ringtoneUri).apply {
             audioAttributes =
                 AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_ALARM).build()
-
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 isLooping = true
             }
-
             play()
         }
 
         setContent {
             val scope = rememberCoroutineScope()
             App(
-                title = title,
+                title = alarm.title,
                 hour = calendar.get(Calendar.HOUR),
                 minute = calendar.get(Calendar.MINUTE),
-                color = color,
+                color = alarm.color,
                 onSnooze = {
-                    val ringTime = setAlarm(alarm = alarm, snooze = true)
-                    viewModel.insertAlarm(alarm.copy(ringTime = ringTime, enabled = true))
                     scope.launch {
-                        delay(200)
+                        val ringTime = setAlarm(alarm = alarm, snooze = true)
+                        viewModel.insertAlarm(alarm.copy(ringTime = ringTime, enabled = true))
                         finish()
                     }
                 },
@@ -129,7 +122,7 @@ class AlarmActivity : ComponentActivity() {
         // Remove notification
         val notificationManager =
             getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.cancel(intent.getIntExtra("id", 0))
+        notificationManager.cancel(ALARM_NOTIFICATION_ID)
 
         ringtone.stop()
         turnScreenOffAndKeyguardOn()
@@ -159,9 +152,7 @@ fun App(
         )
     }
 
-    ClockTheme(
-        matchSystemBars = backgroundColor
-    ) {
+    ClockTheme(matchSystemBars = backgroundColor) {
         Surface(color = backgroundColor) {
             AlarmContent(
                 title = title,
