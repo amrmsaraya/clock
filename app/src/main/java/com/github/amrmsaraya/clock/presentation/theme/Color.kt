@@ -59,23 +59,20 @@ val error = Color(0xFFba1b1b)
 
 val Red500 = Color(0xFFF44336)
 
+val Blue200 = Color(0xFF90CAF9)
+val Blue900 = Color(0xFF0D47A1)
+
 val Purple200 = Color(0xFFB39DDB)
 val Purple900 = Color(0xFF311B92)
 
-val BlueGray200 = Color(0xFFB0BEC5)
-val BlueGray900 = Color(0xFF263238)
-
-val Teal200 = Color(0xFF80CBC4)
-val Teal900 = Color(0xFF004D40)
+val Pink200 = Color(0xFFF48FB1)
+val Pink900 = Color(0xFF880E4F)
 
 val Orange200 = Color(0xFFFFAB91)
 val Orange900 = Color(0xFFBF360C)
 
-val Blue200 = Color(0xFF90CAF9)
-val Blue900 = Color(0xFF0D47A1)
-
-val Pink200 = Color(0xFFF48FB1)
-val Pink900 = Color(0xFF880E4F)
+val Teal200 = Color(0xFF80CBC4)
+val Teal900 = Color(0xFF004D40)
 
 val Green200 = Color(0xFFA5D6A7)
 val Green900 = Color(0xFF1B5E20)
