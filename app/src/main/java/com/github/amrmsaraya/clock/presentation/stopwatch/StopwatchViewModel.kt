@@ -1,7 +1,8 @@
 package com.github.amrmsaraya.clock.presentation.stopwatch
 
-import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.github.amrmsaraya.timer.Time
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -10,17 +11,17 @@ import javax.inject.Inject
 @HiltViewModel
 class StopwatchViewModel @Inject constructor() : ViewModel() {
 
-    private val _uiState = mutableStateOf(StopwatchUiState())
-    val uiState: State<StopwatchUiState> = _uiState
+    var uiState by mutableStateOf(StopwatchUiState())
+        private set
 
     fun updateStopwatch(stopwatch: Time, status: Int) {
-        _uiState.value = _uiState.value.copy(
+        uiState = uiState.copy(
             stopwatch = stopwatch,
             status = status
         )
     }
 
     fun updateLaps(laps: List<Pair<Time, Time>>) {
-        _uiState.value = _uiState.value.copy(laps = laps)
+        uiState = uiState.copy(laps = laps)
     }
 }

@@ -1,7 +1,8 @@
 package com.github.amrmsaraya.clock.presentation.clock
 
-import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.amrmsaraya.clock.domain.entity.Clock
@@ -26,8 +27,8 @@ class ClockViewModel @Inject constructor(
     private var worldClocks = listOf<Clock>()
     private val timeZones = TimeZone.getAvailableIDs().map { TimeZone.getTimeZone(it) }
 
-    private val _uiState = mutableStateOf(ClockUiState(timeZones = timeZones))
-    val uiState: State<ClockUiState> = _uiState
+    var uiState by mutableStateOf(ClockUiState(timeZones = timeZones))
+        private set
 
     private val intentChannel = Channel<ClockIntent>()
 
@@ -81,7 +82,7 @@ class ClockViewModel @Inject constructor(
                 }
             }
         }
-        _uiState.value = uiState.value.copy(localClock = flow)
+        uiState = uiState.copy(localClock = flow)
     }
 
     private fun getWorldClocks() = viewModelScope.launch(Dispatchers.Default) {
@@ -105,7 +106,7 @@ class ClockViewModel @Inject constructor(
                 }
             }
         }
-        _uiState.value = uiState.value.copy(worldClocks = flow)
+        uiState = uiState.copy(worldClocks = flow)
     }
 
     private fun convertToWorldClock(timeZone: TimeZone): WorldClock {

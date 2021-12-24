@@ -42,7 +42,7 @@ fun AlarmScreen(
     modifier: Modifier,
     viewModel: AlarmViewModel = hiltViewModel(),
 ) {
-    val uiState by viewModel.uiState
+    val uiState = viewModel.uiState
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 

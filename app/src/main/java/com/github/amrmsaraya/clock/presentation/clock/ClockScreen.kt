@@ -40,12 +40,12 @@ fun ClockScreen(
     onBackPress: () -> Unit,
     viewModel: ClockViewModel = hiltViewModel(),
 ) {
-    val uiState by viewModel.uiState
+    val uiState = viewModel.uiState
     val localClock by uiState.localClock.collectAsState(initial = WorldClock())
     val worldClocks by uiState.worldClocks.collectAsState(initial = mapOf())
+
     var selectMode by remember { mutableStateOf(false) }
     val localKeyboard = LocalSoftwareKeyboardController.current
-
     var showDialog by remember { mutableStateOf(false) }
 
     BackHandler {

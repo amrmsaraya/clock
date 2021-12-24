@@ -35,7 +35,7 @@ fun StopwatchScreen(
 ) {
     val context = LocalContext.current
 
-    val uiState by viewModel.uiState
+    val uiState = viewModel.uiState
 
     val sliderValue = (uiState.stopwatch.seconds * 1000 + uiState.stopwatch.millis) / 60_000f
 
