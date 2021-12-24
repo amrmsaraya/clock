@@ -61,11 +61,11 @@ fun ClockScreen(
 
     AnimatedVisibility(
         visible = showDialog,
-        enter = slideInHorizontally(
-            initialOffsetX = { it },
+        enter = slideInVertically(
+            initialOffsetY = { it },
         ),
-        exit = slideOutHorizontally(
-            targetOffsetX = { it }
+        exit = slideOutVertically(
+            targetOffsetY = { it }
         )
     ) {
         NewClock(
@@ -81,11 +81,11 @@ fun ClockScreen(
 
     AnimatedVisibility(
         visible = !showDialog,
-        enter = slideInHorizontally(
-            initialOffsetX = { -it },
+        enter = slideInVertically(
+            initialOffsetY = { -it },
         ),
-        exit = slideOutHorizontally(
-            targetOffsetX = { -it }
+        exit = slideOutVertically(
+            targetOffsetY = { -it }
         )
     ) {
         ClockScreenContent(
