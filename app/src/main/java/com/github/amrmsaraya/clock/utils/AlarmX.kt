@@ -42,22 +42,16 @@ fun Context.setAlarm(
 
     val currentTime = Calendar.getInstance()
     val calendar = Calendar.getInstance().apply {
-
-        set(Calendar.HOUR, alarm.hour)
+        set(Calendar.HOUR, if (alarm.hour == 12) 0 else alarm.hour)
         set(Calendar.MINUTE, alarm.minute)
         set(Calendar.AM_PM, alarm.amPm)
         set(Calendar.SECOND, 0)
         set(Calendar.MILLISECOND, 0)
 
         when (alarm.repeatOn.isEmpty()) {
-            // Ring once
-            true -> {
-                if (timeInMillis < currentTime.timeInMillis) {
-                    set(Calendar.DAY_OF_YEAR, get(Calendar.DAY_OF_YEAR) + 1)
-                }
+            true -> if (timeInMillis < currentTime.timeInMillis) {
+                set(Calendar.DAY_OF_YEAR, get(Calendar.DAY_OF_YEAR) + 1)
             }
-
-            // Repeat
             false -> {
                 val repeatOn = Days.values().filter { it.ordinal in alarm.repeatOn }
 
