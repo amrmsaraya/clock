@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cancel
@@ -25,7 +26,7 @@ import kotlinx.coroutines.launch
 import java.util.*
 
 @Composable
-fun AddClock(
+fun NewClock(
     modifier: Modifier = Modifier,
     timeZones: List<TimeZone>,
     onClick: (TimeZone) -> Unit,
@@ -43,8 +44,12 @@ fun AddClock(
         zones.addAll(timeZones)
     }
 
-    Column(modifier = modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp)) {
+    Column(modifier = modifier) {
         SearchTextField(
+            modifier = Modifier
+                .padding(top = 8.dp, start = 16.dp, end = 16.dp)
+                .fillMaxWidth()
+                .wrapContentHeight(),
             search = search,
             onSearch = { search = it },
             onClearSearch = { search = "" },
@@ -53,14 +58,16 @@ fun AddClock(
         Spacer(modifier = Modifier.size(16.dp))
 
         LazyColumn(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 8.dp, end = 16.dp),
             state = lazyListState
         ) {
             items(zones) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(CircleShape)
+                        .clip(RoundedCornerShape(8.dp))
                         .clickable {
                             search = ""
                             zones.clear()
@@ -70,7 +77,7 @@ fun AddClock(
                         },
                 ) {
                     Column(
-                        Modifier.padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 4.dp),
+                        Modifier.padding(start = 8.dp, top = 4.dp, bottom = 4.dp),
                         verticalArrangement = Arrangement.Center
                     ) {
                         Text(text = it.id.substringAfter('/'), fontSize = 18.sp)
@@ -89,6 +96,7 @@ fun AddClock(
 
 @Composable
 private fun SearchTextField(
+    modifier: Modifier = Modifier,
     search: String,
     onSearch: (String) -> Unit,
     onClearSearch: () -> Unit,
@@ -101,15 +109,12 @@ private fun SearchTextField(
         singleLine = true,
     ) {
         Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(60.dp)
-                .padding(top = 8.dp),
+            modifier = modifier,
             shape = CircleShape,
             tonalElevation = 3.dp,
         ) {
             Row(
-                Modifier.padding(start = 16.dp, end = 8.dp),
+                Modifier.padding(start = 4.dp, end = 4.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -117,12 +122,13 @@ private fun SearchTextField(
                     modifier = Modifier.weight(1f),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.outline
-                    )
-                    Spacer(modifier = Modifier.size(8.dp))
+                    IconButton(enabled = false, onClick = {}) {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.outline
+                        )
+                    }
                     Box {
                         if (search.isEmpty()) {
                             Text(

@@ -20,8 +20,8 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.github.amrmsaraya.clock.domain.entity.WorldClock
-import com.github.amrmsaraya.clock.presentation.clock.component.AddClock
 import com.github.amrmsaraya.clock.presentation.clock.component.MaterialClock
+import com.github.amrmsaraya.clock.presentation.clock.component.NewClock
 import com.github.amrmsaraya.clock.presentation.clock.component.WorldClockRow
 import com.github.amrmsaraya.clock.presentation.common_ui.AddFAB
 import com.github.amrmsaraya.clock.presentation.common_ui.DeleteFAB
@@ -68,7 +68,7 @@ fun ClockScreen(
             targetOffsetX = { it }
         )
     ) {
-        AddClock(
+        NewClock(
             timeZones = uiState.timeZones,
             onClick = {
                 viewModel.sendIntent(ClockIntent.InsertClock(it))
