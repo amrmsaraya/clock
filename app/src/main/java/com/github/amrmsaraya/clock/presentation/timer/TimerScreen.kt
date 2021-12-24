@@ -41,7 +41,7 @@ fun TimerScreen(
 ) {
     val context = LocalContext.current
 
-    val uiState by viewModel.uiState
+    val uiState = viewModel.uiState
 
     val sliderValue = uiState.timer.timeInMillis / uiState.configuredTime.toFloat()
 

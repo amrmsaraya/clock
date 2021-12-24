@@ -1,7 +1,8 @@
 package com.github.amrmsaraya.clock.presentation.alarm
 
-import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.amrmsaraya.clock.domain.entity.Alarm
@@ -19,8 +20,8 @@ class AlarmViewModel @Inject constructor(
 
     private val intentChannel = Channel<AlarmIntent>()
 
-    private var _uiState = mutableStateOf(AlarmUiState())
-    val uiState: State<AlarmUiState> = _uiState
+    var uiState by mutableStateOf(AlarmUiState())
+        private set
 
     init {
         handleIntent()
@@ -51,7 +52,7 @@ class AlarmViewModel @Inject constructor(
 
     private fun getAlarms() = viewModelScope.launch {
         alarmCRUDUseCase.getClocks().collect {
-            _uiState.value = _uiState.value.copy(alarms = it)
+            uiState = uiState.copy(alarms = it)
         }
     }
 }

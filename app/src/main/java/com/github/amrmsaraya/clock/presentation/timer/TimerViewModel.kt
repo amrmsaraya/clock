@@ -1,7 +1,8 @@
 package com.github.amrmsaraya.clock.presentation.timer
 
-import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.amrmsaraya.clock.domain.usecase.TimerCRUDUseCase
@@ -20,8 +21,8 @@ class TimerViewModel @Inject constructor(
 
     private val intentChannel = Channel<TimerIntent>()
 
-    private var _uiState = mutableStateOf(TimerUiState(configuredTime = 15 * 60 * 1000))
-    val uiState: State<TimerUiState> = _uiState
+    var uiState by mutableStateOf(TimerUiState(configuredTime = 15 * 60 * 1000))
+        private set
 
     init {
         handleIntent()
@@ -45,14 +46,14 @@ class TimerViewModel @Inject constructor(
     }
 
     private fun updateTimer(timer: Time, status: Int) = viewModelScope.launch {
-        _uiState.value = _uiState.value.copy(
+        uiState = uiState.copy(
             timer = timer,
             status = status
         )
     }
 
     private fun configureTime(timeMillis: Long) = viewModelScope.launch {
-        _uiState.value = _uiState.value.copy(configuredTime = timeMillis)
+        uiState = uiState.copy(configuredTime = timeMillis)
     }
 
     private fun insert(timer: LocalTimer) = viewModelScope.launch {
@@ -65,7 +66,7 @@ class TimerViewModel @Inject constructor(
 
     private fun getLocalTimers() = viewModelScope.launch {
         timerCRUDUseCase.getTimers().collect {
-            _uiState.value = _uiState.value.copy(timers = it)
+            uiState = uiState.copy(timers = it)
         }
     }
 }
