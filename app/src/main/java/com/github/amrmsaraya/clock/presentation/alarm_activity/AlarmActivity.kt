@@ -33,6 +33,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
+import androidx.lifecycle.lifecycleScope
 import com.github.amrmsaraya.clock.R
 import com.github.amrmsaraya.clock.domain.entity.Alarm
 import com.github.amrmsaraya.clock.presentation.alarm.utils.Colors
@@ -44,6 +45,7 @@ import com.github.amrmsaraya.clock.utils.setAlarm
 import com.github.amrmsaraya.clock.utils.turnScreenOffAndKeyguardOn
 import com.github.amrmsaraya.clock.utils.turnScreenOnAndKeyguardOff
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
@@ -85,18 +87,27 @@ class AlarmActivity : ComponentActivity() {
             play()
         }
 
+        lifecycleScope.launchWhenStarted {
+            delay(55 * 1000)
+            val ringTime = setAlarm(alarm = alarm, snooze = true)
+            viewModel.insertAlarm(alarm.copy(ringTime = ringTime, enabled = true))
+            finishAndRemoveTask()
+        }
+
         setContent {
             val scope = rememberCoroutineScope()
             App(
                 title = alarm.title,
-                hour = calendar.get(Calendar.HOUR),
+                hour = calendar.get(Calendar.HOUR).let {
+                    if (it == 0) 12 else it
+                },
                 minute = calendar.get(Calendar.MINUTE),
                 color = alarm.color,
                 onSnooze = {
                     scope.launch {
                         val ringTime = setAlarm(alarm = alarm, snooze = true)
                         viewModel.insertAlarm(alarm.copy(ringTime = ringTime, enabled = true))
-                        finish()
+                        finishAndRemoveTask()
                     }
                 },
                 onStop = { finishAndRemoveTask() }
@@ -107,12 +118,12 @@ class AlarmActivity : ComponentActivity() {
     override fun onDestroy() {
         super.onDestroy()
 
-        // Remove notification
         val notificationManager =
             getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.cancel(ALARM_NOTIFICATION_ID)
 
         ringtone.stop()
+
         turnScreenOffAndKeyguardOn()
     }
 }
