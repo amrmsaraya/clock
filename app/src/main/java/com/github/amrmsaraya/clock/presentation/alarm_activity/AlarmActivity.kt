@@ -89,9 +89,7 @@ class AlarmActivity : ComponentActivity() {
 
         lifecycleScope.launchWhenStarted {
             delay(55 * 1000)
-            val ringTime = setAlarm(alarm = alarm, snooze = true)
-            viewModel.insertAlarm(alarm.copy(ringTime = ringTime, enabled = true))
-            finishAndRemoveTask()
+            snooze(alarm, viewModel)
         }
 
         setContent {
@@ -105,14 +103,21 @@ class AlarmActivity : ComponentActivity() {
                 color = alarm.color,
                 onSnooze = {
                     scope.launch {
-                        val ringTime = setAlarm(alarm = alarm, snooze = true)
-                        viewModel.insertAlarm(alarm.copy(ringTime = ringTime, enabled = true))
-                        finishAndRemoveTask()
+                        snooze(alarm, viewModel)
                     }
                 },
                 onStop = { finishAndRemoveTask() }
             )
         }
+    }
+
+    private fun snooze(
+        alarm: Alarm,
+        viewModel: AlarmActivityViewModel
+    ) {
+        val ringTime = setAlarm(alarm = alarm, snooze = true)
+        viewModel.insertAlarm(alarm.copy(ringTime = ringTime, enabled = true))
+        finishAndRemoveTask()
     }
 
     override fun onDestroy() {
