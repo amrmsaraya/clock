@@ -54,14 +54,16 @@ class AlarmReceiver : BroadcastReceiver() {
             it.putExtra("ringtone", alarm.ringtone)
             it.putExtra("repeatOn", alarm.repeatOn.toIntArray())
 
+            it.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
+
             PendingIntent.getActivity(
                 context,
                 alarm.id.toInt(),
                 it,
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    PendingIntent.FLAG_UPDATE_CURRENT + PendingIntent.FLAG_MUTABLE
+                    PendingIntent.FLAG_ONE_SHOT + PendingIntent.FLAG_MUTABLE
                 } else {
-                    PendingIntent.FLAG_UPDATE_CURRENT
+                    PendingIntent.FLAG_ONE_SHOT
                 }
             )
         }
@@ -76,7 +78,16 @@ class AlarmReceiver : BroadcastReceiver() {
             channelId = NOTIFICATION_CHANNEL_ID,
             title = context.getString(R.string.alarm),
             content = when (alarm.title.isEmpty()) {
-                true -> "${"%02d".format(alarm.hour)}: ${"%02d".format(alarm.minute)}"
+                true -> buildString {
+                    append("%02d".format(alarm.hour))
+                    append(":")
+                    append("%02d".format(alarm.minute))
+                    append(" ")
+                    append(
+                        if (alarm.amPm == 0) context.getString(R.string.am)
+                        else context.getString(R.string.pm)
+                    )
+                }
                 false -> alarm.title
             },
             icon = R.drawable.ic_norification_logo,
