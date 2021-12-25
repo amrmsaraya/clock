@@ -6,8 +6,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.amrmsaraya.clock.domain.entity.Clock
-import com.github.amrmsaraya.clock.domain.entity.WorldClock
 import com.github.amrmsaraya.clock.domain.usecase.ClockCRUDUseCase
+import com.github.amrmsaraya.clock.utils.convertToWorldClock
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
@@ -78,7 +78,7 @@ class ClockViewModel @Inject constructor(
             flow {
                 while (true) {
                     delay(10)
-                    emit(convertToWorldClock(TimeZone.getDefault()))
+                    emit(TimeZone.getDefault().convertToWorldClock())
                 }
             }
         }
@@ -98,7 +98,7 @@ class ClockViewModel @Inject constructor(
                     emit(
                         worldClocks.associate {
                             val timeZone = TimeZone.getTimeZone(it.id)
-                            val worldClock = convertToWorldClock(timeZone)
+                            val worldClock = timeZone.convertToWorldClock()
                             timeZone to worldClock
                         }
                     )
@@ -109,21 +109,5 @@ class ClockViewModel @Inject constructor(
         uiState = uiState.copy(worldClocks = flow)
     }
 
-    private fun convertToWorldClock(timeZone: TimeZone): WorldClock {
-        val calendar = Calendar.getInstance(timeZone)
-        val seconds =
-            270 + (calendar.get(Calendar.SECOND) * 1000 + calendar.get(Calendar.MILLISECOND)) * 6 / 1000f
-        val minutes =
-            270 + calendar.get(Calendar.MINUTE) * 6 + calendar.get(Calendar.SECOND) / 10f
-        val hours =
-            270 + calendar.get(Calendar.HOUR) * 30 + calendar.get(Calendar.MINUTE) / 2f
-
-        return WorldClock(
-            calendar = calendar,
-            hours = hours,
-            minutes = minutes,
-            seconds = seconds,
-        )
-    }
 }
 

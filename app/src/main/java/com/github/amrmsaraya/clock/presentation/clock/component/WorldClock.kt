@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.amrmsaraya.clock.R
 import com.github.amrmsaraya.clock.domain.entity.WorldClock
+import com.github.amrmsaraya.clock.utils.format
 import java.util.*
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -74,8 +75,8 @@ fun WorldClockRow(
                 Text(
                     text = buildString {
                         append(
-                            if (worldClock.calendar.get(Calendar.HOUR) == 0) "12"
-                            else worldClock.calendar.get(Calendar.HOUR)
+                            if (worldClock.calendar.get(Calendar.HOUR) == 0) 12.format()
+                            else worldClock.calendar.get(Calendar.HOUR).format()
                         )
                         append(":")
                         append("%02d".format(worldClock.calendar.get(Calendar.MINUTE)))

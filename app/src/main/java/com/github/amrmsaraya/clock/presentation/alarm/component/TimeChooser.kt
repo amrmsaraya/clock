@@ -13,6 +13,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.ExperimentalUnitApi
 import androidx.compose.ui.unit.dp
+import com.github.amrmsaraya.clock.utils.format
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.PagerDefaults
 import com.google.accompanist.pager.VerticalPager
@@ -25,6 +26,7 @@ fun TimeChooser(
     modifier: Modifier,
     initial: Int,
     items: List<Int>,
+    leadingZeros: Boolean = false,
     onTimeChange: (Int) -> Unit
 ) {
     val state = rememberPagerState(initialPage = initial)
@@ -52,7 +54,7 @@ fun TimeChooser(
         )
     ) {
         Text(
-            text = "%02d".format(items[it]),
+            text = if (leadingZeros) "%02d".format(items[it]) else items[it].format(),
             color = MaterialTheme.colorScheme.onPrimary,
             style = MaterialTheme.typography.displayMedium,
             textAlign = TextAlign.Center

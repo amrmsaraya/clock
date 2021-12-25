@@ -24,6 +24,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.github.amrmsaraya.clock.R
+import com.github.amrmsaraya.clock.utils.format
 import com.github.amrmsaraya.timer.toTime
 import kotlin.math.ln
 
@@ -44,6 +45,7 @@ fun AlarmCard(
     onClick: () -> Unit,
     onLongClick: () -> Unit
 ) {
+
     val animatedBackgroundColor by animateColorAsState(
         targetValue = if (checked) {
             activeBackgroundColor
@@ -118,16 +120,26 @@ fun AlarmCard(
                         text = buildString {
                             append(stringResource(R.string.ring_in))
                             if (ringIn / (1000 * 60 * 60 * 24) > 0) {
-                                append(" ${ringIn / (1000 * 60 * 60 * 24)} d")
+                                append(' ')
+                                append((ringIn / (1000 * 60 * 60 * 24)).format())
+                                append(' ')
+                                append(stringResource(id = R.string.day))
                             }
                             if (ringIn.toTime().hours % 24 > 0) {
-                                append(" ${ringIn.toTime().hours % 24} h")
+                                append(' ')
+                                append((ringIn.toTime().hours % 24).format())
+                                append(' ')
+                                append(stringResource(id = R.string.hour))
                             }
                             if (ringIn.toTime().minutes > 0) {
-                                append(" ${ringIn.toTime().minutes} min")
+                                append(' ')
+                                append(ringIn.toTime().minutes.format())
+                                append(' ')
+                                append(" ${stringResource(id = R.string.minute)}")
                             }
                             if (ringIn < 60 * 1000) {
-                                append(" ${stringResource(R.string.few_seconds)}")
+                                append(' ')
+                                append(stringResource(R.string.few_seconds))
                             }
 
                         },

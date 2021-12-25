@@ -40,18 +40,18 @@ fun MaterialClock(
                 style = Stroke(radius * 0.03f, cap = StrokeCap.Round)
             )
             hourHand(
-                hour = worldClock.hours,
+                hoursAngel = worldClock.hoursAngel,
                 radius = radius,
                 color = handleColor
             )
             minutesHand(
-                minute = worldClock.minutes,
+                minutesAngel = worldClock.minutesAngel,
                 radius = radius,
                 color = handleColor
             )
             if (showSeconds) {
                 secondsHand(
-                    second = worldClock.seconds,
+                    secondsAngel = worldClock.secondsAngel,
                     radius = radius,
                     color = Red500
                 )
@@ -71,7 +71,7 @@ fun MaterialClock(
 }
 
 private fun DrawScope.hourHand(
-    hour: Float,
+    hoursAngel: Float,
     radius: Float,
     color: Color,
 ) {
@@ -79,8 +79,8 @@ private fun DrawScope.hourHand(
         color = color,
         start = Offset(x = center.x, y = center.y),
         end = Offset(
-            x = center.x + (radius * 0.6f) * cos(hour * Math.PI.toFloat() / 180),
-            y = center.y + (radius * 0.6f) * sin(hour * Math.PI.toFloat() / 180)
+            x = center.x + (radius * 0.6f) * cos(hoursAngel * Math.PI.toFloat() / 180),
+            y = center.y + (radius * 0.6f) * sin(hoursAngel * Math.PI.toFloat() / 180)
         ),
         strokeWidth = radius * 0.03f,
         cap = StrokeCap.Round
@@ -88,7 +88,7 @@ private fun DrawScope.hourHand(
 }
 
 private fun DrawScope.minutesHand(
-    minute: Float,
+    minutesAngel: Float,
     radius: Float,
     color: Color,
 ) {
@@ -96,8 +96,8 @@ private fun DrawScope.minutesHand(
         color = color,
         start = Offset(x = center.x, y = center.y),
         end = Offset(
-            x = center.x + (radius * 0.85f) * cos(minute * Math.PI.toFloat() / 180),
-            y = center.y + (radius * 0.85f) * sin(minute * Math.PI.toFloat() / 180)
+            x = center.x + (radius * 0.85f) * cos(minutesAngel * Math.PI.toFloat() / 180),
+            y = center.y + (radius * 0.85f) * sin(minutesAngel * Math.PI.toFloat() / 180)
         ),
         strokeWidth = radius * 0.03f,
         cap = StrokeCap.Round
@@ -105,7 +105,7 @@ private fun DrawScope.minutesHand(
 }
 
 private fun DrawScope.secondsHand(
-    second: Float,
+    secondsAngel: Float,
     radius: Float,
     color: Color,
 ) {
@@ -113,8 +113,8 @@ private fun DrawScope.secondsHand(
         color = color,
         start = Offset(x = center.x, y = center.y),
         end = Offset(
-            x = center.x + (radius * 0.725f) * cos(second * Math.PI.toFloat() / 180),
-            y = center.y + (radius * 0.725f) * sin(second * Math.PI.toFloat() / 180)
+            x = center.x + (radius * 0.725f) * cos(secondsAngel * Math.PI.toFloat() / 180),
+            y = center.y + (radius * 0.725f) * sin(secondsAngel * Math.PI.toFloat() / 180)
         ),
         strokeWidth = radius * 0.01f,
         cap = StrokeCap.Round

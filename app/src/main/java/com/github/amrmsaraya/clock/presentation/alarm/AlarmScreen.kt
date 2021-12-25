@@ -33,6 +33,7 @@ import com.github.amrmsaraya.clock.presentation.common_ui.FullScreenDialog
 import com.github.amrmsaraya.clock.presentation.theme.Purple200
 import com.github.amrmsaraya.clock.presentation.theme.Purple900
 import com.github.amrmsaraya.clock.utils.cancelAlarm
+import com.github.amrmsaraya.clock.utils.format
 import com.github.amrmsaraya.clock.utils.setAlarm
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -233,7 +234,7 @@ private fun AlarmScreenContent(
                                 modifier = Modifier.weight(1f),
                                 title = alarm.title,
                                 time = buildString {
-                                    append(alarm.hour)
+                                    append(alarm.hour.format())
                                     append(":")
                                     append("%02d".format(alarm.minute))
                                 },

@@ -38,11 +38,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import com.github.amrmsaraya.clock.R
@@ -50,6 +52,7 @@ import com.github.amrmsaraya.clock.domain.entity.Alarm
 import com.github.amrmsaraya.clock.presentation.alarm.utils.Colors
 import com.github.amrmsaraya.clock.presentation.alarm.utils.Days
 import com.github.amrmsaraya.clock.presentation.common_ui.FullScreenDialog
+import com.github.amrmsaraya.clock.utils.mirror
 import com.github.amrmsaraya.timer.toTime
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -126,16 +129,18 @@ fun NewAlarm(
 
         Spacer(modifier = Modifier.size(16.dp))
 
-        TimeChooserRow(
-            hour = alarm.hour,
-            minute = alarm.minute,
-            amPm = amPm,
-            onTimeChange = { hour, minute ->
-                selectedHour = hour
-                selectedMinute = minute
-            },
-            onAmPmChange = { amPm = it }
-        )
+        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+            TimeChooserRow(
+                hour = alarm.hour,
+                minute = alarm.minute,
+                amPm = amPm,
+                onTimeChange = { hour, minute ->
+                    selectedHour = hour
+                    selectedMinute = minute
+                },
+                onAmPmChange = { amPm = it }
+            )
+        }
 
         Spacer(modifier = Modifier.size(16.dp))
 
@@ -287,9 +292,10 @@ private fun TimeChooserRow(
             modifier = modifier
                 .weight(0.375f)
                 .fillMaxSize(),
-            items = (1..12).toList(),
-            onTimeChange = { selectedHour = it },
             initial = if (hour == 0) 12 - 1 else hour - 1,
+            items = (1..12).toList(),
+            leadingZeros = false,
+            onTimeChange = { selectedHour = it }
         )
         Text(
             modifier = Modifier
@@ -303,9 +309,10 @@ private fun TimeChooserRow(
             modifier = modifier
                 .weight(0.375f)
                 .fillMaxSize(),
+            initial = minute,
             items = (0..59).toList(),
-            onTimeChange = { selectedMinute = it },
-            initial = minute
+            leadingZeros = true,
+            onTimeChange = { selectedMinute = it }
         )
         Column(
             modifier = Modifier
@@ -438,7 +445,7 @@ private fun ColorRow(
     onColorChange: (Int) -> Unit,
 ) {
     Column {
-        Text(text = stringResource(R.string.select_color))
+        Text(text = stringResource(R.string.color))
         Spacer(modifier = Modifier.size(8.dp))
         Row(
             Modifier
@@ -504,7 +511,12 @@ private fun RingtoneRow(
                 color = MaterialTheme.colorScheme.outline
             )
         }
-        Icon(imageVector = Icons.Default.NavigateNext, contentDescription = null)
+
+        Icon(
+            modifier = Modifier.mirror(),
+            imageVector = Icons.Default.NavigateNext,
+            contentDescription = null
+        )
     }
 }
 
@@ -533,7 +545,11 @@ private fun SnoozeRow(
                 color = MaterialTheme.colorScheme.outline
             )
         }
-        Icon(imageVector = Icons.Default.NavigateNext, contentDescription = null)
+        Icon(
+            modifier = Modifier.mirror(),
+            imageVector = Icons.Default.NavigateNext,
+            contentDescription = null
+        )
     }
 }
 

@@ -27,10 +27,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.lifecycle.lifecycleScope
@@ -41,6 +43,7 @@ import com.github.amrmsaraya.clock.presentation.theme.ClockTheme
 import com.github.amrmsaraya.clock.presentation.theme.md_theme_dark_onPrimary
 import com.github.amrmsaraya.clock.presentation.theme.md_theme_dark_primary
 import com.github.amrmsaraya.clock.services.alarm.ALARM_NOTIFICATION_ID
+import com.github.amrmsaraya.clock.utils.format
 import com.github.amrmsaraya.clock.utils.setAlarm
 import com.github.amrmsaraya.clock.utils.turnScreenOffAndKeyguardOn
 import com.github.amrmsaraya.clock.utils.turnScreenOnAndKeyguardOff
@@ -240,24 +243,26 @@ private fun TimeAndDate(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = hour.toString(),
-                style = MaterialTheme.typography.displayLarge,
-                color = contentColor,
-            )
-            Spacer(modifier = Modifier.size(8.dp))
-            Text(
-                text = ":",
-                style = MaterialTheme.typography.displayLarge,
-                color = contentColor,
-            )
-            Spacer(modifier = Modifier.size(8.dp))
-            Text(
-                text = "%02d".format(minute),
-                style = MaterialTheme.typography.displayLarge,
-                color = contentColor,
-            )
+        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = hour.format(),
+                    style = MaterialTheme.typography.displayLarge,
+                    color = contentColor,
+                )
+                Spacer(modifier = Modifier.size(8.dp))
+                Text(
+                    text = ":",
+                    style = MaterialTheme.typography.displayLarge,
+                    color = contentColor,
+                )
+                Spacer(modifier = Modifier.size(8.dp))
+                Text(
+                    text = "%02d".format(minute),
+                    style = MaterialTheme.typography.displayLarge,
+                    color = contentColor,
+                )
+            }
         }
         Text(
             text = SimpleDateFormat(

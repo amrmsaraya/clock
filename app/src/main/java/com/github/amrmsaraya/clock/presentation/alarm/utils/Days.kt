@@ -9,11 +9,11 @@ enum class Days(
     @StringRes val string: Int,
     val calendar: Int
 ) {
-    SUNDAY(R.string.s, R.string.sun, Calendar.SUNDAY),
-    MONDAY(R.string.m, R.string.mon, Calendar.MONDAY),
-    TUESDAY(R.string.t, R.string.tue, Calendar.TUESDAY),
-    WEDNESDAY(R.string.w, R.string.wed, Calendar.WEDNESDAY),
-    THURSDAY(R.string.t, R.string.thu, Calendar.THURSDAY),
-    FRIDAY(R.string.f, R.string.fri, Calendar.FRIDAY),
-    SATURDAY(R.string.s, R.string.sat, Calendar.SATURDAY),
+    SUNDAY(R.string.sunday, R.string.sun, Calendar.SUNDAY),
+    MONDAY(R.string.monday, R.string.mon, Calendar.MONDAY),
+    TUESDAY(R.string.tuesday, R.string.tue, Calendar.TUESDAY),
+    WEDNESDAY(R.string.wednesday, R.string.wed, Calendar.WEDNESDAY),
+    THURSDAY(R.string.thursday, R.string.thu, Calendar.THURSDAY),
+    FRIDAY(R.string.friday, R.string.fri, Calendar.FRIDAY),
+    SATURDAY(R.string.saturday, R.string.sat, Calendar.SATURDAY),
 }

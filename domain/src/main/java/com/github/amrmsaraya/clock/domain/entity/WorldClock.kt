@@ -4,7 +4,7 @@ import java.util.*
 
 data class WorldClock(
     val calendar: Calendar = Calendar.getInstance(),
-    val hours: Float = 0f,
-    val minutes: Float = 0f,
-    val seconds: Float = 0f,
+    val hoursAngel: Float = 0f,
+    val minutesAngel: Float = 0f,
+    val secondsAngel: Float = 0f,
 )
