@@ -45,7 +45,14 @@ fun TimerScreen(
 
     val sliderValue = uiState.timer.timeInMillis / uiState.configuredTime.toFloat()
 
-    var timer by remember { mutableStateOf(EntityTimer(timeMillis = 15 * 60 * 1000L)) }
+    var timer by remember {
+        mutableStateOf(
+            EntityTimer(
+                title = context.getString(R.string.timer_title),
+                timeMillis = 15 * 60 * 1000L
+            )
+        )
+    }
     var editMode by remember { mutableStateOf(false) }
 
     var showNewTimerDialog by remember { mutableStateOf(false) }
@@ -82,7 +89,10 @@ fun TimerScreen(
         sliderValue = sliderValue,
         selectedTemplate = selectedTemplate,
         onNewTimerClick = {
-            timer = EntityTimer(title = "Timer", timeMillis = 15 * 60 * 1000L)
+            timer = EntityTimer(
+                title = context.getString(R.string.timer_title),
+                timeMillis = 15 * 60 * 1000L
+            )
             editMode = false
             showNewTimerDialog = true
         },

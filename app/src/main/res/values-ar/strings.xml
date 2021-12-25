@@ -5,6 +5,7 @@
     <string name="clock">الساعة</string>
     <string name="stopwatch">ساعة الإيقاف</string>
     <string name="timer">المؤقت</string>
+    <string name="timer_title">مؤقت</string>
     <string name="reset">إعادة ضبط</string>
     <string name="pause">إيقاف مؤقت</string>
     <string name="start">ابدء</string>

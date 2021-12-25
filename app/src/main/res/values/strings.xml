@@ -4,6 +4,7 @@
     <string name="alarm">Alarm</string>
     <string name="stopwatch">Stopwatch</string>
     <string name="timer">Timer</string>
+    <string name="timer_title">Timer</string>
     <string name="reset">Reset</string>
     <string name="pause">Pause</string>
     <string name="start">Start</string>
