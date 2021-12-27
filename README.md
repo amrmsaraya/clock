@@ -33,7 +33,6 @@ Clock combines all of the functionality you need into one simple, beautiful appl
 ## Architecture and Design Patterns
 
 - [Clean Architecture](https://koenig-media.raywenderlich.com/uploads/2019/02/Clean-Architecture-Bob-650x454.png)
-  - Application architecture pattern
   - :app - Application main activity and dependency injection
   - :common - Provide common shared ui & utilities
   - :feature_alarm - Provide alarm feature
