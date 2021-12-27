@@ -16,26 +16,26 @@
         android:theme="@style/Theme.Clock">
 
         <receiver
-            android:name=".services.alarm.AlarmReceiver"
+            android:name=".receiver.AlarmReceiver"
             android:enabled="true"
             android:exported="false" />
         <receiver
-            android:name=".services.timer.TimerCancelReceiver"
+            android:name=".receiver.TimerCancelReceiver"
             android:enabled="true"
             android:exported="false" />
 
         <service
-            android:name=".services.timer.TimerService"
+            android:name=".service.TimerService"
             android:enabled="true"
             android:exported="false" />
 
         <receiver
-            android:name=".services.stopwatch.StopwatchCancelReceiver"
+            android:name=".receiver.StopwatchCancelReceiver"
             android:enabled="true"
             android:exported="false" />
 
         <service
-            android:name=".services.stopwatch.StopwatchService"
+            android:name=".service.StopwatchService"
             android:enabled="true"
             android:exported="false" />
 
@@ -44,7 +44,6 @@
             android:autoRemoveFromRecents="true"
             android:screenOrientation="sensorPortrait"
             android:showOnLockScreen="true" />
-
         <activity
             android:name=".presentation.main_activity.MainActivity"
             android:exported="true"

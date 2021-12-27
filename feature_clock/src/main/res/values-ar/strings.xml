@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="am">ص</string>
+    <string name="pm">م</string>
+    <string name="time_zone_placeholder">مدينة، دولة أو منطقة</string>
+</resources>

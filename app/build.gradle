@@ -42,7 +42,7 @@ android {
         compose true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion '1.1.0-rc02'
+        kotlinCompilerExtensionVersion "$compose_compiler_version"
     }
     packagingOptions {
         resources {
@@ -57,11 +57,13 @@ dependencies {
     def coroutine_version = '1.6.0-native-mt'
     def navigation_version = '2.4.0-rc01'
     def room_version = "2.4.0"
-    def workManager_version = '2.7.1'
 
     // local modules
-    implementation project(path: ":domain")
-    implementation project(path: ":data")
+    implementation project(path: ":common")
+    implementation project(path: ":feature_alarm")
+    implementation project(path: ":feature_clock")
+    implementation project(path: ":feature_stopwatch")
+    implementation project(path: ":feature_timer")
 
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.appcompat:appcompat:1.4.0'
@@ -93,9 +95,6 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version"
 
-    // WorkManager
-    implementation "androidx.work:work-runtime-ktx:$workManager_version"
-
     // SystemUiController
     implementation "com.google.accompanist:accompanist-systemuicontroller:$accompanist_version"
 
@@ -115,7 +114,6 @@ dependencies {
     implementation "com.google.dagger:hilt-android:$hilt_version"
     kapt "com.google.dagger:hilt-compiler:$hilt_version"
     implementation 'androidx.hilt:hilt-navigation-compose:1.0.0-rc01'
-    implementation 'androidx.hilt:hilt-work:1.0.0'
     kapt 'androidx.hilt:hilt-compiler:1.0.0'
 
     // Navigation

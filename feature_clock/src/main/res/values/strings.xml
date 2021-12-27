@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="am">AM</string>
+    <string name="pm">PM</string>
+    <string name="time_zone_placeholder">City, country or region</string>
+</resources>

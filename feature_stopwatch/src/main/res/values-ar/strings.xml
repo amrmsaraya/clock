@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="reset">إعادة ضبط</string>
+    <string name="pause">إيقاف مؤقت</string>
+    <string name="start">ابدء</string>
+    <string name="lap">دورة</string>
+    <string name="resume">استمرار</string>
+</resources>

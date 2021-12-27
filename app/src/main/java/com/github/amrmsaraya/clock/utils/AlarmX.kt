@@ -5,9 +5,9 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import com.github.amrmsaraya.clock.domain.entity.Alarm
-import com.github.amrmsaraya.clock.presentation.alarm.utils.Days
-import com.github.amrmsaraya.clock.services.alarm.AlarmReceiver
+import com.github.amrmsaraya.clock.feature_alarm.domain.entity.Alarm
+import com.github.amrmsaraya.clock.feature_alarm.presentation.ui.alarm_screen.utils.Days
+import com.github.amrmsaraya.clock.receiver.AlarmReceiver
 import java.util.*
 
 fun Context.setAlarm(

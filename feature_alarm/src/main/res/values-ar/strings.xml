@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sunday">ح</string>
+    <string name="monday">ن</string>
+    <string name="tuesday">ث</string>
+    <string name="wednesday">ر</string>
+    <string name="thursday">خ</string>
+    <string name="friday">ج</string>
+    <string name="saturday">س</string>
+    <string name="sat">السبت</string>
+    <string name="sun">اﻷحد</string>
+    <string name="mon">الإثنين</string>
+    <string name="tue">الثلاثاء</string>
+    <string name="wed">اﻷربعاء</string>
+    <string name="thu">الخميس</string>
+    <string name="fri">الجمعة</string>
+    <string name="ring_once">يرن مرة واحدة</string>
+    <string name="am">ص</string>
+    <string name="pm">م</string>
+    <string name="title">الإسم</string>
+    <string name="color">اللون</string>
+    <string name="new_alarm">منبه جديد</string>
+    <string name="edit_alarm">تعديل المنبه</string>
+    <string name="add_new_alarm">اضغط علي "+" لإضافة منبه جديد</string>
+    <string name="ringtone">نغمة الرنين</string>
+    <string name="set_alarm_tone">اختر نغمة الرنين</string>
+    <string name="ring_in">يرن بعد</string>
+    <string name="everyday">كل يوم</string>
+    <string name="snooze">غفوة</string>
+    <string name="minutes">دقائق</string>
+    <string name="few_seconds">ثوان قليلة</string>
+    <string name="day">يوم</string>
+    <string name="hour">س</string>
+    <string name="minute">د</string>
+</resources>

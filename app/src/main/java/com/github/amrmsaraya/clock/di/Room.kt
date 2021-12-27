@@ -1,10 +1,10 @@
 package com.github.amrmsaraya.clock.di
 
 import android.content.Context
-import com.github.amrmsaraya.clock.data.local.AlarmDao
-import com.github.amrmsaraya.clock.data.local.AppDatabase
-import com.github.amrmsaraya.clock.data.local.ClockDao
-import com.github.amrmsaraya.clock.data.local.TimerDao
+import com.github.amrmsaraya.clock.data.AppDatabase
+import com.github.amrmsaraya.clock.feature_alarm.data.local.AlarmDao
+import com.github.amrmsaraya.clock.feature_clock.data.local.ClockDao
+import com.github.amrmsaraya.clock.feature_timer.data.local.TimerDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

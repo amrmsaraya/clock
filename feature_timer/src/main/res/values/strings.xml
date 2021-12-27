@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="timer_title">Timer</string>
+    <string name="reset">Reset</string>
+    <string name="pause">Pause</string>
+    <string name="start">Start</string>
+    <string name="title">Title</string>
+    <string name="resume">Resume</string>
+    <string name="new_timer">New Timer</string>
+    <string name="edit_timer">Edit Timer</string>
+    <string name="delete">Delete</string>
+</resources>

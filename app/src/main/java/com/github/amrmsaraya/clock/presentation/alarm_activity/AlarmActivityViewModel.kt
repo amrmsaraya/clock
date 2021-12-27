@@ -2,8 +2,8 @@ package com.github.amrmsaraya.clock.presentation.alarm_activity
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.github.amrmsaraya.clock.domain.entity.Alarm
-import com.github.amrmsaraya.clock.domain.usecase.AlarmCRUDUseCase
+import com.github.amrmsaraya.clock.feature_alarm.domain.entity.Alarm
+import com.github.amrmsaraya.clock.feature_alarm.domain.usecase.AlarmCRUDUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject

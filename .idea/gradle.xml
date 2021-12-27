@@ -11,8 +11,11 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
-            <option value="$PROJECT_DIR$/data" />
-            <option value="$PROJECT_DIR$/domain" />
+            <option value="$PROJECT_DIR$/common" />
+            <option value="$PROJECT_DIR$/feature_alarm" />
+            <option value="$PROJECT_DIR$/feature_clock" />
+            <option value="$PROJECT_DIR$/feature_stopwatch" />
+            <option value="$PROJECT_DIR$/feature_timer" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />
