@@ -37,7 +37,7 @@ android {
         compose true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion "$compose_compiler_version"
+        kotlinCompilerExtensionVersion Versions.compose_compiler
     }
 }
 
@@ -45,49 +45,47 @@ dependencies {
 
     implementation project(path: ':common')
 
-    def lifecycle_version = '2.4.0'
-    def coroutine_version = '1.6.0-native-mt'
-    def room_version = "2.4.0"
-
-    implementation 'androidx.core:core-ktx:1.7.0'
-    implementation 'com.google.android.material:material:1.4.0'
-    implementation "androidx.compose.ui:ui:$compose_version"
-    implementation "androidx.compose.material:material:$compose_version"
-    implementation "androidx.compose.material3:material3:1.0.0-alpha02"
-    implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
-    implementation "androidx.compose.material:material-icons-core:$compose_version"
-    implementation "androidx.compose.material:material-icons-extended:$compose_version"
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.4.0'
-    implementation 'androidx.activity:activity-compose:1.4.0'
+    // Core
+    implementation Libs.core_ktx
+    implementation Libs.app_compat
+    implementation Libs.material
+    implementation Libs.compose_ui
+    implementation Libs.compose_material
+    implementation Libs.compose_material3
+    implementation Libs.compose_ui_tooling
+    implementation Libs.compose_icons
+    implementation Libs.compose_icons_extended
+    implementation Libs.compose_activity
+    implementation Libs.lifecycle_runtime
 
     // Test
-    testImplementation 'junit:junit:4.13.2'
-    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutine_version"
-    testImplementation "com.google.truth:truth:1.1.3"
+    testImplementation Libs.test_junit
+    testImplementation Libs.test_coroutines
+    testImplementation Libs.test_truth
 
     // Android Test
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
-    androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
-    debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
+    androidTestImplementation Libs.androidTest_junit
+    androidTestImplementation Libs.androidTest_junit_compose
+    debugImplementation Libs.debug_compose_ui
+    androidTestImplementation Libs.androidTest_truth
 
     // ViewModel
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version"
+    implementation Libs.viewModel
+    implementation Libs.viewModel_compose
+
 
     // Coroutine
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutine_version"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutine_version"
+    implementation Libs.coroutines_core
+    implementation Libs.coroutines_android
 
     // Room
-    implementation "androidx.room:room-runtime:$room_version"
-    implementation "androidx.room:room-ktx:$room_version"
-    ksp "androidx.room:room-compiler:$room_version"
+    implementation Libs.room_runtime
+    implementation Libs.room_ktx
+    ksp Libs.room_compiler_ksp
 
     // Hilt
-    implementation "com.google.dagger:hilt-android:$hilt_version"
-    kapt "com.google.dagger:hilt-compiler:$hilt_version"
-    implementation 'androidx.hilt:hilt-navigation-compose:1.0.0-rc01'
-    kapt 'androidx.hilt:hilt-compiler:1.0.0'
-
+    implementation Libs.hilt_android
+    kapt Libs.hilt_compiler_dagger_kapt
+    implementation Libs.hilt_compose_navigation
+    kapt Libs.hilt_compiler_android_kapt
 }
