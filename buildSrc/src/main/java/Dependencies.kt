@@ -1,4 +1,19 @@
+import org.gradle.api.JavaVersion
+
 object Versions {
+    // Android SDK
+    const val compileSdk = 31
+    const val minSdk = 24
+    const val targetSdk = 31
+
+    // Compatibility
+    val sourceCompatibility = JavaVersion.VERSION_11
+    val targetCompatibility = JavaVersion.VERSION_11
+
+    // JvmTarget
+    const val jvmTarget = "11"
+
+    // Dependencies
     const val kotlin = "1.6.10"
     const val lifecycle = "2.4.0"
     const val core_ktx = "1.7.0"
@@ -37,7 +52,6 @@ object Libs {
     const val compose_activity = "androidx.activity:activity-compose:${Versions.compose_activity}"
     const val lifecycle_runtime = "androidx.lifecycle:lifecycle-runtime-ktx:${Versions.lifecycle}"
 
-
     // Test
     const val test_junit = "junit:junit:${Versions.junit}"
     const val test_coroutines =
@@ -49,7 +63,6 @@ object Libs {
     const val androidTest_junit_compose = "androidx.compose.ui:ui-test-junit4:${Versions.compose}"
     const val androidTest_truth = "com.google.truth:truth:${Versions.truth}"
     const val debug_compose_ui = "androidx.compose.ui:ui-tooling:${Versions.compose}"
-
 
     // Splash Screen
     const val splashscreen = "androidx.core:core-splashscreen:${Versions.splashscreen}"
