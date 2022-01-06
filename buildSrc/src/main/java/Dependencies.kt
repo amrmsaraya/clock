@@ -22,7 +22,7 @@ object Versions {
     const val compose = "1.1.0-rc01"
     const val compose_compiler = "1.1.0-rc02"
     const val compose_material3 = "1.0.0-alpha02"
-    const val compose_activity = "1.0.0-alpha02"
+    const val activity_compose = "1.4.0"
     const val accompanist = "0.22.0-rc"
     const val coroutines = "1.6.0-native-mt"
     const val navigation = "2.4.0-rc01"
@@ -49,7 +49,7 @@ object Libs {
     const val compose_icons = "androidx.compose.material:material-icons-core:${Versions.compose}"
     const val compose_icons_extended =
         "androidx.compose.material:material-icons-extended:${Versions.compose}"
-    const val compose_activity = "androidx.activity:activity-compose:${Versions.compose_activity}"
+    const val activity_compose = "androidx.activity:activity-compose:${Versions.activity_compose}"
     const val lifecycle_runtime = "androidx.lifecycle:lifecycle-runtime-ktx:${Versions.lifecycle}"
 
     // Test

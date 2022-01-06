@@ -54,7 +54,7 @@ dependencies {
     implementation(Libs.compose_ui_tooling)
     implementation(Libs.compose_icons)
     implementation(Libs.compose_icons_extended)
-    implementation(Libs.compose_activity)
+    implementation(Libs.activity_compose)
     implementation(Libs.lifecycle_runtime)
 
     // Test
