@@ -59,7 +59,7 @@ fun Context.setAlarm(
 
                 if (timeInMillis < currentTime.timeInMillis) {
                     set(Calendar.DAY_OF_WEEK, getDayOfWeek(repeatOn, true, this))
-                    if (get(Calendar.DAY_OF_WEEK) == currentTime.get(Calendar.DAY_OF_WEEK)) {
+                    if (timeInMillis < currentTime.timeInMillis) {
                         set(Calendar.WEEK_OF_YEAR, currentTime.get(Calendar.WEEK_OF_YEAR) + 1)
                     }
                 }
