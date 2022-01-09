@@ -12,7 +12,6 @@ import java.util.*
 
 fun Context.setAlarm(
     alarm: Alarm,
-    repeat: Boolean = false,
     snooze: Boolean = false
 ): Long {
     val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
@@ -55,7 +54,7 @@ fun Context.setAlarm(
             false -> {
                 val repeatOn = Days.values().filter { it.ordinal in alarm.repeatOn }
 
-                set(Calendar.DAY_OF_WEEK, getDayOfWeek(repeatOn, repeat, currentTime))
+                set(Calendar.DAY_OF_WEEK, getDayOfWeek(repeatOn, false, currentTime))
 
                 if (timeInMillis < currentTime.timeInMillis) {
                     set(Calendar.DAY_OF_WEEK, getDayOfWeek(repeatOn, true, this))

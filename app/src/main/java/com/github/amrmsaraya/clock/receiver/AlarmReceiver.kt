@@ -107,7 +107,7 @@ class AlarmReceiver : BroadcastReceiver() {
             if (alarm.repeatOn.isEmpty()) {
                 alarmCRUDUseCase.insert(alarm.copy(enabled = false))
             } else {
-                val ringTime = context.setAlarm(alarm, repeat = true)
+                val ringTime = context.setAlarm(alarm)
                 alarmCRUDUseCase.insert(alarm.copy(ringTime = ringTime))
             }
             scope.cancel()
