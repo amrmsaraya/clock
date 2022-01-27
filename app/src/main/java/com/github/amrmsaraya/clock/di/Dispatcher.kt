@@ -1,4 +1,4 @@
-package com.github.amrmsaraya.clock.feature_alarm.di
+package com.github.amrmsaraya.clock.di
 
 import dagger.Module
 import dagger.Provides

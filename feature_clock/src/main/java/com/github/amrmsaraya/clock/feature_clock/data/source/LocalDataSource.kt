@@ -6,5 +6,5 @@ import kotlinx.coroutines.flow.Flow
 interface LocalDataSource {
     suspend fun insert(clock: ClockDTO)
     suspend fun delete(clocks: List<ClockDTO>)
-    suspend fun getClocks(): Flow<List<ClockDTO>>
+    fun getClocks(): Flow<List<ClockDTO>>
 }

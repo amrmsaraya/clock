@@ -14,7 +14,7 @@ class LocalDataSourceImpl(private val clockDao: ClockDao) : LocalDataSource {
         clockDao.delete(clocks)
     }
 
-    override suspend fun getClocks(): Flow<List<ClockDTO>> {
+    override fun getClocks(): Flow<List<ClockDTO>> {
         return clockDao.getClocks()
     }
 }
