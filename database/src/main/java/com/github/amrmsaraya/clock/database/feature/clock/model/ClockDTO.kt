@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "clock")
 data class ClockDTO(
     @PrimaryKey
-    val id: String,
-    val displayName: String
+    val id: String = "",
+    val displayName: String = ""
 )
 

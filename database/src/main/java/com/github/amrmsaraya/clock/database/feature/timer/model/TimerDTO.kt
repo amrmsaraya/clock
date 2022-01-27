@@ -7,6 +7,6 @@ import androidx.room.PrimaryKey
 data class TimerDTO(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
-    val title: String,
-    val timeMillis: Long
+    val title: String = "",
+    val timeMillis: Long = 0
 )

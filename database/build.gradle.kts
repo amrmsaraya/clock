@@ -39,6 +39,8 @@ android {
 dependencies {
 
     implementation(Libs.core_ktx)
+    implementation(Libs.app_compat)
+
 
     // Room
     implementation(Libs.room_runtime)
