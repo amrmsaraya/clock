@@ -1,6 +1,6 @@
 package com.github.amrmsaraya.clock.feature_clock.data.mapper
 
-import com.github.amrmsaraya.clock.feature_clock.data.model.ClockDTO
+import com.github.amrmsaraya.clock.database.feature.clock.model.ClockDTO
 import com.github.amrmsaraya.clock.feature_clock.domain.entity.Clock
 
 internal fun ClockDTO.toClock(): Clock {

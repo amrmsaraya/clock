@@ -1,7 +1,7 @@
 package com.github.amrmsaraya.clock.feature_timer.data.sourceImpl
 
-import com.github.amrmsaraya.clock.feature_timer.data.local.TimerDao
-import com.github.amrmsaraya.clock.feature_timer.data.model.TimerDTO
+import com.github.amrmsaraya.clock.database.feature.timer.dao.TimerDao
+import com.github.amrmsaraya.clock.database.feature.timer.model.TimerDTO
 import com.github.amrmsaraya.clock.feature_timer.data.source.LocalDataSource
 import kotlinx.coroutines.flow.Flow
 

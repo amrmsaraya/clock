@@ -1,6 +1,6 @@
 package com.github.amrmsaraya.clock.feature_timer.data.mapper
 
-import com.github.amrmsaraya.clock.feature_timer.data.model.TimerDTO
+import com.github.amrmsaraya.clock.database.feature.timer.model.TimerDTO
 import com.github.amrmsaraya.clock.feature_timer.domain.entity.Timer
 
 fun TimerDTO.toTimer(): Timer {

@@ -1,6 +1,6 @@
 package com.github.amrmsaraya.clock.feature_clock.di
 
-import com.github.amrmsaraya.clock.feature_clock.data.local.ClockDao
+import com.github.amrmsaraya.clock.database.feature.clock.dao.ClockDao
 import com.github.amrmsaraya.clock.feature_clock.data.source.LocalDataSource
 import com.github.amrmsaraya.clock.feature_clock.data.sourceImpl.LocalDataSourceImpl
 import dagger.Module

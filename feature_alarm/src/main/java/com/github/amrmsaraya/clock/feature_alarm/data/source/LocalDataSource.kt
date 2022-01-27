@@ -1,6 +1,6 @@
 package com.github.amrmsaraya.clock.feature_alarm.data.source
 
-import com.github.amrmsaraya.clock.feature_alarm.data.model.AlarmDTO
+import com.github.amrmsaraya.clock.database.feature.alarm.model.AlarmDTO
 import kotlinx.coroutines.flow.Flow
 
 interface LocalDataSource {

@@ -37,14 +37,14 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.lifecycle.lifecycleScope
 import com.github.amrmsaraya.clock.R
-import com.github.amrmsaraya.clock.common.ui.theme.md_theme_dark_onPrimary
-import com.github.amrmsaraya.clock.common.ui.theme.md_theme_dark_primary
 import com.github.amrmsaraya.clock.common.utils.format
 import com.github.amrmsaraya.clock.common.utils.turnScreenOffAndKeyguardOn
 import com.github.amrmsaraya.clock.common.utils.turnScreenOnAndKeyguardOff
 import com.github.amrmsaraya.clock.feature_alarm.domain.entity.Alarm
 import com.github.amrmsaraya.clock.feature_alarm.presentation.ui.alarm_screen.utils.Colors
 import com.github.amrmsaraya.clock.presentation.theme.ClockTheme
+import com.github.amrmsaraya.clock.presentation.theme.md_theme_dark_onPrimary
+import com.github.amrmsaraya.clock.presentation.theme.md_theme_dark_primary
 import com.github.amrmsaraya.clock.receiver.ALARM_NOTIFICATION_ID
 import com.github.amrmsaraya.clock.utils.setAlarm
 import dagger.hilt.android.AndroidEntryPoint

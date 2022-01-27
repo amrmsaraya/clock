@@ -47,7 +47,9 @@ android {
 
 dependencies {
 
+    // Local Modules
     implementation(project(":common"))
+    implementation(project(":database"))
 
     // Core
     implementation(Libs.core_ktx)

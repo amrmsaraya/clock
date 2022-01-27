@@ -1,6 +1,6 @@
 package com.github.amrmsaraya.clock.feature_alarm.data.mapper
 
-import com.github.amrmsaraya.clock.feature_alarm.data.model.AlarmDTO
+import com.github.amrmsaraya.clock.database.feature.alarm.model.AlarmDTO
 import com.github.amrmsaraya.clock.feature_alarm.domain.entity.Alarm
 
 internal fun AlarmDTO.toAlarm(): Alarm {

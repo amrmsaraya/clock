@@ -1,7 +1,7 @@
 package com.github.amrmsaraya.clock.feature_alarm.data.sourceImpl
 
-import com.github.amrmsaraya.clock.feature_alarm.data.local.AlarmDao
-import com.github.amrmsaraya.clock.feature_alarm.data.model.AlarmDTO
+import com.github.amrmsaraya.clock.database.feature.alarm.dao.AlarmDao
+import com.github.amrmsaraya.clock.database.feature.alarm.model.AlarmDTO
 import com.github.amrmsaraya.clock.feature_alarm.data.source.LocalDataSource
 import kotlinx.coroutines.flow.Flow
 
