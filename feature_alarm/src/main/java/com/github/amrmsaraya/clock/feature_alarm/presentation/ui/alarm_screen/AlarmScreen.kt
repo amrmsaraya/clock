@@ -148,6 +148,7 @@ fun AlarmScreen(
     )
 }
 
+@ExperimentalMaterial3Api
 @ExperimentalPagerApi
 @ExperimentalSnapperApi
 @ExperimentalComposeUiApi

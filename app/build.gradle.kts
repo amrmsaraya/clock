@@ -8,14 +8,14 @@ plugins {
 }
 
 android {
-    compileSdk = Versions.compileSdk
+    compileSdk = AndroidConfig.compileSdk
 
     defaultConfig {
         applicationId = "com.github.amrmsaraya.clock"
-        minSdk = Versions.minSdk
-        targetSdk = Versions.targetSdk
-        versionCode = 5
-        versionName = "1.0.4"
+        minSdk = AndroidConfig.minSdk
+        targetSdk = AndroidConfig.targetSdk
+        versionCode = AndroidConfig.versionCode
+        versionName = AndroidConfig.versionName
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -36,12 +36,12 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = Versions.sourceCompatibility
-        targetCompatibility = Versions.targetCompatibility
+        sourceCompatibility = AndroidConfig.sourceCompatibility
+        targetCompatibility = AndroidConfig.targetCompatibility
     }
 
     kotlinOptions {
-        jvmTarget = Versions.jvmTarget
+        jvmTarget = AndroidConfig.jvmTarget
     }
 
     buildFeatures {
@@ -49,7 +49,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = Versions.compose_compiler
+        kotlinCompilerExtensionVersion = Versions.compose
     }
 
     packagingOptions {
@@ -81,15 +81,21 @@ dependencies {
     implementation(Libs.lifecycle_runtime)
 
     // Test
-    testImplementation(Libs.test_junit)
-    testImplementation(Libs.test_coroutines)
-    testImplementation(Libs.test_truth)
+    testImplementation(TestLibs.junit)
+    testImplementation(TestLibs.coroutines)
+    testImplementation(TestLibs.truth)
+    testImplementation(TestLibs.mockk)
+    testImplementation(TestLibs.mockk_jvm)
 
     // Android Test
-    androidTestImplementation(Libs.androidTest_junit)
-    androidTestImplementation(Libs.androidTest_junit_compose)
-    debugImplementation(Libs.debug_compose_ui)
-    androidTestImplementation(Libs.androidTest_truth)
+    androidTestImplementation(AndroidTestLibs.junit)
+    androidTestImplementation(AndroidTestLibs.truth)
+    androidTestImplementation(AndroidTestLibs.junit_compose)
+    debugImplementation(AndroidTestLibs.debug_compose_ui)
+    androidTestImplementation(AndroidTestLibs.arch_core)
+    androidTestImplementation(AndroidTestLibs.coroutines)
+    androidTestImplementation(AndroidTestLibs.mockk)
+    androidTestImplementation(AndroidTestLibs.mockk_jvm)
 
     // Splash Screen
     implementation(Libs.splashscreen)

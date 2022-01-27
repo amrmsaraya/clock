@@ -58,6 +58,7 @@ import com.github.amrmsaraya.timer.toTime
 import com.google.accompanist.pager.ExperimentalPagerApi
 import dev.chrisbanes.snapper.ExperimentalSnapperApi
 
+@ExperimentalMaterial3Api
 @ExperimentalSnapperApi
 @ExperimentalPagerApi
 @ExperimentalComposeUiApi
@@ -560,6 +561,7 @@ private fun SnoozeRow(
     }
 }
 
+@ExperimentalMaterial3Api
 @ExperimentalComposeUiApi
 @Composable
 fun SnoozeDialog(

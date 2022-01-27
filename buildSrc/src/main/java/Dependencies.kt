@@ -1,40 +1,53 @@
 import org.gradle.api.JavaVersion
 
-object Versions {
+object AndroidConfig {
     // Android SDK
     const val compileSdk = 31
     const val minSdk = 24
-    const val targetSdk = 31
+    const val targetSdk = compileSdk
 
     // Compatibility
-    val sourceCompatibility = JavaVersion.VERSION_11
-    val targetCompatibility = JavaVersion.VERSION_11
+    val sourceCompatibility = JavaVersion.VERSION_1_8
+    val targetCompatibility = JavaVersion.VERSION_1_8
 
     // JvmTarget
-    const val jvmTarget = "11"
+    const val jvmTarget = "1.8"
 
-    // Dependencies
+    // Version
+    const val versionCode = 5
+    const val versionName = "1.0.4"
+}
+
+object Versions {
+
+    // Kotlin
     const val kotlin = "1.6.10"
+
+    // Libs
     const val lifecycle = "2.4.0"
     const val core_ktx = "1.7.0"
-    const val app_compat = "1.4.0"
-    const val material = "1.4.0"
-    const val compose = "1.1.0-rc01"
-    const val compose_compiler = "1.1.0-rc02"
-    const val compose_material3 = "1.0.0-alpha02"
+    const val app_compat = "1.4.1"
+    const val material = "1.5.0"
+    const val compose = "1.1.0-rc03"
+    const val compose_material3 = "1.0.0-alpha04"
     const val activity_compose = "1.4.0"
-    const val accompanist = "0.22.0-rc"
+    const val accompanist = "0.22.1-rc"
     const val coroutines = "1.6.0-native-mt"
-    const val navigation = "2.4.0-rc01"
+    const val navigation = "2.4.0"
     const val splashscreen = "1.0.0-alpha02"
-    const val room = "2.4.0"
+    const val room = "2.4.1"
     const val hilt = "2.40.5"
+    const val hilt_compiler = "1.0.0"
+    const val hilt_navigation = "1.0.0"
     const val kotlinx_serialization = "1.3.2"
     const val timer = "1.0.3"
 
+    // Test
     const val junit = "4.13.2"
     const val junit_android = "1.1.3"
     const val truth = "1.1.3"
+    const val arch_core = "2.1.0"
+    const val mockk = "1.12.2"
 }
 
 object Libs {
@@ -51,18 +64,6 @@ object Libs {
         "androidx.compose.material:material-icons-extended:${Versions.compose}"
     const val activity_compose = "androidx.activity:activity-compose:${Versions.activity_compose}"
     const val lifecycle_runtime = "androidx.lifecycle:lifecycle-runtime-ktx:${Versions.lifecycle}"
-
-    // Test
-    const val test_junit = "junit:junit:${Versions.junit}"
-    const val test_coroutines =
-        "org.jetbrains.kotlinx:kotlinx-coroutines-test:${Versions.coroutines}"
-    const val test_truth = "com.google.truth:truth:${Versions.truth}"
-
-    // Android Test
-    const val androidTest_junit = "androidx.test.ext:junit:${Versions.junit_android}"
-    const val androidTest_junit_compose = "androidx.compose.ui:ui-test-junit4:${Versions.compose}"
-    const val androidTest_truth = "com.google.truth:truth:${Versions.truth}"
-    const val debug_compose_ui = "androidx.compose.ui:ui-tooling:${Versions.compose}"
 
     // Splash Screen
     const val splashscreen = "androidx.core:core-splashscreen:${Versions.splashscreen}"
@@ -94,8 +95,9 @@ object Libs {
     // Hilt
     const val hilt_android = "com.google.dagger:hilt-android:${Versions.hilt}"
     const val hilt_compiler_dagger_kapt = "com.google.dagger:hilt-compiler:${Versions.hilt}"
-    const val hilt_compose_navigation = "androidx.hilt:hilt-navigation-compose:1.0.0-rc01"
-    const val hilt_compiler_android_kapt = "androidx.hilt:hilt-compiler:1.0.0"
+    const val hilt_compose_navigation =
+        "androidx.hilt:hilt-navigation-compose:${Versions.hilt_navigation}"
+    const val hilt_compiler_android_kapt = "androidx.hilt:hilt-compiler:${Versions.hilt_compiler}"
 
     // Navigation
     const val navigation = "androidx.navigation:navigation-compose:${Versions.navigation}"
@@ -105,4 +107,25 @@ object Libs {
 
     // Timer
     const val timer = "com.github.amrmsaraya:timer:${Versions.timer}"
+}
+
+object TestLibs {
+    const val junit = "junit:junit:${Versions.junit}"
+    const val coroutines =
+        "org.jetbrains.kotlinx:kotlinx-coroutines-test:${Versions.coroutines}"
+    const val truth = "com.google.truth:truth:${Versions.truth}"
+    const val mockk = "io.mockk:mockk:${Versions.mockk}"
+    const val mockk_jvm = "io.mockk:mockk-agent-jvm:${Versions.mockk}"
+}
+
+object AndroidTestLibs {
+    const val junit = "androidx.test.ext:junit:${Versions.junit_android}"
+    const val truth = "com.google.truth:truth:${Versions.truth}"
+    const val junit_compose = "androidx.compose.ui:ui-test-junit4:${Versions.compose}"
+    const val debug_compose_ui = "androidx.compose.ui:ui-tooling:${Versions.compose}"
+    const val coroutines =
+        "org.jetbrains.kotlinx:kotlinx-coroutines-test:${Versions.coroutines}"
+    const val arch_core = "androidx.arch.core:core-testing:${Versions.arch_core}"
+    const val mockk = "io.mockk:mockk:${Versions.mockk}"
+    const val mockk_jvm = "io.mockk:mockk-agent-jvm:${Versions.mockk}"
 }

@@ -6,6 +6,7 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,6 +21,7 @@ import com.github.amrmsaraya.clock.feature_clock.R
 import com.github.amrmsaraya.clock.feature_clock.domain.entity.WorldClock
 import java.util.*
 
+@ExperimentalMaterial3Api
 @ExperimentalFoundationApi
 @Composable
 fun WorldClockRow(
