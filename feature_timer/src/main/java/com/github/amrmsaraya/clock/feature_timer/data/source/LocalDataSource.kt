@@ -6,5 +6,5 @@ import kotlinx.coroutines.flow.Flow
 interface LocalDataSource {
     suspend fun insert(timer: TimerDTO)
     suspend fun delete(timer: TimerDTO)
-    suspend fun getTimers(): Flow<List<TimerDTO>>
+    fun getTimers(): Flow<List<TimerDTO>>
 }
