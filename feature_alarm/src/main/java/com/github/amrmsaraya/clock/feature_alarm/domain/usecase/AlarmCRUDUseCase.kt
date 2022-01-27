@@ -14,7 +14,7 @@ class AlarmCRUDUseCase(private val alarmRepo: AlarmRepo) {
         alarmRepo.delete(alarms)
     }
 
-    suspend fun getClocks(): Flow<List<Alarm>> {
+    suspend fun getAlarms(): Flow<List<Alarm>> {
         return alarmRepo.getAlarms()
     }
 

@@ -14,7 +14,7 @@ class LocalDataSourceImpl(private val alarmDao: AlarmDao) : LocalDataSource {
         alarmDao.delete(alarms)
     }
 
-    override suspend fun getAlarms(): Flow<List<AlarmDTO>> {
+    override fun getAlarms(): Flow<List<AlarmDTO>> {
         return alarmDao.getAlarms()
     }
 }

@@ -6,5 +6,5 @@ import kotlinx.coroutines.flow.Flow
 interface LocalDataSource {
     suspend fun insert(alarm: AlarmDTO)
     suspend fun delete(alarms: List<AlarmDTO>)
-    suspend fun getAlarms(): Flow<List<AlarmDTO>>
+    fun getAlarms(): Flow<List<AlarmDTO>>
 }
