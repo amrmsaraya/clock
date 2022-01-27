@@ -29,19 +29,21 @@ Clock combines all of the functionality you need into one simple, beautiful appl
 - [Timer](https://github.com/amrmsaraya/timer) - Stopwatch & Timer features
 - [JUnit](https://junit.org/junit4) - Unit Testing
 - [Truth](https://truth.dev) - Fluent Assertions
+- [Mokk](https://mockk.io/) - Mocking
 
 ## Architecture and Design Patterns
 
 - [Clean Architecture](https://koenig-media.raywenderlich.com/uploads/2019/02/Clean-Architecture-Bob-650x454.png)
     - :app - Application main activity and dependency injection
     - :buildSrc - Manage application dependencies
+    - :database - Contains database, DTOs (Data Transfer Object) & DAOs
     - :common - Provide common shared ui & utilities
     - :feature_alarm - Provide alarm feature
     - :feature_clock - Provide clock feature
     - :feature_stopwatch - Provide stopwatch feature
     - :feature_timer - Provide timer feature
     - each module from above contains its own layers
-        - data : contains DAOs, DTOs, Mapper, Data sources and Repository Implementation
+        - data : contains Mapper, Data sources and Repository Implementation
         - domain : Business layer that contains Repository interfaces and Models (Entities)
         - presentation : UI related code
 
