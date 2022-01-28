@@ -27,10 +27,18 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = AndroidConfig.sourceCompatibility
         targetCompatibility = AndroidConfig.sourceCompatibility
     }
+
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
+
     kotlinOptions {
         jvmTarget = AndroidConfig.jvmTarget
     }
@@ -55,10 +63,11 @@ dependencies {
     kapt(Libs.hilt_compiler_dagger_kapt)
     kapt(Libs.hilt_compiler_android_kapt)
 
-    // Android Test
-    androidTestImplementation(AndroidTestLibs.junit)
-    androidTestImplementation(AndroidTestLibs.truth)
-    androidTestImplementation(AndroidTestLibs.arch_core)
-    androidTestImplementation(AndroidTestLibs.coroutines)
+    // Test
+    testImplementation(TestLibs.junit)
+    testImplementation(TestLibs.truth)
+    testImplementation(AndroidTestLibs.arch_core)
+    testImplementation(TestLibs.coroutines)
+    testImplementation(TestLibs.robolectric)
 
 }

@@ -89,13 +89,13 @@ dependencies {
 
     // Android Test
     androidTestImplementation(AndroidTestLibs.junit)
-    androidTestImplementation(AndroidTestLibs.truth)
+    androidTestImplementation(TestLibs.truth)
     androidTestImplementation(AndroidTestLibs.junit_compose)
     debugImplementation(AndroidTestLibs.debug_compose_ui)
     androidTestImplementation(AndroidTestLibs.arch_core)
-    androidTestImplementation(AndroidTestLibs.coroutines)
-    androidTestImplementation(AndroidTestLibs.mockk)
-    androidTestImplementation(AndroidTestLibs.mockk_jvm)
+    androidTestImplementation(TestLibs.coroutines)
+    androidTestImplementation(TestLibs.mockk)
+    androidTestImplementation(TestLibs.mockk_jvm)
 
     // Splash Screen
     implementation(Libs.splashscreen)

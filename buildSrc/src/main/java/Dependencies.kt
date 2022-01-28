@@ -48,6 +48,7 @@ object Versions {
     const val truth = "1.1.3"
     const val arch_core = "2.1.0"
     const val mockk = "1.12.2"
+    const val robolectric = "4.7.3"
 }
 
 object Libs {
@@ -116,16 +117,12 @@ object TestLibs {
     const val truth = "com.google.truth:truth:${Versions.truth}"
     const val mockk = "io.mockk:mockk:${Versions.mockk}"
     const val mockk_jvm = "io.mockk:mockk-agent-jvm:${Versions.mockk}"
+    const val robolectric = "org.robolectric:robolectric:${Versions.robolectric}"
 }
 
 object AndroidTestLibs {
     const val junit = "androidx.test.ext:junit:${Versions.junit_android}"
-    const val truth = "com.google.truth:truth:${Versions.truth}"
     const val junit_compose = "androidx.compose.ui:ui-test-junit4:${Versions.compose}"
     const val debug_compose_ui = "androidx.compose.ui:ui-tooling:${Versions.compose}"
-    const val coroutines =
-        "org.jetbrains.kotlinx:kotlinx-coroutines-test:${Versions.coroutines}"
     const val arch_core = "androidx.arch.core:core-testing:${Versions.arch_core}"
-    const val mockk = "io.mockk:mockk:${Versions.mockk}"
-    const val mockk_jvm = "io.mockk:mockk-agent-jvm:${Versions.mockk}"
 }
