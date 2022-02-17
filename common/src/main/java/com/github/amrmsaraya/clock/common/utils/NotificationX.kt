@@ -35,57 +35,31 @@ fun Context.createNotification(
     actionTitle: String? = null,
     actionIntent: PendingIntent? = null,
 ): Notification {
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        NotificationCompat.Builder(this, channelId).apply {
-            setContentTitle(title)
-            setContentText(content)
-            setSmallIcon(icon)
-            setSilent(isSilent)
-            setOngoing(isOnGoing)
-            setPriority(priority)
+    val notification = NotificationCompat.Builder(this, channelId).apply {
+        setContentTitle(title)
+        setContentText(content)
+        setSmallIcon(icon)
+        setSilent(isSilent)
+        setOngoing(isOnGoing)
+        setPriority(priority)
 
-            intent?.let {
-                setContentIntent(intent)
-            }
+        intent?.let {
+            setContentIntent(intent)
+        }
 
-            if (actionTitle != null && actionIntent != null) {
-                addAction(
-                    icon,
-                    actionTitle,
-                    actionIntent
-                )
-            }
+        if (actionTitle != null && actionIntent != null) {
+            addAction(
+                icon,
+                actionTitle,
+                actionIntent
+            )
+        }
 
-            if (isFullScreen) {
-                setFullScreenIntent(intent, true)
-            }
+        if (isFullScreen) {
+            setFullScreenIntent(intent, true)
+        }
 
-        }.build()
-    } else {
-        NotificationCompat.Builder(this).apply {
-            setContentTitle(title)
-            setContentText(content)
-            setSmallIcon(icon)
-            setSilent(isSilent)
-            setOngoing(isOnGoing)
-            setPriority(priority)
-
-            intent?.let {
-                setContentIntent(intent)
-            }
-
-            if (actionTitle != null && actionIntent != null) {
-                addAction(
-                    icon,
-                    actionTitle,
-                    actionIntent
-                )
-            }
-
-            if (isFullScreen) {
-                setFullScreenIntent(intent, true)
-            }
-
-        }.build()
     }
+
+    return notification.build()
 }
