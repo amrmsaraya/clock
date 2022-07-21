@@ -26,6 +26,7 @@ fun Context.setAlarm(
         intent.putExtra("ringtone", alarm.ringtone)
         intent.putExtra("color", alarm.color)
         intent.putExtra("repeatOn", alarm.repeatOn.toIntArray())
+        intent.putExtra("snooze", alarm.snooze)
 
         PendingIntent.getBroadcast(
             this,
@@ -105,6 +106,7 @@ fun Context.cancelAlarm(alarm: Alarm) {
         intent.putExtra("ringtone", alarm.ringtone)
         intent.putExtra("color", alarm.color)
         intent.putExtra("repeatOn", alarm.repeatOn.toIntArray())
+        intent.putExtra("snooze", alarm.snooze)
 
         PendingIntent.getBroadcast(
             this,

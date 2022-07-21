@@ -12,6 +12,7 @@ import com.github.amrmsaraya.clock.R
 import com.github.amrmsaraya.clock.common.utils.createNotification
 import com.github.amrmsaraya.clock.common.utils.createNotificationChannel
 import com.github.amrmsaraya.clock.feature_alarm.domain.entity.Alarm
+import com.github.amrmsaraya.clock.feature_alarm.domain.entity.defaultSnooze
 import com.github.amrmsaraya.clock.feature_alarm.domain.usecase.AlarmCRUDUseCase
 import com.github.amrmsaraya.clock.presentation.alarm_activity.AlarmActivity
 import com.github.amrmsaraya.clock.utils.setAlarm
@@ -41,6 +42,7 @@ class AlarmReceiver : BroadcastReceiver() {
             color = intent.getIntExtra("color", 0),
             repeatOn = intent.getIntArrayExtra("repeatOn")?.toList() ?: intArrayOf().toList(),
             ringtone = intent.getStringExtra("ringtone") ?: "",
+            snooze = intent.getLongExtra("snooze", defaultSnooze),
         )
 
         val pendingIntent = Intent(context, AlarmActivity::class.java).let {
@@ -53,6 +55,7 @@ class AlarmReceiver : BroadcastReceiver() {
             it.putExtra("color", alarm.color)
             it.putExtra("ringtone", alarm.ringtone)
             it.putExtra("repeatOn", alarm.repeatOn.toIntArray())
+            it.putExtra("snooze", alarm.snooze)
 
             it.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
 

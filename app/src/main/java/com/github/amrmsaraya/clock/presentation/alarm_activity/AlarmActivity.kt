@@ -41,6 +41,7 @@ import com.github.amrmsaraya.clock.common.utils.format
 import com.github.amrmsaraya.clock.common.utils.turnScreenOffAndKeyguardOn
 import com.github.amrmsaraya.clock.common.utils.turnScreenOnAndKeyguardOff
 import com.github.amrmsaraya.clock.feature_alarm.domain.entity.Alarm
+import com.github.amrmsaraya.clock.feature_alarm.domain.entity.defaultSnooze
 import com.github.amrmsaraya.clock.feature_alarm.presentation.ui.alarm_screen.utils.Colors
 import com.github.amrmsaraya.clock.presentation.theme.ClockTheme
 import com.github.amrmsaraya.clock.presentation.theme.md_theme_dark_onPrimary
@@ -74,6 +75,7 @@ class AlarmActivity : ComponentActivity() {
             color = intent.getIntExtra("color", 0),
             repeatOn = intent.getIntArrayExtra("repeatOn")?.toList() ?: intArrayOf().toList(),
             ringtone = intent.getStringExtra("ringtone") ?: "",
+            snooze = intent.getLongExtra("snooze", defaultSnooze),
         )
 
         val ringtoneUri =
