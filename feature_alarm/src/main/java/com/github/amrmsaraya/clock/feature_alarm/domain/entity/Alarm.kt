@@ -2,7 +2,7 @@ package com.github.amrmsaraya.clock.feature_alarm.domain.entity
 
 import java.util.*
 
-const val defaultSnooze: Long = 5 * 60 * 1000
+const val DEFAULT_SNOOZE: Long = 5 * 60 * 1000
 
 data class Alarm(
     val id: Long = 0,
@@ -15,5 +15,5 @@ data class Alarm(
     val ringtone: String = "",
     val enabled: Boolean = true,
     val ringTime: Long = 0,
-    val snooze: Long = defaultSnooze,
+    val snooze: Long = DEFAULT_SNOOZE,
 )
