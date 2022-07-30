@@ -14,8 +14,8 @@ object AndroidConfig {
     const val jvmTarget = "1.8"
 
     // Version
-    const val versionCode = 6
-    const val versionName = "1.0.5"
+    const val versionCode = 7
+    const val versionName = "1.0.6"
 }
 
 object Versions {
